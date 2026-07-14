@@ -1,0 +1,19 @@
+---
+type Variant = 'default' | 'muted';
+
+interface Props {
+	variant?: Variant;
+	class?: string;
+}
+
+const { variant = 'default', class: className } = Astro.props;
+
+const variants: Record<Variant, string> = {
+	default: 'rounded-lg border border-neutral-200 bg-white p-6 shadow-sm',
+	muted: 'rounded-lg border border-neutral-200 bg-neutral-100 p-6',
+};
+---
+
+<div class:list={[variants[variant], className]}>
+	<slot />
+</div>

@@ -1,11 +1,27 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Container from '@/components/common/Container.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { createPageMetadata } from '@/seo/metadata';
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout seo={createPageMetadata({ path: '/' })}>
+	<Container class="py-16">
+		<main class="mx-auto max-w-xl space-y-6 text-center">
+			<h1 class="text-4xl font-bold text-primary-800">Trimnexa</h1>
+			<p class="text-lg text-neutral-600">
+				Project foundation in progress. Marketplace features will be added in later phases.
+			</p>
+			<Alert variant="info" title="Development status">
+				Phase 1 — technical foundation. No marketplace business logic yet.
+			</Alert>
+			<div class="flex justify-center gap-3">
+				<Button href="/">Home</Button>
+				<Button variant="secondary" href="https://docs.astro.build" target="_blank" rel="noopener">
+					Astro docs
+				</Button>
+			</div>
+		</main>
+	</Container>
+</BaseLayout>

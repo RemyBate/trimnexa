@@ -1,0 +1,23 @@
+---
+type Variant = 'info' | 'success' | 'warning' | 'error';
+
+interface Props {
+	variant?: Variant;
+	title?: string;
+	class?: string;
+}
+
+const { variant = 'info', title, class: className } = Astro.props;
+
+const variants: Record<Variant, string> = {
+	info: 'border-info-200 bg-info-50 text-info-900',
+	success: 'border-success-200 bg-success-50 text-success-900',
+	warning: 'border-warning-200 bg-warning-50 text-warning-900',
+	error: 'border-error-200 bg-error-50 text-error-900',
+};
+---
+
+<div class:list={['rounded-md border p-4', variants[variant], className]} role="alert">
+	{title && <p class="mb-1 font-semibold">{title}</p>}
+	<slot />
+</div>

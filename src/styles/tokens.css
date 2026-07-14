@@ -1,0 +1,92 @@
+/**
+ * Trimnexa design tokens — original palette for Cameroon marketplace.
+ * Not based on Amazon or other global marketplace branding.
+ */
+@theme {
+	/* Brand — deep teal (trust) + warm gold accent */
+	--color-primary-50: #ecfaf9;
+	--color-primary-100: #c9f0ee;
+	--color-primary-200: #95e0dc;
+	--color-primary-300: #5ec9c4;
+	--color-primary-400: #2daea8;
+	--color-primary-500: #149490;
+	--color-primary-600: #0b6e6e;
+	--color-primary-700: #085454;
+	--color-primary-800: #064040;
+	--color-primary-900: #042c2c;
+
+	--color-accent-400: #f0b429;
+	--color-accent-500: #e8a317;
+	--color-accent-600: #c7880f;
+
+	/* Neutrals */
+	--color-neutral-50: #f8faf9;
+	--color-neutral-100: #f1f4f3;
+	--color-neutral-200: #e2e8e6;
+	--color-neutral-300: #c5cfcb;
+	--color-neutral-400: #9aa8a3;
+	--color-neutral-500: #6b7a75;
+	--color-neutral-600: #4f5d58;
+	--color-neutral-700: #3d4844;
+	--color-neutral-800: #2d3430;
+	--color-neutral-900: #1a1f1d;
+
+	/* Semantic */
+	--color-success-50: #ecfdf3;
+	--color-success-200: #a7f3c9;
+	--color-success-600: #1a7f4b;
+	--color-success-900: #14532d;
+
+	--color-warning-50: #fffbeb;
+	--color-warning-200: #fde68a;
+	--color-warning-600: #c17d0d;
+	--color-warning-900: #78350f;
+
+	--color-error-50: #fef2f2;
+	--color-error-200: #fecaca;
+	--color-error-600: #b91c1c;
+	--color-error-700: #991b1b;
+	--color-error-900: #7f1d1d;
+
+	--color-info-50: #eff6ff;
+	--color-info-200: #bfdbfe;
+	--color-info-600: #0369a1;
+	--color-info-900: #1e3a5f;
+
+	/* Typography */
+	--font-sans:
+		system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+		'Liberation Sans', sans-serif;
+
+	--text-xs: 0.75rem;
+	--text-sm: 0.875rem;
+	--text-base: 1rem;
+	--text-lg: 1.125rem;
+	--text-xl: 1.25rem;
+	--text-2xl: 1.5rem;
+	--text-3xl: 1.875rem;
+	--text-4xl: 2.25rem;
+
+	/* Spacing (4px base) */
+	--spacing-page: 1rem;
+
+	/* Radius */
+	--radius-sm: 0.25rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.75rem;
+	--radius-xl: 1rem;
+	--radius-full: 9999px;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+	/* Animation */
+	--duration-fast: 150ms;
+	--duration-normal: 250ms;
+	--duration-slow: 400ms;
+
+	/* Layout */
+	--container-max: 80rem;
+}

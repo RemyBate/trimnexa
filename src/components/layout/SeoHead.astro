@@ -1,0 +1,31 @@
+---
+import type { PageMetadata } from '@/types/seo';
+
+interface Props {
+	metadata: PageMetadata;
+}
+
+const { metadata } = Astro.props;
+const { title, description, canonicalUrl, robots, openGraph, twitter } = metadata;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+{robots && <meta name="robots" content={robots} />}
+<meta name="generator" content={Astro.generator} />
+
+<meta property="og:title" content={openGraph.title} />
+<meta property="og:description" content={openGraph.description} />
+<meta property="og:url" content={openGraph.url} />
+<meta property="og:type" content={openGraph.type} />
+<meta property="og:site_name" content={openGraph.siteName} />
+<meta property="og:locale" content={openGraph.locale} />
+{openGraph.image && <meta property="og:image" content={openGraph.image} />}
+
+<meta name="twitter:card" content={twitter.card} />
+<meta name="twitter:title" content={twitter.title} />
+<meta name="twitter:description" content={twitter.description} />
+{twitter.image && <meta name="twitter:image" content={twitter.image} />}
