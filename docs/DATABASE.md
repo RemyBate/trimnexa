@@ -2,11 +2,11 @@
 
 [← Documentation index](./README.md)
 
-Database planning for Trimnexa. Schema implementation begins in Phase 3.
+Database planning for Trimnexa. **Phase 3 initial schema implemented** in `prisma/schema.prisma`.
 
 **Planned stack:** PostgreSQL + Prisma ORM — see [ARCHITECTURE.md](./ARCHITECTURE.md)
 
-**Financial flows:** [PAYMENTS.md](./PAYMENTS.md) · **Product context:** [PRD.md](./PRD.md)
+**Financial flows:** [FINANCIAL-DATA.md](./FINANCIAL-DATA.md) · [PAYMENTS.md](./PAYMENTS.md) · **Product context:** [PRD.md](./PRD.md)
 
 ## Design principles
 

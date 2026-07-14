@@ -4,7 +4,7 @@ A trusted multi-vendor e-commerce marketplace for Cameroon. Trimnexa connects ve
 
 **Website:** [https://trimnexa.com](https://trimnexa.com)
 
-**Current project phase:** Milestone 2 complete (Phase 2) — pending owner review
+**Current project phase:** Milestone 3 — Phase 3 complete; Phase 4 blocked on auth provider approval
 
 **Last roadmap update:** 2026-07-14
 
@@ -23,8 +23,8 @@ Full vision, mission, values, and business goals: [docs/PRD.md](docs/PRD.md)
 - [x] Phase 0 — Planning
 - [x] Phase 1 — Foundation (1A, 1B, 1C complete)
 - [x] Phase 2 — Public website (EN/FR, header, footer, homepage)
-- [ ] Phase 3 — Database
-- [ ] Phase 4 — Authentication
+- [x] Phase 3 — Database foundation (Prisma, migrations, seed)
+- [ ] Phase 4 — Authentication (blocked — provider selection)
 - [ ] Phase 5 — Customer account
 - [ ] Phase 6 — Seller and shop
 - [ ] Phase 7 — Products
@@ -55,12 +55,12 @@ Full roadmap with tasks and acceptance criteria: [docs/ROADMAP.md](docs/ROADMAP.
 | Framework            | Astro `^7.0.9`                                 |
 | Language             | TypeScript (strict)                            |
 | Node.js              | `>=22.12.0`                                    |
-| Database             | Not configured                                 |
-| Authentication       | Not configured (solution TBD — Phase 4)        |
-| Marketplace features | Not started                                    |
-| Deployment adapter   | Not installed (hosting-neutral until Phase 20) |
+| Database             | Prisma 7 + PostgreSQL (Phase 3 — configure `DATABASE_URL` locally) |
+| Authentication       | Not configured (Phase 4 — provider selection required)             |
+| Marketplace features | Not started                                                        |
+| Deployment adapter   | Not installed (deferred to Phase 4 auth/API routes)                |
 
-The project contains the Astro basics starter template. Phase 1A technical foundation is complete; no marketplace features added.
+Phase 3 database foundation is in place. Run `npm run db:migrate:dev` and `npm run db:seed` after configuring PostgreSQL. Phase 4 authentication is blocked pending provider selection.
 
 ---
 
@@ -113,6 +113,8 @@ Development server: [http://localhost:4321](http://localhost:4321)
 | `npm run format`    | Format with Prettier     |
 | `npm run typecheck` | Astro + TypeScript check |
 | `npm run test`      | Run Vitest unit tests    |
+| `npm run db:migrate:dev` | Apply migrations (local PostgreSQL) |
+| `npm run db:seed`   | Seed categories and dev settings |
 
 Optional background dev server: `astro dev --background` (see [AGENTS.md](AGENTS.md))
 

@@ -4,7 +4,7 @@
 
 Progress is tracked with checkboxes. **Do not begin a new phase until the previous phase is stable.** Update checkboxes when work is verified complete. Never remove completed phases from this document.
 
-**Current project phase:** Milestone 2 complete (Phase 2) — pending owner review before commit
+**Current project phase:** Milestone 3 — Phase 3 complete; Phase 4 blocked on auth provider approval
 
 **Last roadmap update:** 2026-07-14
 
@@ -34,8 +34,8 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 - [x] **Phase 0** — Planning and repository review
 - [x] **Phase 1** — Project foundation (1A, 1B, 1C complete)
 - [x] **Phase 2** — Public website and brand identity
-- [ ] **Phase 3** — Database and server foundation
-- [ ] **Phase 4** — Authentication and authorization
+- [x] **Phase 3** — Database and server foundation
+- [ ] **Phase 4** — Authentication and authorization (blocked — provider selection)
 - [ ] **Phase 5** — Customer account
 - [ ] **Phase 6** — Seller application and shop management
 - [ ] **Phase 7** — Categories and product management
@@ -163,24 +163,28 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 ## Phase 3 — Database and server foundation
 
-- [ ] Select PostgreSQL provider
-- [ ] Select ORM after compatibility review
-- [ ] Create the initial database schema
-- [ ] Create migrations
-- [ ] Create safe seed data
-- [ ] Add database client management
-- [ ] Add server-side validation
-- [ ] Add repository or service patterns only where useful
-- [ ] Add audit-log foundation
-- [ ] Document financial data handling
-- [ ] Add database tests
-- [ ] Install deployment adapter if SSR is required for database routes
+- [x] Select PostgreSQL provider (local PostgreSQL for development; production host deferred to Phase 20)
+- [x] Select ORM after compatibility review (Prisma 7 + `@prisma/adapter-pg`)
+- [x] Create the initial database schema
+- [x] Create migrations
+- [x] Create safe seed data
+- [x] Add database client management
+- [x] Add server-side validation
+- [x] Add repository or service patterns only where useful
+- [x] Add audit-log foundation
+- [x] Document financial data handling
+- [x] Add database tests
+- [ ] Install deployment adapter if SSR is required for database routes (deferred to Phase 4 auth/API routes)
 
-**Acceptance criteria:** Migrations work from a clean database; seed command works; money is represented safely; important relationships documented; no production credentials committed.
+**Acceptance criteria:** Migrations work from a clean database; seed command works; money is represented safely; important relationships documented; no production credentials committed. **Status: complete — pending owner review.** SSR adapter deferred until Phase 4.
 
 ---
 
 ## Phase 4 — Authentication and authorization
+
+**Status: not started — blocked on authentication provider selection (owner approval required).**
+
+See Milestone 3 review report for candidate evaluation.
 
 - [ ] Choose an Astro-compatible authentication solution (evaluate candidates — see [ARCHITECTURE.md](./ARCHITECTURE.md#authentication-evaluation-phase-4))
 - [ ] Create registration
@@ -546,6 +550,12 @@ A task is complete only when:
 ---
 
 ## Current phase
+
+**Milestone 3 — Phase 3 complete; Phase 4 blocked on authentication provider selection**
+
+- Prisma 7 + PostgreSQL schema, migration, seed, money utilities, audit log foundation
+- Phase 4 **not implemented** — owner must select auth provider (see review report)
+- Quality checks: build (25 pages), typecheck, lint, test (18/18), format:check — all pass
 
 **Milestone 2 complete — Phase 2 (Public website and brand identity) pending owner review**
 

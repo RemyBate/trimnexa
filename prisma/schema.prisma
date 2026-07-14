@@ -1,0 +1,177 @@
+// Trimnexa Prisma schema — Phase 3 initial foundation.
+// Full marketplace entities are added in later phases per docs/DATABASE.md.
+
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider = "postgresql"
+}
+
+// --- Users and access (auth integration in Phase 4) ---
+
+enum UserStatus {
+	ACTIVE
+	SUSPENDED
+	PENDING_VERIFICATION
+}
+
+enum Role {
+	CUSTOMER
+	SELLER
+	ADMINISTRATOR
+	STAFF
+}
+
+model User {
+	id              String     @id @default(cuid())
+	email           String     @unique
+	emailVerifiedAt DateTime?  @map("email_verified_at")
+	phone           String?
+	passwordHash    String?    @map("password_hash")
+	firstName       String?    @map("first_name")
+	lastName        String?    @map("last_name")
+	status          UserStatus @default(PENDING_VERIFICATION)
+	suspendedAt     DateTime?  @map("suspended_at")
+	suspendedReason String?    @map("suspended_reason")
+	locale          String     @default("en")
+	createdAt       DateTime   @default(now()) @map("created_at")
+	updatedAt       DateTime   @updatedAt @map("updated_at")
+
+	roles           UserRoleAssignment[]
+	customerProfile CustomerProfile?
+	sellerProfile   SellerProfile?
+	auditLogs       AuditLog[]           @relation("AuditActor")
+
+	@@map("users")
+}
+
+model UserRoleAssignment {
+	id        String   @id @default(cuid())
+	userId    String   @map("user_id")
+	role      Role
+	grantedAt DateTime @default(now()) @map("granted_at")
+	grantedBy String?  @map("granted_by")
+
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@unique([userId, role])
+	@@map("user_role_assignments")
+}
+
+model CustomerProfile {
+	id        String   @id @default(cuid())
+	userId    String   @unique @map("user_id")
+	createdAt DateTime @default(now()) @map("created_at")
+	updatedAt DateTime @updatedAt @map("updated_at")
+
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@map("customer_profiles")
+}
+
+enum SellerStatus {
+	PENDING
+	APPROVED
+	REJECTED
+	SUSPENDED
+}
+
+model SellerProfile {
+	id        String       @id @default(cuid())
+	userId    String       @unique @map("user_id")
+	shopName  String?      @map("shop_name")
+	status    SellerStatus @default(PENDING)
+	createdAt DateTime     @default(now()) @map("created_at")
+	updatedAt DateTime     @updatedAt @map("updated_at")
+
+	user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+	applications SellerApplication[]
+
+	@@map("seller_profiles")
+}
+
+enum ApplicationStatus {
+	SUBMITTED
+	UNDER_REVIEW
+	APPROVED
+	REJECTED
+}
+
+model SellerApplication {
+	id              String            @id @default(cuid())
+	sellerProfileId String            @map("seller_profile_id")
+	businessName    String            @map("business_name")
+	description     String?
+	status          ApplicationStatus @default(SUBMITTED)
+	submittedAt     DateTime          @default(now()) @map("submitted_at")
+	reviewedAt      DateTime?         @map("reviewed_at")
+	reviewNotes     String?           @map("review_notes")
+
+	sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+
+	@@map("seller_applications")
+}
+
+// --- Catalogue foundation ---
+
+model Category {
+	id        String   @id @default(cuid())
+	slug      String   @unique
+	parentId  String?  @map("parent_id")
+	sortOrder Int      @default(0) @map("sort_order")
+	isActive  Boolean  @default(true) @map("is_active")
+	createdAt DateTime @default(now()) @map("created_at")
+	updatedAt DateTime @updatedAt @map("updated_at")
+
+	parent       Category?             @relation("CategoryTree", fields: [parentId], references: [id])
+	children     Category[]            @relation("CategoryTree")
+	translations CategoryTranslation[]
+
+	@@map("categories")
+}
+
+model CategoryTranslation {
+	id          String  @id @default(cuid())
+	categoryId  String  @map("category_id")
+	locale      String
+	name        String
+	description String?
+
+	category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+	@@unique([categoryId, locale])
+	@@map("category_translations")
+}
+
+// --- Platform ---
+
+model AuditLog {
+	id         String   @id @default(cuid())
+	action     String
+	entityType String?  @map("entity_type")
+	entityId   String?  @map("entity_id")
+	actorId    String?  @map("actor_id")
+	metadata   Json?
+	ipAddress  String?  @map("ip_address")
+	userAgent  String?  @map("user_agent")
+	createdAt  DateTime @default(now()) @map("created_at")
+
+	actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+	@@index([action])
+	@@index([entityType, entityId])
+	@@index([actorId])
+	@@index([createdAt])
+	@@map("audit_logs")
+}
+
+model SiteSetting {
+	id        String   @id @default(cuid())
+	key       String   @unique
+	value     Json
+	updatedAt DateTime @updatedAt @map("updated_at")
+
+	@@map("site_settings")
+}

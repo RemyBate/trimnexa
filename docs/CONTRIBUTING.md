@@ -69,20 +69,27 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for folder structure and server/client 
 
 ## Commit standards
 
-- Use clear, focused commit messages describing _why_ the change was made
+- Use [Conventional Commits](https://www.conventionalcommits.org/) with a concise subject describing the **actual work** (not milestone or phase numbers)
+- Subject line: imperative mood, lowercase after the type prefix (e.g. `feat: add prisma database layer`)
+- Body (optional): explain _why_ when the subject alone is not enough
 - One logical change per commit where practical
 - Never commit `.env` files or secrets
 - Never commit production credentials
 - Update documentation in the same commit when behavior or architecture changes
-- Reference the phase or roadmap item when applicable
+- Track roadmap progress in `docs/ROADMAP.md` and `docs/CHANGELOG.md` — do not put milestone names in commit messages
 
-Example:
+**Do not use** subjects such as `feat: Milestone 2` or `feat: Phase 3`.
+
+Examples:
 
 ```
-Phase 1: Add Tailwind CSS and base layout components
+feat: add prisma database layer with migrations and seed
 
-Configure @astrojs/tailwind integration and create Trimnexa
-design token foundation. No marketplace features added.
+feat: add bilingual public layout with header and footer
+
+fix: resolve mobile navigation toggle visibility
+
+docs: document financial data handling rules
 ```
 
 ---

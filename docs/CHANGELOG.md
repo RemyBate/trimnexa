@@ -8,6 +8,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.0] — 2026-07-14
+
+Milestone 3 — Phase 3 database and server foundation (Phase 4 not started).
+
+### Added
+
+- Prisma 7 with PostgreSQL (`prisma/schema.prisma`, `prisma.config.ts`)
+- Initial migration: users, roles, profiles, categories, audit logs, site settings
+- Seed script: categories (EN/FR), site settings, development admin placeholder
+- `src/lib/db.ts` — Prisma client singleton with `@prisma/adapter-pg`
+- `src/lib/money.ts` — integer minor-unit money utilities
+- `src/lib/validation/` — shared Zod schemas
+- `src/lib/audit/` — `recordAuditLog()` foundation
+- [FINANCIAL-DATA.md](./FINANCIAL-DATA.md) — financial handling rules
+- npm scripts: `db:generate`, `db:migrate`, `db:migrate:dev`, `db:seed`, `db:studio`
+- Unit tests for money and validation utilities
+
+### Changed
+
+- `build` and `typecheck` scripts run `prisma generate` first
+- [.env.example](../.env.example) — `DATABASE_URL` documented with local example
+- [ROADMAP.md](./ROADMAP.md): Phase 3 complete; Phase 4 blocked on auth provider
+
+### Notes
+
+- Phase 4 authentication **not implemented** — awaiting owner selection of auth provider
+- Deployment adapter deferred until Phase 4 API/auth routes
+- Run `npm run db:migrate:dev` and `npm run db:seed` after configuring PostgreSQL locally
+
+---
+
 ## [0.2.0] — 2026-07-14
 
 Milestone 2 — Public website and brand identity (Phase 2).
