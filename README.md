@@ -4,7 +4,7 @@ A trusted multi-vendor e-commerce marketplace for Cameroon. Trimnexa connects ve
 
 **Website:** [https://trimnexa.com](https://trimnexa.com)
 
-**Current project phase:** Milestone 1 complete — Phase 2 next, pending approval
+**Current project phase:** Milestone 2 complete (Phase 2) — pending owner review
 
 **Last roadmap update:** 2026-07-14
 
@@ -22,7 +22,7 @@ Full vision, mission, values, and business goals: [docs/PRD.md](docs/PRD.md)
 
 - [x] Phase 0 — Planning
 - [x] Phase 1 — Foundation (1A, 1B, 1C complete)
-- [ ] Phase 2 — Public website
+- [x] Phase 2 — Public website (EN/FR, header, footer, homepage)
 - [ ] Phase 3 — Database
 - [ ] Phase 4 — Authentication
 - [ ] Phase 5 — Customer account

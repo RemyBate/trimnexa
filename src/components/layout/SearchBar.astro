@@ -1,0 +1,40 @@
+---
+import type { SupportedLocale } from '@/config/site';
+import type { PageContext } from '@/i18n';
+import { localizedPath } from '@/i18n';
+
+interface Props {
+	locale: SupportedLocale;
+	t: PageContext['t'];
+	class?: string;
+}
+
+const { locale, t, class: className } = Astro.props;
+const searchAction = localizedPath(locale, '/search');
+---
+
+<form action={searchAction} method="get" role="search" class:list={['w-full', className]}>
+	<label for="site-search" class="sr-only">{t('common.search')}</label>
+	<div class="relative">
+		<input
+			id="site-search"
+			type="search"
+			name="q"
+			placeholder={t('common.searchPlaceholder')}
+			class="w-full rounded-lg border border-neutral-300 bg-white py-2.5 pl-4 pr-12 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			autocomplete="off"
+		/>
+		<button
+			type="submit"
+			class="absolute right-1 top-1/2 flex h-9 min-w-9 -translate-y-1/2 items-center justify-center rounded-md bg-primary-600 px-3 text-sm font-medium text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+			aria-label={t('common.search')}
+		>
+			<svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+				<path
+					fill-rule="evenodd"
+					d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+					clip-rule="evenodd"></path>
+			</svg>
+		</button>
+	</div>
+</form>

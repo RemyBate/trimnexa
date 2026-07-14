@@ -7,6 +7,11 @@
 		@apply antialiased;
 	}
 
+	:focus-visible {
+		outline: 2px solid var(--color-primary-600);
+		outline-offset: 2px;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		*,
 		*::before,

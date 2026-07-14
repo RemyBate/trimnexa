@@ -1,0 +1,53 @@
+---
+import type { SupportedLocale } from '@/config/site';
+import type { PageContext } from '@/i18n';
+import { getOpenGraphLocale } from '@/i18n';
+import { createPageMetadata } from '@/seo/metadata';
+import type { PageMetadata, SeoOptions } from '@/types/seo';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AnnouncementBar from '@/components/layout/AnnouncementBar.astro';
+import CategoryNav from '@/components/layout/CategoryNav.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Header from '@/components/layout/Header.astro';
+import SkipLink from '@/components/layout/SkipLink.astro';
+
+interface Props {
+	locale: SupportedLocale;
+	currentPath: string;
+	t: PageContext['t'];
+	seo?: SeoOptions | PageMetadata;
+	class?: string;
+	showCategoryNav?: boolean;
+}
+
+const {
+	locale,
+	currentPath,
+	t,
+	seo: seoInput,
+	class: className,
+	showCategoryNav = true,
+} = Astro.props;
+
+const metadata: PageMetadata =
+	seoInput && 'openGraph' in seoInput
+		? seoInput
+		: createPageMetadata({
+				...seoInput,
+				locale: getOpenGraphLocale(locale),
+				path: seoInput?.path ?? currentPath,
+			});
+---
+
+<BaseLayout lang={locale} seo={metadata} class={className}>
+	<SkipLink>{t('common.skipToContent')}</SkipLink>
+	<div class="flex min-h-screen flex-col">
+		<AnnouncementBar>{t('announcement.message')}</AnnouncementBar>
+		<Header locale={locale} currentPath={currentPath} t={t} />
+		{showCategoryNav && <CategoryNav locale={locale} t={t} />}
+		<main id="main-content" class="flex-1 focus:outline-none" tabindex="-1">
+			<slot />
+		</main>
+		<Footer locale={locale} t={t} />
+	</div>
+</BaseLayout>

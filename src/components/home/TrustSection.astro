@@ -1,0 +1,35 @@
+---
+import Card from '@/components/common/Card.astro';
+import Container from '@/components/common/Container.astro';
+import type { PageContext } from '@/i18n';
+
+interface Props {
+	t: PageContext['t'];
+}
+
+const { t } = Astro.props;
+
+const items = [
+	{ titleKey: 'home.trustSecure', descKey: 'home.trustSecureDesc' },
+	{ titleKey: 'home.trustVerified', descKey: 'home.trustVerifiedDesc' },
+	{ titleKey: 'home.trustSupport', descKey: 'home.trustSupportDesc' },
+];
+---
+
+<section class="bg-neutral-100 py-12 sm:py-16">
+	<Container>
+		<h2 class="text-center text-3xl font-bold text-neutral-900">{t('home.trustTitle')}</h2>
+		<ul class="mt-10 grid gap-6 md:grid-cols-3">
+			{
+				items.map((item) => (
+					<li>
+						<Card>
+							<h3 class="text-lg font-semibold text-primary-800">{t(item.titleKey)}</h3>
+							<p class="mt-2 text-sm text-neutral-600">{t(item.descKey)}</p>
+						</Card>
+					</li>
+				))
+			}
+		</ul>
+	</Container>
+</section>

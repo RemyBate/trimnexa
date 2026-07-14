@@ -33,6 +33,7 @@ This document identifies known project risks and their mitigation strategies. Ad
 | AI-generated code introducing inconsistent architecture  | [CONTRIBUTING.md](./CONTRIBUTING.md) AI rules; code review; phase-scoped changes                           |
 | Documentation drift from implementation                  | Update relevant `docs/` file when completing roadmap phases                                                |
 | Provisional brand palette used before Phase 2 approval   | Tokens marked provisional in DESIGN-SYSTEM.md and DECISIONS.md; final palette decided in Phase 2           |
+| Provisional logo used before final brand approval        | SVG mark documented as Proposed; replace before launch if owner selects different identity                 |
 
 ---
 

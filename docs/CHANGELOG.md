@@ -8,6 +8,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.2.0] — 2026-07-14
+
+Milestone 2 — Public website and brand identity (Phase 2).
+
+### Added
+
+- Bilingual public site with locale path prefix (`/en/`, `/fr/`)
+- i18n foundation: `src/i18n/` with EN/FR translation dictionaries and utilities
+- `PublicLayout.astro` with announcement bar, header, category nav, footer
+- Original logo mark (`public/brand/logo-mark.svg`) and `Logo.astro` wordmark
+- Responsive header with search bar, language switcher, mobile navigation (no JS)
+- Category navigation, footer with newsletter placeholder
+- Homepage sections: hero, category tiles, trust, seller CTA, product placeholders
+- Public pages: about, contact, help, become-a-seller, search
+- Policy placeholders: privacy, terms, returns, seller-policy, prohibited-products
+- Navigation config in `src/config/navigation.ts`
+- Vitest tests for i18n utilities (`src/i18n/i18n.test.ts`)
+
+### Changed
+
+- Root `/` redirects to `/en/`
+- Error pages link to localized home
+- Global CSS: focus-visible outline for accessibility
+- [ROADMAP.md](./ROADMAP.md): Phase 2 marked complete (pending review)
+- [DECISIONS.md](./DECISIONS.md): locale routing and logo placeholder decisions
+- [DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md): navigation and Phase 2 component status
+
+---
+
 ## [0.1.0] — 2026-07-14
 
 Milestone 1 — Project foundation (Phase 1A, 1B, 1C).

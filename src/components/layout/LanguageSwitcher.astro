@@ -1,0 +1,43 @@
+---
+import type { SupportedLocale } from '@/config/site';
+import { site } from '@/config/site';
+import type { PageContext } from '@/i18n';
+import { getLocaleLabel, getLocaleShortLabel, replaceLocaleInPath } from '@/i18n';
+
+interface Props {
+	locale: SupportedLocale;
+	currentPath: string;
+	t: PageContext['t'];
+}
+
+const { locale, currentPath, t } = Astro.props;
+---
+
+<div class="flex items-center gap-1" role="navigation" aria-label={t('common.language')}>
+	{
+		site.supportedLocales.map((code) => {
+			const isActive = code === locale;
+			const href = replaceLocaleInPath(currentPath, code);
+
+			return isActive ? (
+				<span
+					class="rounded-md bg-primary-100 px-2 py-1 text-xs font-semibold text-primary-800"
+					aria-current="true"
+					title={getLocaleLabel(code)}
+				>
+					{getLocaleShortLabel(code)}
+				</span>
+			) : (
+				<a
+					href={href}
+					class="rounded-md px-2 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-100 hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+					hreflang={code}
+					lang={code}
+					title={getLocaleLabel(code)}
+				>
+					{getLocaleShortLabel(code)}
+				</a>
+			);
+		})
+	}
+</div>

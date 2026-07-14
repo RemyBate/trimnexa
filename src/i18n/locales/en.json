@@ -1,0 +1,169 @@
+{
+	"common": {
+		"siteName": "Trimnexa",
+		"search": "Search",
+		"searchPlaceholder": "Search products, brands, and categories",
+		"account": "Account",
+		"cart": "Cart",
+		"signIn": "Sign in",
+		"menu": "Menu",
+		"closeMenu": "Close menu",
+		"skipToContent": "Skip to main content",
+		"language": "Language",
+		"comingSoon": "Coming soon",
+		"learnMore": "Learn more",
+		"contactUs": "Contact us",
+		"readMore": "Read more",
+		"legalReviewPending": "This page is a placeholder. Final legal content requires professional review before launch.",
+		"marketplaceLaunching": "Marketplace catalogue launches in a later phase."
+	},
+	"announcement": {
+		"message": "Trimnexa is building Cameroon's trusted multi-vendor marketplace — seller applications opening soon."
+	},
+	"nav": {
+		"home": "Home",
+		"categories": "Categories",
+		"deals": "Deals",
+		"shops": "Shops",
+		"help": "Help",
+		"about": "About",
+		"contact": "Contact",
+		"becomeSeller": "Become a seller"
+	},
+	"categories": {
+		"electronics": "Electronics",
+		"fashion": "Fashion",
+		"home": "Home & living",
+		"beauty": "Beauty & health",
+		"groceries": "Groceries",
+		"sports": "Sports & outdoors"
+	},
+	"footer": {
+		"shop": "Shop",
+		"sell": "Sell on Trimnexa",
+		"support": "Support",
+		"legal": "Legal",
+		"tagline": "Cameroon's trusted multi-vendor marketplace. Secure payments in FCFA.",
+		"copyright": "All rights reserved.",
+		"newsletterTitle": "Stay informed",
+		"newsletterDescription": "Get updates on launch cities, seller onboarding, and marketplace news.",
+		"emailPlaceholder": "Your email address",
+		"subscribe": "Subscribe",
+		"newsletterNote": "Newsletter signup will be enabled before launch."
+	},
+	"home": {
+		"metaTitle": "Shop trusted sellers across Cameroon",
+		"metaDescription": "Trimnexa connects verified local sellers with customers through secure FCFA payments and bilingual support.",
+		"heroTitle": "Shop local. Pay securely. Trust Trimnexa.",
+		"heroSubtitle": "Discover verified sellers, transparent pricing in FCFA, and buyer protection designed for Cameroon.",
+		"heroCta": "Explore categories",
+		"heroSecondaryCta": "Become a seller",
+		"featuredCategories": "Featured categories",
+		"featuredCategoriesSubtitle": "Browse popular departments — full catalogue coming soon.",
+		"popularProducts": "Popular products",
+		"newProducts": "New arrivals",
+		"deals": "Deals & promotions",
+		"featuredSellers": "Featured sellers",
+		"placeholderGrid": "Product listings will appear here when the marketplace catalogue launches.",
+		"trustTitle": "Built for trust",
+		"trustSecure": "Secure payments",
+		"trustSecureDesc": "Mobile money and card payments in XAF/FCFA with verified transaction records.",
+		"trustVerified": "Verified sellers",
+		"trustVerifiedDesc": "Seller applications reviewed before shops go live on the platform.",
+		"trustSupport": "Buyer support",
+		"trustSupportDesc": "Clear order tracking, help centre, and dispute processes.",
+		"sellerCtaTitle": "Grow your business on Trimnexa",
+		"sellerCtaDesc": "Reach customers across Cameroon with a professional shop, secure payouts, and seller tools.",
+		"sellerCtaButton": "Start seller application"
+	},
+	"about": {
+		"metaTitle": "About Trimnexa",
+		"metaDescription": "Learn about Trimnexa's mission to build Cameroon's most trusted digital marketplace.",
+		"title": "About Trimnexa",
+		"intro": "Trimnexa is building a trusted multi-vendor e-commerce marketplace for Cameroon — connecting verified local sellers with customers through secure technology and bilingual support.",
+		"visionTitle": "Our vision",
+		"vision": "To build the most trusted digital marketplace in Cameroon, empowering local businesses through secure technology, exceptional customer experience, and modern e-commerce.",
+		"valuesTitle": "What we stand for",
+		"valueTrust": "Trust — verified sellers, secure payments, and transparent policies.",
+		"valueLocal": "Local first — designed for Cameroonian shoppers and businesses.",
+		"valueAccess": "Accessibility — mobile-first, bilingual, and inclusive by design."
+	},
+	"contact": {
+		"metaTitle": "Contact us",
+		"metaDescription": "Get in touch with the Trimnexa team for support, partnerships, and general enquiries.",
+		"title": "Contact us",
+		"intro": "We are here to help with general enquiries, seller interest, and partnership questions.",
+		"name": "Full name",
+		"email": "Email address",
+		"subject": "Subject",
+		"message": "Message",
+		"submit": "Send message",
+		"formNote": "Contact form submission will be connected in a later phase. For now, please email hello@trimnexa.com.",
+		"officeTitle": "Company",
+		"officeLocation": "Cameroon",
+		"responseTime": "We aim to respond within 2 business days."
+	},
+	"help": {
+		"metaTitle": "Help centre",
+		"metaDescription": "Find answers about shopping, orders, returns, and selling on Trimnexa.",
+		"title": "Help centre",
+		"intro": "Browse common topics. Detailed help articles will expand as marketplace features launch.",
+		"topicOrders": "Orders & delivery",
+		"topicOrdersDesc": "Track orders, delivery updates, and address changes.",
+		"topicPayments": "Payments & FCFA",
+		"topicPaymentsDesc": "Payment methods, receipts, and payment issues.",
+		"topicReturns": "Returns & refunds",
+		"topicReturnsDesc": "Return eligibility, refund timelines, and disputes.",
+		"topicSelling": "Selling on Trimnexa",
+		"topicSellingDesc": "Seller application, shop setup, and payouts."
+	},
+	"becomeSeller": {
+		"metaTitle": "Become a seller",
+		"metaDescription": "Apply to sell on Trimnexa and reach customers across Cameroon.",
+		"title": "Become a seller on Trimnexa",
+		"intro": "Join a marketplace built for Cameroonian businesses. Seller onboarding and application review launch in a later development phase.",
+		"benefitReach": "Reach more customers",
+		"benefitReachDesc": "Showcase products to shoppers searching across categories and cities.",
+		"benefitTools": "Seller tools",
+		"benefitToolsDesc": "Manage products, orders, and earnings from a dedicated seller dashboard.",
+		"benefitPayouts": "Secure payouts",
+		"benefitPayoutsDesc": "Transparent commissions and payout tracking after order fulfilment.",
+		"cta": "Seller application opening soon",
+		"ctaNote": "The seller application form will be available in Phase 6."
+	},
+	"search": {
+		"metaTitle": "Search",
+		"metaDescription": "Search products on Trimnexa.",
+		"title": "Search",
+		"resultsFor": "Results for",
+		"noQuery": "Enter a search term to find products, brands, and categories.",
+		"placeholder": "Full product search launches with the marketplace catalogue in Phase 8."
+	},
+	"privacy": {
+		"metaTitle": "Privacy policy",
+		"title": "Privacy policy"
+	},
+	"terms": {
+		"metaTitle": "Terms and conditions",
+		"title": "Terms and conditions"
+	},
+	"returns": {
+		"metaTitle": "Returns & refunds",
+		"title": "Returns & refunds policy"
+	},
+	"sellerPolicy": {
+		"metaTitle": "Seller policy",
+		"title": "Seller policy"
+	},
+	"prohibitedProducts": {
+		"metaTitle": "Prohibited products",
+		"title": "Prohibited products policy"
+	},
+	"errors": {
+		"notFoundTitle": "Page not found",
+		"notFoundMessage": "The page you are looking for does not exist or may have been moved.",
+		"serverErrorTitle": "Something went wrong",
+		"serverErrorMessage": "We are working to fix the problem. Please try again later.",
+		"returnHome": "Return home"
+	}
+}

@@ -2,11 +2,13 @@
 
 [← Documentation index](./README.md)
 
-Trimnexa design tokens and base components. **Phase 1C foundation implemented** in `src/styles/tokens.css` and `src/components/common/`. Logo and full marketplace UI components are planned for Phase 2.
+Trimnexa design tokens and base components. **Phase 1C foundation** and **Phase 2 public UI** implemented.
 
-**Colour palette status:** The teal-and-gold token set is **provisional** — a foundation placeholder pending project-owner approval in Phase 2. Do not treat it as final brand identity.
+**Colour palette status:** The teal-and-gold token set is **provisional** — pending project-owner approval.
 
-**Source files:** `src/styles/tokens.css` · `src/styles/global.css` · `src/components/common/`
+**Logo status:** SVG mark + wordmark in `Logo.astro` is **provisional** — pending final brand design approval.
+
+**Source files:** `src/styles/tokens.css` · `src/styles/global.css` · `src/components/common/` · `src/components/layout/` · `src/components/brand/` · `src/components/home/`
 
 **Related:** [UI-DESIGN.md](./UI-DESIGN.md) · [ROADMAP.md](./ROADMAP.md)
 
@@ -14,16 +16,16 @@ Trimnexa design tokens and base components. **Phase 1C foundation implemented** 
 
 ## Phase 1C status (foundation)
 
-| Area                  | Status      | Location                                |
-| --------------------- | ----------- | --------------------------------------- |
-| Design tokens         | Implemented | `src/styles/tokens.css`                 |
-| Global styles         | Implemented | `src/styles/global.css`                 |
-| Button                | Implemented | `src/components/common/Button.astro`    |
-| Card                  | Implemented | `src/components/common/Card.astro`      |
-| Alert                 | Implemented | `src/components/common/Alert.astro`     |
-| Container             | Implemented | `src/components/common/Container.astro` |
-| Logo                  | Phase 2     | —                                       |
-| Forms, tables, modals | Phase 2     | —                                       |
+| Area                  | Status                    | Location                                                        |
+| --------------------- | ------------------------- | --------------------------------------------------------------- |
+| Design tokens         | Implemented               | `src/styles/tokens.css`                                         |
+| Global styles         | Implemented               | `src/styles/global.css`                                         |
+| Button                | Implemented               | `src/components/common/Button.astro`                            |
+| Card                  | Implemented               | `src/components/common/Card.astro`                              |
+| Alert                 | Implemented               | `src/components/common/Alert.astro`                             |
+| Container             | Implemented               | `src/components/common/Container.astro`                         |
+| Logo                  | Implemented (provisional) | `src/components/brand/Logo.astro`, `public/brand/logo-mark.svg` |
+| Forms, tables, modals | Phase 2                   | —                                                               |
 
 ### Token summary
 
@@ -177,15 +179,13 @@ The Trimnexa design system provides a consistent, original, accessible visual la
 
 ## Navigation
 
-| Item                | Status           | Notes                       |
-| ------------------- | ---------------- | --------------------------- |
-| Main header         | _To be designed_ | Logo, search, cart, account |
-| Mobile navigation   | _To be designed_ | Collapsible menu            |
-| Category navigation | _To be designed_ | Horizontal or mega-menu     |
-| Breadcrumbs         | _To be designed_ | Product and category pages  |
-| Footer              | _To be designed_ | Links, policies, newsletter |
-| Sidebar (dashboard) | _To be designed_ | Seller and admin areas      |
-| Language switcher   | _To be designed_ | EN / FR                     |
+| Item                | Status          | Notes                                                    |
+| ------------------- | --------------- | -------------------------------------------------------- |
+| Main header         | **Implemented** | `Header.astro` — logo, search, account, cart, mobile nav |
+| Mobile navigation   | **Implemented** | Checkbox toggle, no client JS                            |
+| Category navigation | **Implemented** | `CategoryNav.astro` — placeholder categories             |
+| Footer              | **Implemented** | `Footer.astro` — links, newsletter placeholder           |
+| Language switcher   | **Implemented** | `LanguageSwitcher.astro` — EN / FR                       |
 
 ---
 

@@ -1,0 +1,169 @@
+{
+	"common": {
+		"siteName": "Trimnexa",
+		"search": "Rechercher",
+		"searchPlaceholder": "Rechercher des produits, marques et catégories",
+		"account": "Compte",
+		"cart": "Panier",
+		"signIn": "Se connecter",
+		"menu": "Menu",
+		"closeMenu": "Fermer le menu",
+		"skipToContent": "Aller au contenu principal",
+		"language": "Langue",
+		"comingSoon": "Bientôt disponible",
+		"learnMore": "En savoir plus",
+		"contactUs": "Nous contacter",
+		"readMore": "Lire la suite",
+		"legalReviewPending": "Cette page est un espace réservé. Le contenu juridique final nécessite un examen professionnel avant le lancement.",
+		"marketplaceLaunching": "Le catalogue marketplace sera disponible dans une phase ultérieure."
+	},
+	"announcement": {
+		"message": "Trimnexa construit la marketplace multi-vendeurs de confiance au Cameroun — candidatures vendeurs bientôt ouvertes."
+	},
+	"nav": {
+		"home": "Accueil",
+		"categories": "Catégories",
+		"deals": "Promotions",
+		"shops": "Boutiques",
+		"help": "Aide",
+		"about": "À propos",
+		"contact": "Contact",
+		"becomeSeller": "Devenir vendeur"
+	},
+	"categories": {
+		"electronics": "Électronique",
+		"fashion": "Mode",
+		"home": "Maison & décoration",
+		"beauty": "Beauté & santé",
+		"groceries": "Épicerie",
+		"sports": "Sport & plein air"
+	},
+	"footer": {
+		"shop": "Acheter",
+		"sell": "Vendre sur Trimnexa",
+		"support": "Assistance",
+		"legal": "Mentions légales",
+		"tagline": "La marketplace multi-vendeurs de confiance au Cameroun. Paiements sécurisés en FCFA.",
+		"copyright": "Tous droits réservés.",
+		"newsletterTitle": "Restez informé",
+		"newsletterDescription": "Recevez des nouvelles sur les villes de lancement, l'onboarding vendeurs et la marketplace.",
+		"emailPlaceholder": "Votre adresse e-mail",
+		"subscribe": "S'abonner",
+		"newsletterNote": "L'inscription à la newsletter sera activée avant le lancement."
+	},
+	"home": {
+		"metaTitle": "Achetez auprès de vendeurs de confiance au Cameroun",
+		"metaDescription": "Trimnexa connecte des vendeurs locaux vérifiés avec des clients via des paiements FCFA sécurisés et un support bilingue.",
+		"heroTitle": "Achetez local. Payez en sécurité. Faites confiance à Trimnexa.",
+		"heroSubtitle": "Découvrez des vendeurs vérifiés, des prix transparents en FCFA et une protection acheteur conçue pour le Cameroun.",
+		"heroCta": "Explorer les catégories",
+		"heroSecondaryCta": "Devenir vendeur",
+		"featuredCategories": "Catégories en vedette",
+		"featuredCategoriesSubtitle": "Parcourez les rayons populaires — catalogue complet bientôt disponible.",
+		"popularProducts": "Produits populaires",
+		"newProducts": "Nouveautés",
+		"deals": "Promotions",
+		"featuredSellers": "Vendeurs en vedette",
+		"placeholderGrid": "Les fiches produits apparaîtront ici au lancement du catalogue marketplace.",
+		"trustTitle": "Conçu pour la confiance",
+		"trustSecure": "Paiements sécurisés",
+		"trustSecureDesc": "Mobile money et cartes en XAF/FCFA avec enregistrements de transaction vérifiés.",
+		"trustVerified": "Vendeurs vérifiés",
+		"trustVerifiedDesc": "Les candidatures vendeurs sont examinées avant l'ouverture des boutiques.",
+		"trustSupport": "Assistance acheteur",
+		"trustSupportDesc": "Suivi de commande clair, centre d'aide et processus de litige.",
+		"sellerCtaTitle": "Développez votre activité sur Trimnexa",
+		"sellerCtaDesc": "Touchez des clients à travers le Cameroun avec une boutique professionnelle, des paiements sécurisés et des outils vendeur.",
+		"sellerCtaButton": "Commencer la candidature vendeur"
+	},
+	"about": {
+		"metaTitle": "À propos de Trimnexa",
+		"metaDescription": "Découvrez la mission de Trimnexa : construire la marketplace numérique la plus fiable au Cameroun.",
+		"title": "À propos de Trimnexa",
+		"intro": "Trimnexa construit une marketplace e-commerce multi-vendeurs de confiance pour le Cameroun — connectant des vendeurs locaux vérifiés avec des clients grâce à une technologie sécurisée et un support bilingue.",
+		"visionTitle": "Notre vision",
+		"vision": "Construire la marketplace numérique la plus fiable au Cameroun, en autonomisant les entreprises locales grâce à une technologie sécurisée, une expérience client exceptionnelle et un e-commerce moderne.",
+		"valuesTitle": "Nos valeurs",
+		"valueTrust": "Confiance — vendeurs vérifiés, paiements sécurisés et politiques transparentes.",
+		"valueLocal": "Local d'abord — conçu pour les acheteurs et entreprises camerounais.",
+		"valueAccess": "Accessibilité — mobile d'abord, bilingue et inclusif par conception."
+	},
+	"contact": {
+		"metaTitle": "Nous contacter",
+		"metaDescription": "Contactez l'équipe Trimnexa pour l'assistance, les partenariats et les questions générales.",
+		"title": "Nous contacter",
+		"intro": "Nous sommes disponibles pour les questions générales, l'intérêt vendeur et les partenariats.",
+		"name": "Nom complet",
+		"email": "Adresse e-mail",
+		"subject": "Objet",
+		"message": "Message",
+		"submit": "Envoyer le message",
+		"formNote": "L'envoi du formulaire sera connecté dans une phase ultérieure. Pour l'instant, écrivez à hello@trimnexa.com.",
+		"officeTitle": "Entreprise",
+		"officeLocation": "Cameroun",
+		"responseTime": "Nous visons une réponse sous 2 jours ouvrables."
+	},
+	"help": {
+		"metaTitle": "Centre d'aide",
+		"metaDescription": "Trouvez des réponses sur les achats, commandes, retours et la vente sur Trimnexa.",
+		"title": "Centre d'aide",
+		"intro": "Parcourez les sujets courants. Les articles détaillés s'enrichiront au lancement des fonctionnalités marketplace.",
+		"topicOrders": "Commandes & livraison",
+		"topicOrdersDesc": "Suivi des commandes, mises à jour de livraison et modifications d'adresse.",
+		"topicPayments": "Paiements & FCFA",
+		"topicPaymentsDesc": "Modes de paiement, reçus et problèmes de paiement.",
+		"topicReturns": "Retours & remboursements",
+		"topicReturnsDesc": "Éligibilité aux retours, délais de remboursement et litiges.",
+		"topicSelling": "Vendre sur Trimnexa",
+		"topicSellingDesc": "Candidature vendeur, configuration de boutique et paiements."
+	},
+	"becomeSeller": {
+		"metaTitle": "Devenir vendeur",
+		"metaDescription": "Postulez pour vendre sur Trimnexa et toucher des clients à travers le Cameroun.",
+		"title": "Devenir vendeur sur Trimnexa",
+		"intro": "Rejoignez une marketplace conçue pour les entreprises camerounaises. L'onboarding et l'examen des candidatures vendeurs arrivent dans une phase ultérieure.",
+		"benefitReach": "Toucher plus de clients",
+		"benefitReachDesc": "Présentez vos produits aux acheteurs qui parcourent catégories et villes.",
+		"benefitTools": "Outils vendeur",
+		"benefitToolsDesc": "Gérez produits, commandes et revenus depuis un tableau de bord dédié.",
+		"benefitPayouts": "Paiements sécurisés",
+		"benefitPayoutsDesc": "Commissions transparentes et suivi des paiements après livraison.",
+		"cta": "Candidature vendeur bientôt ouverte",
+		"ctaNote": "Le formulaire de candidature vendeur sera disponible en Phase 6."
+	},
+	"search": {
+		"metaTitle": "Recherche",
+		"metaDescription": "Rechercher des produits sur Trimnexa.",
+		"title": "Recherche",
+		"resultsFor": "Résultats pour",
+		"noQuery": "Saisissez un terme pour trouver des produits, marques et catégories.",
+		"placeholder": "La recherche produits complète arrive avec le catalogue marketplace en Phase 8."
+	},
+	"privacy": {
+		"metaTitle": "Politique de confidentialité",
+		"title": "Politique de confidentialité"
+	},
+	"terms": {
+		"metaTitle": "Conditions générales",
+		"title": "Conditions générales"
+	},
+	"returns": {
+		"metaTitle": "Retours & remboursements",
+		"title": "Politique de retours & remboursements"
+	},
+	"sellerPolicy": {
+		"metaTitle": "Politique vendeur",
+		"title": "Politique vendeur"
+	},
+	"prohibitedProducts": {
+		"metaTitle": "Produits interdits",
+		"title": "Politique des produits interdits"
+	},
+	"errors": {
+		"notFoundTitle": "Page introuvable",
+		"notFoundMessage": "La page que vous recherchez n'existe pas ou a peut-être été déplacée.",
+		"serverErrorTitle": "Une erreur s'est produite",
+		"serverErrorMessage": "Nous travaillons à résoudre le problème. Veuillez réessayer plus tard.",
+		"returnHome": "Retour à l'accueil"
+	}
+}

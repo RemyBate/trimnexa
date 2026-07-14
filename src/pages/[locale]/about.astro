@@ -1,0 +1,46 @@
+---
+import Container from '@/components/common/Container.astro';
+import Card from '@/components/common/Card.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	showCategoryNav={false}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('about.metaTitle'),
+		t('about.metaDescription'),
+	)}
+>
+	<Container class="py-12 sm:py-16">
+		<article class="mx-auto max-w-3xl space-y-8">
+			<header class="space-y-4">
+				<h1 class="text-4xl font-bold text-neutral-900">{t('about.title')}</h1>
+				<p class="text-lg text-neutral-600">{t('about.intro')}</p>
+			</header>
+			<Card>
+				<h2 class="text-xl font-semibold text-primary-800">{t('about.visionTitle')}</h2>
+				<p class="mt-3 text-neutral-700">{t('about.vision')}</p>
+			</Card>
+			<section>
+				<h2 class="text-xl font-semibold text-neutral-900">{t('about.valuesTitle')}</h2>
+				<ul class="mt-4 space-y-3 text-neutral-700">
+					<li>{t('about.valueTrust')}</li>
+					<li>{t('about.valueLocal')}</li>
+					<li>{t('about.valueAccess')}</li>
+				</ul>
+			</section>
+		</article>
+	</Container>
+</PublicLayout>

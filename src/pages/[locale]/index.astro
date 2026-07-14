@@ -1,0 +1,36 @@
+---
+import CategoryTiles from '@/components/home/CategoryTiles.astro';
+import HeroSection from '@/components/home/HeroSection.astro';
+import PlaceholderSection from '@/components/home/PlaceholderSection.astro';
+import SellerCtaSection from '@/components/home/SellerCtaSection.astro';
+import TrustSection from '@/components/home/TrustSection.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('home.metaTitle'),
+		t('home.metaDescription'),
+	)}
+>
+	<HeroSection locale={locale} t={t} />
+	<CategoryTiles locale={locale} t={t} />
+	<PlaceholderSection title={t('home.popularProducts')} t={t} />
+	<PlaceholderSection title={t('home.newProducts')} t={t} />
+	<PlaceholderSection title={t('home.deals')} t={t} />
+	<PlaceholderSection title={t('home.featuredSellers')} t={t} />
+	<TrustSection t={t} />
+	<SellerCtaSection locale={locale} t={t} />
+</PublicLayout>

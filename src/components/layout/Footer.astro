@@ -1,0 +1,78 @@
+---
+import Logo from '@/components/brand/Logo.astro';
+import { footerSections, resolveNavHref } from '@/config/navigation';
+import type { SupportedLocale } from '@/config/site';
+import type { PageContext } from '@/i18n';
+
+interface Props {
+	locale: SupportedLocale;
+	t: PageContext['t'];
+}
+
+const { locale, t } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-auto border-t border-neutral-200 bg-neutral-900 text-neutral-200">
+	<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+		<div class="grid gap-10 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
+			<div class="space-y-4">
+				<Logo
+					locale={locale}
+					showWordmark={true}
+					class="[&_span]:text-white [&_span_span]:text-accent-400"
+				/>
+				<p class="max-w-sm text-sm text-neutral-400">{t('footer.tagline')}</p>
+			</div>
+
+			{
+				footerSections.map((section) => (
+					<div>
+						<h2 class="text-sm font-semibold uppercase tracking-wide text-white">
+							{t(section.titleKey)}
+						</h2>
+						<ul class="mt-4 space-y-2">
+							{section.links.map((link) => (
+								<li>
+									<a
+										href={resolveNavHref(locale, link.href)}
+										class="text-sm text-neutral-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400"
+									>
+										{t(link.key)}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+
+		<div class="mt-10 rounded-lg border border-neutral-700 bg-neutral-800 p-6">
+			<h2 class="text-base font-semibold text-white">{t('footer.newsletterTitle')}</h2>
+			<p class="mt-2 text-sm text-neutral-400">{t('footer.newsletterDescription')}</p>
+			<form class="mt-4 flex max-w-md flex-col gap-2 sm:flex-row" aria-disabled="true">
+				<label class="sr-only" for="newsletter-email">{t('footer.emailPlaceholder')}</label>
+				<input
+					id="newsletter-email"
+					type="email"
+					disabled
+					placeholder={t('footer.emailPlaceholder')}
+					class="min-h-11 flex-1 rounded-md border border-neutral-600 bg-neutral-900 px-3 text-sm text-neutral-200 placeholder:text-neutral-500"
+				/>
+				<button
+					type="button"
+					disabled
+					class="min-h-11 rounded-md bg-accent-600 px-4 text-sm font-medium text-neutral-900 opacity-70"
+				>
+					{t('footer.subscribe')}
+				</button>
+			</form>
+			<p class="mt-2 text-xs text-neutral-500">{t('footer.newsletterNote')}</p>
+		</div>
+
+		<p class="mt-8 text-center text-xs text-neutral-500">
+			© {year} Trimnexa. {t('footer.copyright')}
+		</p>
+	</div>
+</footer>

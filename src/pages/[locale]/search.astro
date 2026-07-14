@@ -1,0 +1,43 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Container from '@/components/common/Container.astro';
+import SearchBar from '@/components/layout/SearchBar.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const query = Astro.url.searchParams.get('q')?.trim() ?? '';
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('search.metaTitle'),
+		t('search.metaDescription'),
+	)}
+>
+	<Container class="py-12">
+		<div class="mx-auto max-w-3xl space-y-6">
+			<h1 class="text-3xl font-bold text-neutral-900">{t('search.title')}</h1>
+			<SearchBar locale={locale} t={t} />
+			{
+				query ? (
+					<p class="text-neutral-700">
+						{t('search.resultsFor')}: <strong>{query}</strong>
+					</p>
+				) : (
+					<p class="text-neutral-600">{t('search.noQuery')}</p>
+				)
+			}
+			<Alert variant="info">{t('search.placeholder')}</Alert>
+		</div>
+	</Container>
+</PublicLayout>

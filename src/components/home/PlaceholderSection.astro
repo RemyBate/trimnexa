@@ -1,0 +1,23 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Container from '@/components/common/Container.astro';
+import type { PageContext } from '@/i18n';
+
+interface Props {
+	title: string;
+	t: PageContext['t'];
+}
+
+const { title, t } = Astro.props;
+---
+
+<section class="py-10 sm:py-12">
+	<Container>
+		<h2 class="text-2xl font-bold text-neutral-900">{title}</h2>
+		<div class="mt-6">
+			<Alert variant="info" title={t('common.comingSoon')}>
+				{t('home.placeholderGrid')}
+			</Alert>
+		</div>
+	</Container>
+</section>

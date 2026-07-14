@@ -1,0 +1,28 @@
+---
+import Button from '@/components/common/Button.astro';
+import Container from '@/components/common/Container.astro';
+import type { SupportedLocale } from '@/config/site';
+import type { PageContext } from '@/i18n';
+import { localizedPath } from '@/i18n';
+
+interface Props {
+	locale: SupportedLocale;
+	t: PageContext['t'];
+}
+
+const { locale, t } = Astro.props;
+---
+
+<section class="bg-primary-800 py-12 text-white sm:py-16">
+	<Container>
+		<div class="mx-auto max-w-3xl text-center">
+			<h2 class="text-3xl font-bold">{t('home.sellerCtaTitle')}</h2>
+			<p class="mt-4 text-primary-100">{t('home.sellerCtaDesc')}</p>
+			<div class="mt-8">
+				<Button href={localizedPath(locale, '/become-a-seller')} variant="secondary" size="lg">
+					{t('home.sellerCtaButton')}
+				</Button>
+			</div>
+		</div>
+	</Container>
+</section>

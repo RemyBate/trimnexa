@@ -1,0 +1,32 @@
+---
+import type { SupportedLocale } from '@/config/site';
+import { categoryLinks } from '@/config/navigation';
+import type { PageContext } from '@/i18n';
+import { localizedPath } from '@/i18n';
+
+interface Props {
+	locale: SupportedLocale;
+	t: PageContext['t'];
+}
+
+const { locale, t } = Astro.props;
+---
+
+<nav aria-label={t('nav.categories')} class="border-b border-neutral-200 bg-white">
+	<div class="mx-auto max-w-7xl overflow-x-auto px-4 sm:px-6 lg:px-8">
+		<ul class="flex min-w-max gap-1 py-2">
+			{
+				categoryLinks.map((category) => (
+					<li>
+						<a
+							href={`${localizedPath(locale)}#categories`}
+							class="inline-flex whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+						>
+							{t(category.key)}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</nav>

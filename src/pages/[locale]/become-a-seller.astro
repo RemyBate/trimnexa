@@ -1,0 +1,58 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Container from '@/components/common/Container.astro';
+import Card from '@/components/common/Card.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+
+const benefits = [
+	{ titleKey: 'becomeSeller.benefitReach', descKey: 'becomeSeller.benefitReachDesc' },
+	{ titleKey: 'becomeSeller.benefitTools', descKey: 'becomeSeller.benefitToolsDesc' },
+	{ titleKey: 'becomeSeller.benefitPayouts', descKey: 'becomeSeller.benefitPayoutsDesc' },
+];
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	showCategoryNav={false}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('becomeSeller.metaTitle'),
+		t('becomeSeller.metaDescription'),
+	)}
+>
+	<Container class="py-12 sm:py-16">
+		<div class="mx-auto max-w-4xl space-y-8">
+			<header class="space-y-3">
+				<h1 class="text-4xl font-bold text-neutral-900">{t('becomeSeller.title')}</h1>
+				<p class="text-lg text-neutral-600">{t('becomeSeller.intro')}</p>
+			</header>
+			<ul class="grid gap-4 md:grid-cols-3">
+				{
+					benefits.map((benefit) => (
+						<li>
+							<Card>
+								<h2 class="font-semibold text-primary-800">{t(benefit.titleKey)}</h2>
+								<p class="mt-2 text-sm text-neutral-600">{t(benefit.descKey)}</p>
+							</Card>
+						</li>
+					))
+				}
+			</ul>
+			<Alert variant="info" title={t('becomeSeller.cta')}>
+				{t('becomeSeller.ctaNote')}
+			</Alert>
+			<Button disabled>{t('becomeSeller.cta')}</Button>
+		</div>
+	</Container>
+</PublicLayout>

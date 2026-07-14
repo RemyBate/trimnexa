@@ -1,0 +1,22 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Container from '@/components/common/Container.astro';
+import type { PageContext } from '@/i18n';
+
+interface Props {
+	title: string;
+	t: PageContext['t'];
+}
+
+const { title, t } = Astro.props;
+---
+
+<Container class="py-12">
+	<article class="mx-auto max-w-3xl space-y-6">
+		<h1 class="text-3xl font-bold text-neutral-900 sm:text-4xl">{title}</h1>
+		<Alert variant="warning" title={t('common.legalReviewPending')} />
+		<div class="prose-policy space-y-4 text-neutral-700">
+			<slot />
+		</div>
+	</article>
+</Container>

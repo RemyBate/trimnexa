@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="Trimnexa">
+	<rect width="40" height="40" rx="10" fill="#0b6e6e" />
+	<path
+		d="M12 11h16v5H22v13h-4V16H12V11z"
+		fill="#ffffff"
+	></path>
+	<circle cx="30" cy="12" r="3" fill="#e8a317"></circle>
+</svg>

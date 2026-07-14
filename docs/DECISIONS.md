@@ -53,20 +53,23 @@ Use this template when adding new decisions:
 | 2026-07-14 | Zod for environment validation                               | Type-safe env parsing at build/dev time                           | `src/config/env.ts`; secrets in `.env` only                                        |
 | 2026-07-14 | Provisional brand palette (teal + gold)                      | Foundation placeholder until Phase 2 brand approval               | `src/styles/tokens.css`; **Status: Proposed** — owner approval required in Phase 2 |
 | 2026-07-14 | Vitest for unit tests                                        | Test SEO and foundation utilities                                 | `npm run test`; expand in Phase 19                                                 |
+| 2026-07-14 | Locale path prefix (`/en/`, `/fr/`)                          | SEO-friendly localized URLs per documentation recommendation      | `src/pages/[locale]/`; owner may revise in review                                  |
+| 2026-07-14 | Provisional SVG logo mark + wordmark                         | Phase 2 brand placeholder until final logo approval               | `public/brand/logo-mark.svg`; **Status: Proposed**                                 |
 
 ---
 
 ## Pending decisions
 
-| Decision                | Options                                                  | Target phase |
-| ----------------------- | -------------------------------------------------------- | ------------ |
-| Authentication solution | Better Auth, Auth.js, Lucia v3, other Astro-compatible   | Phase 4      |
-| Localization routing    | Locale prefix (`/en`, `/fr`) vs cookie preference        | Phase 2/17   |
-| Brand colour palette    | Approve provisional teal + gold vs alternative direction | Phase 2      |
-| Payment provider        | CamPay vs direct MTN MoMo vs Orange WebPay               | Phase 11     |
-| Guest cart strategy     | Session-based guest cart vs auth-required cart           | Phase 9      |
-| Initial launch city     | Douala, Yaoundé, or both                                 | Phase 21     |
-| Production hosting      | Managed platform vs Hetzner Node.js                      | Phase 20     |
+| Decision                | Options                                                     | Target phase   |
+| ----------------------- | ----------------------------------------------------------- | -------------- |
+| Authentication solution | Better Auth, Auth.js, Lucia v3, other Astro-compatible      | Phase 4        |
+| Localization routing    | Confirm locale prefix (`/en`, `/fr`) implemented in Phase 2 | Phase 2 review |
+| Brand colour palette    | Approve provisional teal + gold vs alternative direction    | Phase 2        |
+| Final logo design       | Approve provisional SVG mark + wordmark vs new design       | Phase 2        |
+| Payment provider        | CamPay vs direct MTN MoMo vs Orange WebPay                  | Phase 11       |
+| Guest cart strategy     | Session-based guest cart vs auth-required cart              | Phase 9        |
+| Initial launch city     | Douala, Yaoundé, or both                                    | Phase 21       |
+| Production hosting      | Managed platform vs Hetzner Node.js                         | Phase 20       |
 
 Document the final choice in this log when each decision is made.
 

@@ -1,0 +1,95 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Container from '@/components/common/Container.astro';
+import Card from '@/components/common/Card.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	showCategoryNav={false}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('contact.metaTitle'),
+		t('contact.metaDescription'),
+	)}
+>
+	<Container class="py-12 sm:py-16">
+		<div class="mx-auto grid max-w-5xl gap-10 lg:grid-cols-2">
+			<div class="space-y-4">
+				<h1 class="text-4xl font-bold text-neutral-900">{t('contact.title')}</h1>
+				<p class="text-lg text-neutral-600">{t('contact.intro')}</p>
+				<Card variant="muted">
+					<h2 class="font-semibold text-neutral-900">{t('contact.officeTitle')}</h2>
+					<p class="mt-2 text-neutral-600">{t('contact.officeLocation')}</p>
+					<p class="mt-2 text-sm text-neutral-500">{t('contact.responseTime')}</p>
+				</Card>
+			</div>
+
+			<Card>
+				<form class="space-y-4" aria-disabled="true">
+					<Alert variant="info">{t('contact.formNote')}</Alert>
+					<div>
+						<label for="contact-name" class="mb-1 block text-sm font-medium text-neutral-700">
+							{t('contact.name')}
+						</label>
+						<input
+							id="contact-name"
+							name="name"
+							type="text"
+							disabled
+							class="w-full rounded-md border border-neutral-300 px-3 py-2.5 text-sm"
+						/>
+					</div>
+					<div>
+						<label for="contact-email" class="mb-1 block text-sm font-medium text-neutral-700">
+							{t('contact.email')}
+						</label>
+						<input
+							id="contact-email"
+							name="email"
+							type="email"
+							disabled
+							class="w-full rounded-md border border-neutral-300 px-3 py-2.5 text-sm"
+						/>
+					</div>
+					<div>
+						<label for="contact-subject" class="mb-1 block text-sm font-medium text-neutral-700">
+							{t('contact.subject')}
+						</label>
+						<input
+							id="contact-subject"
+							name="subject"
+							type="text"
+							disabled
+							class="w-full rounded-md border border-neutral-300 px-3 py-2.5 text-sm"
+						/>
+					</div>
+					<div>
+						<label for="contact-message" class="mb-1 block text-sm font-medium text-neutral-700">
+							{t('contact.message')}
+						</label>
+						<textarea
+							id="contact-message"
+							name="message"
+							rows="5"
+							disabled
+							class="w-full rounded-md border border-neutral-300 px-3 py-2.5 text-sm"></textarea>
+					</div>
+					<Button type="button" disabled>{t('contact.submit')}</Button>
+				</form>
+			</Card>
+		</div>
+	</Container>
+</PublicLayout>

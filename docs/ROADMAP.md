@@ -4,7 +4,7 @@
 
 Progress is tracked with checkboxes. **Do not begin a new phase until the previous phase is stable.** Update checkboxes when work is verified complete. Never remove completed phases from this document.
 
-**Current project phase:** Milestone 1 complete (Phase 1A–1C) — Phase 2 next, pending approval
+**Current project phase:** Milestone 2 complete (Phase 2) — pending owner review before commit
 
 **Last roadmap update:** 2026-07-14
 
@@ -33,7 +33,7 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 - [x] **Phase 0** — Planning and repository review
 - [x] **Phase 1** — Project foundation (1A, 1B, 1C complete)
-- [ ] **Phase 2** — Public website and brand identity
+- [x] **Phase 2** — Public website and brand identity
 - [ ] **Phase 3** — Database and server foundation
 - [ ] **Phase 4** — Authentication and authorization
 - [ ] **Phase 5** — Customer account
@@ -141,23 +141,23 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 ## Phase 2 — Public website and brand identity
 
-- [ ] Create Trimnexa logo placement and brand styles
-- [ ] Build responsive header
-- [ ] Build search interface
-- [ ] Build category navigation
-- [ ] Build footer
-- [ ] Build homepage
-- [ ] Build About page
-- [ ] Build Contact page
-- [ ] Build Help page
-- [ ] Build Become a Seller page
-- [ ] Build initial policy-page placeholders
-- [ ] Add responsive behaviour
-- [ ] Add accessibility checks
-- [ ] Add English and French foundation
-- [ ] Decide localization routing strategy (prefix vs cookie)
+- [x] Create Trimnexa logo placement and brand styles
+- [x] Build responsive header
+- [x] Build search interface
+- [x] Build category navigation
+- [x] Build footer
+- [x] Build homepage
+- [x] Build About page
+- [x] Build Contact page
+- [x] Build Help page
+- [x] Build Become a Seller page
+- [x] Build initial policy-page placeholders
+- [x] Add responsive behaviour
+- [x] Add accessibility checks
+- [x] Add English and French foundation
+- [x] Decide localization routing strategy (prefix vs cookie)
 
-**Acceptance criteria:** Public pages work on mobile, tablet, and desktop; header and footer are reusable; website has an original identity; no Amazon branding or copied design; SEO metadata present; language foundation works.
+**Acceptance criteria:** Public pages work on mobile, tablet, and desktop; header and footer are reusable; website has an original identity; no Amazon branding or copied design; SEO metadata present; language foundation works. **Status: complete — pending owner review.**
 
 ---
 
@@ -547,14 +547,17 @@ A task is complete only when:
 
 ## Current phase
 
+**Milestone 2 complete — Phase 2 (Public website and brand identity) pending owner review**
+
+- Bilingual public site with locale path prefix (`/en/`, `/fr/`)
+- Responsive header, footer, search UI, category navigation, homepage sections
+- Public pages and policy placeholders with legal-review notices
+- Original provisional logo mark; teal-and-gold palette unchanged (provisional)
+- Quality checks: build (25 pages), typecheck, lint, test (10/10), format:check — all pass
+
+Do not commit until owner review and explicit approval.
+
 **Milestone 1 complete — Phase 1 (1A, 1B, 1C) finished and cleanup verified**
-
-- Unused Astro starter files removed (`Welcome.astro`, starter SVG assets)
-- Zod 4 and ESLint configuration warnings resolved where supported
-- Brand palette documented as **provisional** pending Phase 2 owner approval
-- Quality checks: build, typecheck, lint, test, format:check — all pass
-
-Phase 2 (Public website and brand identity) has not started. Do not begin Phase 2 until explicitly instructed.
 
 ### Phase 0 acceptance criteria
 
