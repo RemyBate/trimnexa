@@ -1,0 +1,339 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import type { SellerProfileView } from '@/lib/seller/profile';
+
+interface Labels {
+	shopName: string;
+	description: string;
+	shopPhone: string;
+	shopEmail: string;
+	addressLine1: string;
+	addressLine2: string;
+	city: string;
+	region: string;
+	country: string;
+	returnPolicy: string;
+	shippingPolicy: string;
+	logo: string;
+	banner: string;
+	save: string;
+	saving: string;
+	success: string;
+	errorGeneric: string;
+	uploadLogo: string;
+	uploadBanner: string;
+}
+
+interface Props {
+	profile: SellerProfileView;
+	labels: Labels;
+}
+
+const { profile, labels } = Astro.props;
+const formConfig = JSON.stringify({ labels });
+---
+
+<div id="shop-profile-success" class="mb-4 hidden" role="status">
+	<Alert variant="success">{labels.success}</Alert>
+</div>
+
+<div id="shop-profile-error" class="mb-4 hidden" role="alert">
+	<Alert variant="error">
+		<span id="shop-profile-error-text">{labels.errorGeneric}</span>
+	</Alert>
+</div>
+
+<Card class="p-6 sm:p-8">
+	<form id="shop-profile-form" class="space-y-6" data-config={formConfig} novalidate>
+		<div class="grid gap-6 md:grid-cols-2">
+			<div>
+				<p class="mb-2 text-sm font-medium text-neutral-800">{labels.logo}</p>
+				{
+					profile.logoUrl ? (
+						<img
+							src={profile.logoUrl}
+							alt=""
+							class="mb-3 h-24 w-24 rounded-md border border-neutral-200 object-cover"
+						/>
+					) : null
+				}
+				<input
+					id="shop-logo"
+					type="file"
+					accept="image/jpeg,image/png,image/webp"
+					class="text-sm"
+				/>
+				<Button type="button" id="shop-logo-upload" variant="secondary" class="mt-2">
+					{labels.uploadLogo}
+				</Button>
+			</div>
+			<div>
+				<p class="mb-2 text-sm font-medium text-neutral-800">{labels.banner}</p>
+				{
+					profile.bannerUrl ? (
+						<img
+							src={profile.bannerUrl}
+							alt=""
+							class="mb-3 h-24 w-full rounded-md border border-neutral-200 object-cover"
+						/>
+					) : null
+				}
+				<input
+					id="shop-banner"
+					type="file"
+					accept="image/jpeg,image/png,image/webp"
+					class="text-sm"
+				/>
+				<Button type="button" id="shop-banner-upload" variant="secondary" class="mt-2">
+					{labels.uploadBanner}
+				</Button>
+			</div>
+		</div>
+
+		<div>
+			<label for="shop-name" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.shopName}
+			</label>
+			<input
+				id="shop-name"
+				name="shopName"
+				type="text"
+				required
+				value={profile.shopName ?? ''}
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			/>
+		</div>
+
+		<div>
+			<label for="shop-description" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.description}
+			</label>
+			<textarea
+				id="shop-description"
+				name="description"
+				rows="4"
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			>
+				{profile.description ?? ''}
+			</textarea>
+		</div>
+
+		<div class="grid gap-4 sm:grid-cols-2">
+			<div>
+				<label for="shop-phone" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.shopPhone}
+				</label>
+				<input
+					id="shop-phone"
+					name="shopPhone"
+					type="tel"
+					required
+					value={profile.shopPhone ?? ''}
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				/>
+			</div>
+			<div>
+				<label for="shop-email" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.shopEmail}
+				</label>
+				<input
+					id="shop-email"
+					name="shopEmail"
+					type="email"
+					value={profile.shopEmail ?? ''}
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				/>
+			</div>
+		</div>
+
+		<div>
+			<label for="address-line1" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.addressLine1}
+			</label>
+			<input
+				id="address-line1"
+				name="addressLine1"
+				type="text"
+				required
+				value={profile.addressLine1 ?? ''}
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			/>
+		</div>
+
+		<div>
+			<label for="address-line2" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.addressLine2}
+			</label>
+			<input
+				id="address-line2"
+				name="addressLine2"
+				type="text"
+				value={profile.addressLine2 ?? ''}
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			/>
+		</div>
+
+		<div class="grid gap-4 sm:grid-cols-3">
+			<div>
+				<label for="shop-city" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.city}
+				</label>
+				<input
+					id="shop-city"
+					name="city"
+					type="text"
+					required
+					value={profile.city ?? ''}
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				/>
+			</div>
+			<div>
+				<label for="shop-region" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.region}
+				</label>
+				<input
+					id="shop-region"
+					name="region"
+					type="text"
+					required
+					value={profile.region ?? ''}
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				/>
+			</div>
+			<div>
+				<label for="shop-country" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.country}
+				</label>
+				<input
+					id="shop-country"
+					name="country"
+					type="text"
+					required
+					maxlength="2"
+					value={profile.country ?? 'CM'}
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				/>
+			</div>
+		</div>
+
+		<div>
+			<label for="return-policy" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.returnPolicy}
+			</label>
+			<textarea
+				id="return-policy"
+				name="returnPolicy"
+				rows="4"
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			>
+				{profile.returnPolicy ?? ''}
+			</textarea>
+		</div>
+
+		<div>
+			<label for="shipping-policy" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.shippingPolicy}
+			</label>
+			<textarea
+				id="shipping-policy"
+				name="shippingPolicy"
+				rows="4"
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			>
+				{profile.shippingPolicy ?? ''}
+			</textarea>
+		</div>
+
+		<Button type="submit" id="shop-profile-submit">{labels.save}</Button>
+	</form>
+</Card>
+
+<script>
+	const form = document.getElementById('shop-profile-form') as HTMLFormElement;
+	const config = JSON.parse(form.dataset.config ?? '{}') as {
+		labels: { save: string; saving: string };
+	};
+	const submitButton = document.getElementById('shop-profile-submit') as HTMLButtonElement;
+	const successBox = document.getElementById('shop-profile-success');
+	const errorBox = document.getElementById('shop-profile-error');
+	const errorText = document.getElementById('shop-profile-error-text');
+
+	async function uploadMedia(endpoint: string, inputId: string) {
+		const input = document.getElementById(inputId) as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) {
+			return;
+		}
+
+		const formData = new FormData();
+		formData.append('file', file);
+
+		const response = await fetch(endpoint, {
+			method: 'POST',
+			body: formData,
+		});
+
+		if (!response.ok) {
+			errorBox?.classList.remove('hidden');
+			return;
+		}
+
+		window.location.reload();
+	}
+
+	document.getElementById('shop-logo-upload')?.addEventListener('click', () => {
+		void uploadMedia('/api/seller/shop/logo', 'shop-logo');
+	});
+
+	document.getElementById('shop-banner-upload')?.addEventListener('click', () => {
+		void uploadMedia('/api/seller/shop/banner', 'shop-banner');
+	});
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		successBox?.classList.add('hidden');
+		errorBox?.classList.add('hidden');
+		submitButton.disabled = true;
+		submitButton.textContent = config.labels.saving;
+
+		const formData = new FormData(form);
+		const payload = {
+			shopName: String(formData.get('shopName') ?? ''),
+			description: String(formData.get('description') ?? ''),
+			shopPhone: String(formData.get('shopPhone') ?? ''),
+			shopEmail: String(formData.get('shopEmail') ?? ''),
+			addressLine1: String(formData.get('addressLine1') ?? ''),
+			addressLine2: String(formData.get('addressLine2') ?? ''),
+			city: String(formData.get('city') ?? ''),
+			region: String(formData.get('region') ?? ''),
+			country: String(formData.get('country') ?? 'CM'),
+			returnPolicy: String(formData.get('returnPolicy') ?? ''),
+			shippingPolicy: String(formData.get('shippingPolicy') ?? ''),
+		};
+
+		try {
+			const response = await fetch('/api/seller/shop', {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+			});
+
+			if (!response.ok) {
+				errorBox?.classList.remove('hidden');
+				return;
+			}
+
+			successBox?.classList.remove('hidden');
+		} catch {
+			if (errorText) {
+				errorText.textContent = 'Request failed';
+			}
+			errorBox?.classList.remove('hidden');
+		} finally {
+			submitButton.disabled = false;
+			submitButton.textContent = config.labels.save;
+		}
+	});
+</script>

@@ -1,0 +1,158 @@
+---
+import type { SupportTicketView } from '@/lib/account/support';
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+
+interface Labels {
+	newTicket: string;
+	subject: string;
+	message: string;
+	submit: string;
+	submitting: string;
+	success: string;
+	errorGeneric: string;
+	statusOpen: string;
+	statusInProgress: string;
+	statusResolved: string;
+	statusClosed: string;
+}
+
+interface Props {
+	tickets: SupportTicketView[];
+	labels: Labels;
+}
+
+const { tickets, labels } = Astro.props;
+
+const statusLabels: Record<SupportTicketView['status'], string> = {
+	OPEN: labels.statusOpen,
+	IN_PROGRESS: labels.statusInProgress,
+	RESOLVED: labels.statusResolved,
+	CLOSED: labels.statusClosed,
+};
+
+const formConfig = JSON.stringify({ labels });
+---
+
+<div data-support-center data-config={formConfig}>
+	<div class="mb-6">
+		<h2 class="text-lg font-semibold text-neutral-900">{labels.newTicket}</h2>
+	</div>
+
+	<div id="support-success" class="mb-4 hidden" role="status">
+		<Alert variant="success">{labels.success}</Alert>
+	</div>
+	<div id="support-error" class="mb-4 hidden" role="alert">
+		<Alert variant="error">{labels.errorGeneric}</Alert>
+	</div>
+
+	<form
+		id="support-form"
+		class="mb-8 space-y-4 rounded-lg border border-neutral-200 bg-neutral-50 p-4 sm:p-6"
+	>
+		<div>
+			<label for="support-subject" class="mb-1 block text-sm font-medium text-neutral-800"
+				>{labels.subject}</label
+			>
+			<input
+				id="support-subject"
+				name="subject"
+				required
+				maxlength="120"
+				class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+			/>
+		</div>
+		<div>
+			<label for="support-message" class="mb-1 block text-sm font-medium text-neutral-800"
+				>{labels.message}</label
+			>
+			<textarea
+				id="support-message"
+				name="message"
+				required
+				rows="5"
+				maxlength="2000"
+				class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"></textarea>
+		</div>
+		<Button type="submit" id="support-submit">{labels.submit}</Button>
+	</form>
+
+	<div class="space-y-4">
+		{
+			tickets.map((ticket) => (
+				<Card class="p-5">
+					<div class="flex flex-wrap items-start justify-between gap-3">
+						<div>
+							<h3 class="font-semibold text-neutral-900">{ticket.subject}</h3>
+							<p class="mt-1 text-xs font-medium uppercase tracking-wide text-neutral-500">
+								{statusLabels[ticket.status]}
+							</p>
+							{ticket.lastMessagePreview ? (
+								<p class="mt-2 text-sm text-neutral-600">{ticket.lastMessagePreview}</p>
+							) : null}
+							<p class="mt-2 text-xs text-neutral-500">{ticket.updatedAt.toLocaleString()}</p>
+						</div>
+					</div>
+				</Card>
+			))
+		}
+	</div>
+</div>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-support-center]');
+	const form = document.getElementById('support-form') as HTMLFormElement | null;
+	if (!root || !form) {
+		throw new Error('Support center not found');
+	}
+
+	const config = JSON.parse(root.dataset.config ?? '{}') as {
+		labels: { submit: string; submitting: string };
+	};
+
+	const successBox = document.getElementById('support-success');
+	const errorBox = document.getElementById('support-error');
+	const submitButton = document.getElementById('support-submit') as HTMLButtonElement | null;
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		successBox?.classList.add('hidden');
+		errorBox?.classList.add('hidden');
+
+		if (submitButton) {
+			submitButton.disabled = true;
+			submitButton.textContent = config.labels.submitting;
+		}
+
+		const formData = new FormData(form);
+		const payload = {
+			subject: String(formData.get('subject') ?? ''),
+			message: String(formData.get('message') ?? ''),
+		};
+
+		try {
+			const response = await fetch('/api/account/support/tickets', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+			});
+
+			if (!response.ok) {
+				errorBox?.classList.remove('hidden');
+				return;
+			}
+
+			form.reset();
+			successBox?.classList.remove('hidden');
+			window.setTimeout(() => window.location.reload(), 800);
+		} catch {
+			errorBox?.classList.remove('hidden');
+		} finally {
+			if (submitButton) {
+				submitButton.disabled = false;
+				submitButton.textContent = config.labels.submit;
+			}
+		}
+	});
+</script>

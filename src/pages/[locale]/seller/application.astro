@@ -1,0 +1,68 @@
+---
+import SellerApplicationForm from '@/components/seller/SellerApplicationForm.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { getSellerApplicationState } from '@/lib/seller/application';
+import { requireSessionUser } from '@/lib/authz';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+import Container from '@/components/common/Container.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const user = await requireSessionUser(Astro, locale);
+const { accessState, application } = await getSellerApplicationState(user.id);
+
+if (accessState === 'approved') {
+	return Astro.redirect(localizedPath(locale, '/seller'));
+}
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	showCategoryNav={false}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('seller.applicationTitle'),
+		t('seller.applicationDescription'),
+		{ noindex: true },
+	)}
+>
+	<Container class="py-10">
+		<div class="mx-auto max-w-3xl space-y-6">
+			<header>
+				<h1 class="text-3xl font-bold text-neutral-900">{t('seller.applicationTitle')}</h1>
+				<p class="mt-2 text-neutral-600">{t('seller.applicationDescription')}</p>
+			</header>
+			<SellerApplicationForm
+				accessState={accessState}
+				application={application}
+				labels={{
+					businessName: t('seller.businessName'),
+					description: t('seller.businessDescription'),
+					contactPhone: t('seller.contactPhone'),
+					contactEmail: t('seller.contactEmail'),
+					businessCity: t('seller.businessCity'),
+					businessRegion: t('seller.businessRegion'),
+					submit: t('seller.submitApplication'),
+					submitting: t('seller.submittingApplication'),
+					success: t('seller.applicationSubmitted'),
+					errorGeneric: t('seller.applicationError'),
+					pendingTitle: t('seller.pendingTitle'),
+					pendingDescription: t('seller.pendingDescription'),
+					rejectedTitle: t('seller.rejectedTitle'),
+					rejectedDescription: t('seller.rejectedDescription'),
+					suspendedTitle: t('seller.suspendedTitle'),
+					suspendedDescription: t('seller.suspendedDescription'),
+					underReviewTitle: t('seller.underReviewTitle'),
+					underReviewDescription: t('seller.underReviewDescription'),
+				}}
+			/>
+		</div>
+	</Container>
+</PublicLayout>

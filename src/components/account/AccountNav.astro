@@ -1,0 +1,50 @@
+---
+import type { SupportedLocale } from '@/config/site';
+import type { AccountNavItem } from '@/lib/account/navigation';
+import { localizedPath } from '@/i18n';
+
+interface Props {
+	locale: SupportedLocale;
+	currentPath: string;
+	items: AccountNavItem[];
+}
+
+const { locale, currentPath, items } = Astro.props;
+
+function isActive(href: string): boolean {
+	return currentPath === href || currentPath.startsWith(`${href}/`);
+}
+---
+
+<nav aria-label="Account navigation" class="account-nav">
+	<ul class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
+		{
+			items.map((item) => {
+				const href = localizedPath(locale, item.href);
+				const active = isActive(href);
+				return (
+					<li class="shrink-0 lg:shrink">
+						<a
+							href={href}
+							aria-current={active ? 'page' : undefined}
+							class:list={[
+								'block rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600',
+								active
+									? 'bg-primary-50 text-primary-800'
+									: 'text-neutral-700 hover:bg-neutral-100 hover:text-primary-800',
+							]}
+						>
+							{item.label}
+						</a>
+					</li>
+				);
+			})
+		}
+	</ul>
+</nav>
+
+<style>
+	.account-nav ul {
+		scrollbar-width: thin;
+	}
+</style>

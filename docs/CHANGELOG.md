@@ -10,6 +10,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.6.0] — 2026-07-14
+
+Milestone 6 — Phase 6 seller application and shop management (pending owner review).
+
+### Added
+
+- Extended `SellerProfile` with shop slug, address, policies, media paths, onboarding state
+- Extended `SellerApplication` with contact and location fields
+- Migration `20260714160001_seller_shop_management`
+- Seller services (`src/lib/seller/`), admin seller review (`src/lib/admin/sellers.ts`)
+- Local seller media uploads (`src/lib/storage/seller-media.ts`) with type/size validation
+- API routes: `/api/seller/application`, `/api/seller/shop/*`, `/api/admin/sellers/*`
+- Pages: `/seller/application`, `/seller/onboarding`, `/seller/shop`, `/admin/sellers`
+- `SellerLayout`, `AdminLayout`, seller/admin components
+- Audit actions for seller approval, rejection, suspension, reactivation
+- Seed users: `pending-seller@trimnexa.local`, `seller@trimnexa.local`
+
+### Changed
+
+- Seller dashboard uses approved-seller guards (role + profile status)
+- Become a Seller page links to live application flow
+- User menu shows seller dashboard, application, or become-a-seller based on status
+- `npm run dev` runs `prisma generate` before Astro dev
+
+---
+
+## [0.5.0] — 2026-07-14
+
+Milestone 5 — Phase 5 customer account (pending owner review).
+
+### Added
+
+- Customer account database models: addresses, orders foundation, wishlist, notifications, support tickets
+- Migration `20260714134429_customer_account`
+- Account services and Zod validation (`src/lib/account/`)
+- Account API routes under `/api/account/*` with session auth
+- Account layout with responsive sidebar navigation
+- Pages: `/account`, `/account/profile`, `/account/addresses`, `/account/orders`, `/account/wishlist`, `/account/notifications`, `/account/support`
+- Profile editing, address CRUD, support ticket submission, notification read state
+- Bilingual account copy (EN/FR)
+
+### Changed
+
+- Account dashboard links to live account sections with summary counts
+- User menu dropdown links to dedicated account routes
+- Registration provisioning creates wishlist + welcome notification
+- Seed backfills wishlists for existing customer profiles
+
+---
+
 ## [0.4.0] — 2026-07-14
 
 Milestone 4 — Phase 4 authentication and authorization (pending owner review).

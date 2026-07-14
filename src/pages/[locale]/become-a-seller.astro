@@ -4,7 +4,7 @@ import Button from '@/components/common/Button.astro';
 import Container from '@/components/common/Container.astro';
 import Card from '@/components/common/Card.astro';
 import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
-import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
 import PublicLayout from '@/layouts/PublicLayout.astro';
 
 export const prerender = true;
@@ -53,7 +53,9 @@ const benefits = [
 			<Alert variant="info" title={t('becomeSeller.cta')}>
 				{t('becomeSeller.ctaNote')}
 			</Alert>
-			<Button disabled>{t('becomeSeller.cta')}</Button>
+			<Button href={localizedPath(locale, '/seller/application')}
+				>{t('becomeSeller.applyNow')}</Button
+			>
 		</div>
 	</Container>
 </PublicLayout>

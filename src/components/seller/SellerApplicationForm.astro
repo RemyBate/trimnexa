@@ -1,0 +1,222 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import type { SellerApplicationView } from '@/lib/seller/profile';
+import type { SellerAccessState } from '@/lib/seller/application';
+
+interface Labels {
+	businessName: string;
+	description: string;
+	contactPhone: string;
+	contactEmail: string;
+	businessCity: string;
+	businessRegion: string;
+	submit: string;
+	submitting: string;
+	success: string;
+	errorGeneric: string;
+	pendingTitle: string;
+	pendingDescription: string;
+	rejectedTitle: string;
+	rejectedDescription: string;
+	suspendedTitle: string;
+	suspendedDescription: string;
+	underReviewTitle: string;
+	underReviewDescription: string;
+}
+
+interface Props {
+	accessState: SellerAccessState;
+	application: SellerApplicationView | null;
+	labels: Labels;
+}
+
+const { accessState, application, labels } = Astro.props;
+const formConfig = JSON.stringify({ labels });
+const showForm = accessState === 'none' || accessState === 'rejected';
+---
+
+{
+	accessState === 'pending' || accessState === 'under_review' ? (
+		<Alert variant="info" title={labels.pendingTitle}>
+			{accessState === 'under_review' ? labels.underReviewDescription : labels.pendingDescription}
+		</Alert>
+	) : null
+}
+
+{
+	accessState === 'rejected' ? (
+		<Alert variant="warning" title={labels.rejectedTitle}>
+			{application?.reviewNotes || labels.rejectedDescription}
+		</Alert>
+	) : null
+}
+
+{
+	accessState === 'suspended' ? (
+		<Alert variant="error" title={labels.suspendedTitle}>
+			{labels.suspendedDescription}
+		</Alert>
+	) : null
+}
+
+{
+	showForm ? (
+		<Card class="p-6 sm:p-8">
+			<div id="seller-application-success" class="mb-4 hidden" role="status">
+				<Alert variant="success">{labels.success}</Alert>
+			</div>
+			<div id="seller-application-error" class="mb-4 hidden" role="alert">
+				<Alert variant="error">
+					<span id="seller-application-error-text">{labels.errorGeneric}</span>
+				</Alert>
+			</div>
+			<form id="seller-application-form" class="space-y-4" data-config={formConfig} novalidate>
+				<div>
+					<label for="business-name" class="mb-1 block text-sm font-medium text-neutral-800">
+						{labels.businessName}
+					</label>
+					<input
+						id="business-name"
+						name="businessName"
+						type="text"
+						required
+						value={application?.businessName ?? ''}
+						class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+					/>
+				</div>
+				<div>
+					<label for="business-description" class="mb-1 block text-sm font-medium text-neutral-800">
+						{labels.description}
+					</label>
+					<textarea
+						id="business-description"
+						name="description"
+						rows="4"
+						class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+					>
+						{application?.description ?? ''}
+					</textarea>
+				</div>
+				<div class="grid gap-4 sm:grid-cols-2">
+					<div>
+						<label for="contact-phone" class="mb-1 block text-sm font-medium text-neutral-800">
+							{labels.contactPhone}
+						</label>
+						<input
+							id="contact-phone"
+							name="contactPhone"
+							type="tel"
+							required
+							value={application?.contactPhone ?? ''}
+							class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+						/>
+					</div>
+					<div>
+						<label for="contact-email" class="mb-1 block text-sm font-medium text-neutral-800">
+							{labels.contactEmail}
+						</label>
+						<input
+							id="contact-email"
+							name="contactEmail"
+							type="email"
+							required
+							value={application?.contactEmail ?? ''}
+							class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+						/>
+					</div>
+				</div>
+				<div class="grid gap-4 sm:grid-cols-2">
+					<div>
+						<label for="business-city" class="mb-1 block text-sm font-medium text-neutral-800">
+							{labels.businessCity}
+						</label>
+						<input
+							id="business-city"
+							name="businessCity"
+							type="text"
+							required
+							value={application?.businessCity ?? ''}
+							class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+						/>
+					</div>
+					<div>
+						<label for="business-region" class="mb-1 block text-sm font-medium text-neutral-800">
+							{labels.businessRegion}
+						</label>
+						<input
+							id="business-region"
+							name="businessRegion"
+							type="text"
+							required
+							value={application?.businessRegion ?? ''}
+							class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+						/>
+					</div>
+				</div>
+				<Button type="submit" id="seller-application-submit">
+					{labels.submit}
+				</Button>
+			</form>
+		</Card>
+	) : null
+}
+
+<script>
+	const form = document.getElementById('seller-application-form') as HTMLFormElement | null;
+	if (!form) {
+		// Status-only view for pending applications.
+	} else {
+		const config = JSON.parse(form.dataset.config ?? '{}') as {
+			labels: { submit: string; submitting: string };
+		};
+		const submitButton = document.getElementById('seller-application-submit') as HTMLButtonElement;
+		const successBox = document.getElementById('seller-application-success');
+		const errorBox = document.getElementById('seller-application-error');
+		const errorText = document.getElementById('seller-application-error-text');
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			successBox?.classList.add('hidden');
+			errorBox?.classList.add('hidden');
+			submitButton.disabled = true;
+			submitButton.textContent = config.labels.submitting;
+
+			const formData = new FormData(form);
+			const payload = {
+				businessName: String(formData.get('businessName') ?? ''),
+				description: String(formData.get('description') ?? ''),
+				contactPhone: String(formData.get('contactPhone') ?? ''),
+				contactEmail: String(formData.get('contactEmail') ?? ''),
+				businessCity: String(formData.get('businessCity') ?? ''),
+				businessRegion: String(formData.get('businessRegion') ?? ''),
+			};
+
+			try {
+				const response = await fetch('/api/seller/application', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+
+				if (!response.ok) {
+					const data = (await response.json()) as { error?: string };
+					if (errorText) {
+						errorText.textContent = data.error ?? config.labels.submit;
+					}
+					errorBox?.classList.remove('hidden');
+					return;
+				}
+
+				successBox?.classList.remove('hidden');
+				window.setTimeout(() => window.location.reload(), 800);
+			} catch {
+				errorBox?.classList.remove('hidden');
+			} finally {
+				submitButton.disabled = false;
+				submitButton.textContent = config.labels.submit;
+			}
+		});
+	}
+</script>

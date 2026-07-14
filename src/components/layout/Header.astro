@@ -14,14 +14,21 @@ interface SessionUser {
 	firstName?: string | null;
 }
 
+interface SellerMenuState {
+	showSellerDashboard: boolean;
+	showSellerApplication: boolean;
+	showBecomeSeller: boolean;
+}
+
 interface Props {
 	locale: SupportedLocale;
 	currentPath: string;
 	t: PageContext['t'];
 	user: SessionUser | null;
+	sellerMenuState?: SellerMenuState | null;
 }
 
-const { locale, currentPath, t, user } = Astro.props;
+const { locale, currentPath, t, user, sellerMenuState } = Astro.props;
 const toggleId = 'mobile-nav-toggle';
 
 const userMenuLabels = {
@@ -32,6 +39,8 @@ const userMenuLabels = {
 	addresses: t('userMenu.addresses'),
 	settings: t('userMenu.settings'),
 	becomeSeller: t('userMenu.becomeSeller'),
+	sellerDashboard: t('userMenu.sellerDashboard'),
+	sellerApplication: t('userMenu.sellerApplication'),
 	signOut: t('userMenu.signOut'),
 };
 ---
@@ -68,7 +77,12 @@ const userMenuLabels = {
 				<LanguageSwitcher locale={locale} currentPath={currentPath} t={t} />
 				{
 					user ? (
-						<UserMenu locale={locale} user={user} labels={userMenuLabels} />
+						<UserMenu
+							locale={locale}
+							user={user}
+							labels={userMenuLabels}
+							sellerMenuState={sellerMenuState}
+						/>
 					) : (
 						<>
 							<a

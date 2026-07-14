@@ -1,0 +1,36 @@
+---
+import Container from '@/components/common/Container.astro';
+import type { SellerNavItem } from '@/lib/seller/navigation';
+import SellerNav from '@/components/seller/SellerNav.astro';
+import type { SupportedLocale } from '@/config/site';
+import type { PageContext } from '@/i18n';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+import type { PageMetadata, SeoOptions } from '@/types/seo';
+
+interface Props {
+	locale: SupportedLocale;
+	currentPath: string;
+	t: PageContext['t'];
+	seo: SeoOptions | PageMetadata;
+	title: string;
+	navItems: SellerNavItem[];
+}
+
+const { locale, currentPath, t, seo, title, navItems } = Astro.props;
+---
+
+<PublicLayout locale={locale} currentPath={currentPath} t={t} seo={seo} showCategoryNav={false}>
+	<Container class="py-8 sm:py-10">
+		<div class="mb-6">
+			<h1 class="text-2xl font-bold text-neutral-900 sm:text-3xl">{title}</h1>
+		</div>
+		<div class="grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)]">
+			<aside class="lg:sticky lg:top-24 lg:self-start">
+				<SellerNav locale={locale} currentPath={currentPath} items={navItems} />
+			</aside>
+			<div class="min-w-0">
+				<slot />
+			</div>
+		</div>
+	</Container>
+</PublicLayout>

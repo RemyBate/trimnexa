@@ -1,0 +1,63 @@
+---
+import ShopProfileForm from '@/components/seller/ShopProfileForm.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { getSellerNavItems } from '@/lib/seller/navigation';
+import { getSellerProfileByUserId } from '@/lib/seller/profile';
+import { requireApprovedSeller } from '@/lib/seller/guards';
+import SellerLayout from '@/layouts/SellerLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireApprovedSeller(Astro, locale);
+
+const profile = await getSellerProfileByUserId(Astro.locals.user!.id);
+const navItems = getSellerNavItems(t);
+
+if (!profile) {
+	return Astro.redirect(localizedPath(locale, '/seller/application'));
+}
+---
+
+<SellerLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('seller.shopTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('seller.shopTitle'),
+		t('seller.shopDescription'),
+		{ noindex: true },
+	)}
+>
+	<ShopProfileForm
+		profile={profile}
+		labels={{
+			shopName: t('seller.shopName'),
+			description: t('seller.shopDescriptionLabel'),
+			shopPhone: t('seller.shopPhone'),
+			shopEmail: t('seller.shopEmail'),
+			addressLine1: t('seller.addressLine1'),
+			addressLine2: t('seller.addressLine2'),
+			city: t('seller.city'),
+			region: t('seller.region'),
+			country: t('seller.country'),
+			returnPolicy: t('seller.returnPolicy'),
+			shippingPolicy: t('seller.shippingPolicy'),
+			logo: t('seller.logo'),
+			banner: t('seller.banner'),
+			save: t('seller.saveShop'),
+			saving: t('seller.savingShop'),
+			success: t('seller.shopSaved'),
+			errorGeneric: t('seller.shopError'),
+			uploadLogo: t('seller.uploadLogo'),
+			uploadBanner: t('seller.uploadBanner'),
+		}}
+	/>
+</SellerLayout>

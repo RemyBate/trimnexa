@@ -1,4 +1,4 @@
-// Trimnexa Prisma schema — marketplace foundation + Better Auth (Phase 4).
+// Trimnexa Prisma schema — marketplace foundation + Better Auth (Phase 4) + customer account (Phase 5).
 // Full marketplace entities are added in later phases per docs/DATABASE.md.
 
 generator client {
@@ -46,6 +46,10 @@ model User {
 	customerProfile CustomerProfile?
 	sellerProfile   SellerProfile?
 	auditLogs       AuditLog[]           @relation("AuditActor")
+	addresses       CustomerAddress[]
+	orders          CustomerOrder[]
+	notifications   Notification[]
+	supportTickets  SupportTicket[]
 
 	@@map("users")
 }
@@ -115,9 +119,144 @@ model CustomerProfile {
 	createdAt DateTime @default(now()) @map("created_at")
 	updatedAt DateTime @updatedAt @map("updated_at")
 
-	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+	user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+	wishlist Wishlist?
 
 	@@map("customer_profiles")
+}
+
+// --- Customer account (Phase 5) ---
+
+model CustomerAddress {
+	id            String   @id @default(cuid())
+	userId        String   @map("user_id")
+	label         String
+	recipientName String   @map("recipient_name")
+	phone         String
+	line1         String
+	line2         String?
+	city          String
+	region        String
+	country       String   @default("CM")
+	isDefault     Boolean  @default(false) @map("is_default")
+	createdAt     DateTime @default(now()) @map("created_at")
+	updatedAt     DateTime @updatedAt @map("updated_at")
+
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@index([userId])
+	@@map("customer_addresses")
+}
+
+enum CustomerOrderStatus {
+	PENDING_PAYMENT
+	PAID
+	PROCESSING
+	SHIPPED
+	DELIVERED
+	CANCELLED
+	REFUNDED
+}
+
+model CustomerOrder {
+	id          String              @id @default(cuid())
+	userId      String              @map("user_id")
+	orderNumber String              @unique @map("order_number")
+	status      CustomerOrderStatus @default(PENDING_PAYMENT)
+	totalMinor  Int                 @map("total_minor")
+	currency    String              @default("XAF")
+	placedAt    DateTime?           @map("placed_at")
+	createdAt   DateTime            @default(now()) @map("created_at")
+	updatedAt   DateTime            @updatedAt @map("updated_at")
+
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@index([userId, placedAt])
+	@@map("customer_orders")
+}
+
+model Wishlist {
+	id                String   @id @default(cuid())
+	customerProfileId String   @unique @map("customer_profile_id")
+	createdAt         DateTime @default(now()) @map("created_at")
+	updatedAt         DateTime @updatedAt @map("updated_at")
+
+	customerProfile CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+	items           WishlistItem[]
+
+	@@map("wishlists")
+}
+
+model WishlistItem {
+	id           String   @id @default(cuid())
+	wishlistId   String   @map("wishlist_id")
+	productId    String?  @map("product_id")
+	productSlug  String   @map("product_slug")
+	productTitle String   @map("product_title")
+	addedAt      DateTime @default(now()) @map("added_at")
+
+	wishlist Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+
+	@@unique([wishlistId, productSlug])
+	@@map("wishlist_items")
+}
+
+enum NotificationType {
+	ORDER
+	ACCOUNT
+	PROMOTION
+	SUPPORT
+	SYSTEM
+}
+
+model Notification {
+	id        String           @id @default(cuid())
+	userId    String           @map("user_id")
+	type      NotificationType @default(SYSTEM)
+	title     String
+	body      String
+	readAt    DateTime?        @map("read_at")
+	createdAt DateTime         @default(now()) @map("created_at")
+
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@index([userId, createdAt])
+	@@map("notifications")
+}
+
+enum SupportTicketStatus {
+	OPEN
+	IN_PROGRESS
+	RESOLVED
+	CLOSED
+}
+
+model SupportTicket {
+	id        String              @id @default(cuid())
+	userId    String              @map("user_id")
+	subject   String
+	status    SupportTicketStatus @default(OPEN)
+	createdAt DateTime            @default(now()) @map("created_at")
+	updatedAt DateTime            @updatedAt @map("updated_at")
+
+	user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+	messages SupportMessage[]
+
+	@@index([userId, createdAt])
+	@@map("support_tickets")
+}
+
+model SupportMessage {
+	id           String   @id @default(cuid())
+	ticketId     String   @map("ticket_id")
+	authorUserId String   @map("author_user_id")
+	body         String
+	createdAt    DateTime @default(now()) @map("created_at")
+
+	ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+	@@index([ticketId, createdAt])
+	@@map("support_messages")
 }
 
 enum SellerStatus {
@@ -128,12 +267,28 @@ enum SellerStatus {
 }
 
 model SellerProfile {
-	id        String       @id @default(cuid())
-	userId    String       @unique @map("user_id")
-	shopName  String?      @map("shop_name")
-	status    SellerStatus @default(PENDING)
-	createdAt DateTime     @default(now()) @map("created_at")
-	updatedAt DateTime     @updatedAt @map("updated_at")
+	id                    String       @id @default(cuid())
+	userId                String       @unique @map("user_id")
+	shopName              String?      @map("shop_name")
+	shopSlug              String?      @unique @map("shop_slug")
+	description           String?
+	logoPath              String?      @map("logo_path")
+	bannerPath            String?      @map("banner_path")
+	returnPolicy          String?      @map("return_policy")
+	shippingPolicy        String?      @map("shipping_policy")
+	shopPhone             String?      @map("shop_phone")
+	shopEmail             String?      @map("shop_email")
+	addressLine1          String?      @map("address_line1")
+	addressLine2          String?      @map("address_line2")
+	city                  String?
+	region                String?
+	country               String?      @default("CM")
+	status                SellerStatus @default(PENDING)
+	onboardingCompletedAt DateTime?    @map("onboarding_completed_at")
+	suspendedAt           DateTime?    @map("suspended_at")
+	suspensionReason      String?      @map("suspension_reason")
+	createdAt             DateTime     @default(now()) @map("created_at")
+	updatedAt             DateTime     @updatedAt @map("updated_at")
 
 	user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 	applications SellerApplication[]
@@ -153,13 +308,19 @@ model SellerApplication {
 	sellerProfileId String            @map("seller_profile_id")
 	businessName    String            @map("business_name")
 	description     String?
+	contactPhone    String            @map("contact_phone")
+	contactEmail    String            @map("contact_email")
+	businessCity    String            @map("business_city")
+	businessRegion  String            @map("business_region")
 	status          ApplicationStatus @default(SUBMITTED)
 	submittedAt     DateTime          @default(now()) @map("submitted_at")
 	reviewedAt      DateTime?         @map("reviewed_at")
+	reviewedById    String?           @map("reviewed_by_id")
 	reviewNotes     String?           @map("review_notes")
 
 	sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
 
+	@@index([status, submittedAt])
 	@@map("seller_applications")
 }
 

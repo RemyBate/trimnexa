@@ -1,25 +1,35 @@
 ---
-import Container from '@/components/common/Container.astro';
-import Card from '@/components/common/Card.astro';
+import SellerDashboard from '@/components/seller/SellerDashboard.astro';
 import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
-import { getPageContext, getStaticPathsForLocale } from '@/i18n';
-import { requireRoles } from '@/lib/authz';
-import { Role } from '@prisma/client';
-import PublicLayout from '@/layouts/PublicLayout.astro';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { getSellerNavItems } from '@/lib/seller/navigation';
+import { getSellerProfileByUserId } from '@/lib/seller/profile';
+import { requireApprovedSeller } from '@/lib/seller/guards';
+import { getSellerDashboardSummary } from '@/lib/seller/summary';
+import SellerLayout from '@/layouts/SellerLayout.astro';
 
 export const prerender = false;
 export const getStaticPaths = getStaticPathsForLocale;
 
 const { locale, t } = getPageContext(Astro);
 const currentPath = Astro.url.pathname;
-await requireRoles(Astro, locale, [Role.SELLER, Role.ADMINISTRATOR, Role.STAFF]);
+await requireApprovedSeller(Astro, locale);
+
+const summary = await getSellerDashboardSummary(Astro.locals.user!.id);
+const profile = await getSellerProfileByUserId(Astro.locals.user!.id);
+const navItems = getSellerNavItems(t);
+
+if (!summary || !profile) {
+	return Astro.redirect(localizedPath(locale, '/seller/application'));
+}
 ---
 
-<PublicLayout
+<SellerLayout
 	locale={locale}
 	currentPath={currentPath}
 	t={t}
-	showCategoryNav={false}
+	title={t('seller.dashboardTitle')}
+	navItems={navItems}
 	seo={createLocalizedPageMetadata(
 		locale,
 		currentPath,
@@ -28,11 +38,24 @@ await requireRoles(Astro, locale, [Role.SELLER, Role.ADMINISTRATOR, Role.STAFF])
 		{ noindex: true },
 	)}
 >
-	<Container class="py-10">
-		<Card class="mx-auto max-w-2xl p-6 sm:p-8">
-			<h1 class="text-2xl font-bold text-neutral-900">{t('seller.dashboardTitle')}</h1>
-			<p class="mt-2 text-neutral-600">{t('seller.dashboardSubtitle')}</p>
-			<p class="mt-4 text-sm text-neutral-500">{t('seller.placeholder')}</p>
-		</Card>
-	</Container>
-</PublicLayout>
+	<SellerDashboard
+		locale={locale}
+		summary={summary}
+		labels={{
+			welcome: t('seller.welcome'),
+			shopLabel: t('seller.shopLabel'),
+			onboardingTitle: t('seller.onboardingTitle'),
+			onboardingDescription: t('seller.onboardingDescription'),
+			completeOnboarding: t('seller.completeOnboarding'),
+			completing: t('seller.completing'),
+			onboardingDone: t('seller.onboardingDone'),
+			manageShop: t('seller.manageShop'),
+			productsSoon: t('seller.productsSoon'),
+			ordersSoon: t('seller.ordersSoon'),
+			checklistShop: t('seller.checklistShop'),
+			checklistAddress: t('seller.checklistAddress'),
+			checklistLogo: t('seller.checklistLogo'),
+			checklistPolicies: t('seller.checklistPolicies'),
+		}}
+	/>
+</SellerLayout>

@@ -1,0 +1,68 @@
+---
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import { localizedPath } from '@/i18n';
+import type { SupportedLocale } from '@/config/site';
+import type { AdminSellerListItem } from '@/lib/admin/sellers';
+
+interface Labels {
+	email: string;
+	shop: string;
+	status: string;
+	application: string;
+	submitted: string;
+	review: string;
+	noSellers: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	sellers: AdminSellerListItem[];
+	labels: Labels;
+}
+
+const { locale, sellers, labels } = Astro.props;
+---
+
+{
+	sellers.length === 0 ? (
+		<Card class="p-6 text-sm text-neutral-600">{labels.noSellers}</Card>
+	) : (
+		<div class="overflow-x-auto rounded-lg border border-neutral-200">
+			<table class="min-w-full divide-y divide-neutral-200 text-sm">
+				<thead class="bg-neutral-50">
+					<tr>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.shop}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.email}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.status}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.application}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.submitted}</th>
+						<th class="px-4 py-3 text-right font-medium text-neutral-700">{labels.review}</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-neutral-200 bg-white">
+					{sellers.map((seller) => (
+						<tr>
+							<td class="px-4 py-3 font-medium text-neutral-900">{seller.shopName ?? '—'}</td>
+							<td class="px-4 py-3 text-neutral-700">{seller.email}</td>
+							<td class="px-4 py-3 text-neutral-700">{seller.status}</td>
+							<td class="px-4 py-3 text-neutral-700">{seller.applicationStatus ?? '—'}</td>
+							<td class="px-4 py-3 text-neutral-700">
+								{seller.submittedAt ? seller.submittedAt.toLocaleDateString(locale) : '—'}
+							</td>
+							<td class="px-4 py-3 text-right">
+								<Button
+									href={localizedPath(locale, `/admin/sellers/${seller.id}`)}
+									variant="secondary"
+									size="sm"
+								>
+									{labels.review}
+								</Button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	)
+}

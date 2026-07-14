@@ -1,0 +1,54 @@
+---
+import AccountEmptyState from '@/components/account/AccountEmptyState.astro';
+import Card from '@/components/common/Card.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { ensureCustomerWishlist, listWishlistItems } from '@/lib/account/wishlist';
+import { getAccountNavItems } from '@/lib/account/navigation';
+import { requireSessionUser } from '@/lib/authz';
+import AccountLayout from '@/layouts/AccountLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const marketplaceUser = await requireSessionUser(Astro, locale);
+await ensureCustomerWishlist(marketplaceUser.id);
+const items = await listWishlistItems(marketplaceUser.id);
+const navItems = getAccountNavItems(t);
+---
+
+<AccountLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('account.wishlistTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('account.wishlistTitle'),
+		t('account.wishlistDescription'),
+		{ noindex: true },
+	)}
+>
+	{
+		items.length === 0 ? (
+			<AccountEmptyState
+				title={t('account.noWishlistTitle')}
+				description={t('account.noWishlistDescription')}
+			/>
+		) : (
+			<div class="space-y-4">
+				{items.map((item) => (
+					<Card class="p-5">
+						<h2 class="font-semibold text-neutral-900">{item.productTitle}</h2>
+						<p class="mt-1 text-sm text-neutral-600">{item.productSlug}</p>
+						<p class="mt-2 text-xs text-neutral-500">{item.addedAt.toLocaleString()}</p>
+					</Card>
+				))}
+			</div>
+		)
+	}
+</AccountLayout>

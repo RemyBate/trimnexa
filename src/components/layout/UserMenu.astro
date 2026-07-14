@@ -17,16 +17,25 @@ interface MenuLabels {
 	addresses: string;
 	settings: string;
 	becomeSeller: string;
+	sellerDashboard: string;
+	sellerApplication: string;
 	signOut: string;
+}
+
+interface SellerMenuState {
+	showSellerDashboard: boolean;
+	showSellerApplication: boolean;
+	showBecomeSeller: boolean;
 }
 
 interface Props {
 	locale: SupportedLocale;
 	user: SessionUser;
 	labels: MenuLabels;
+	sellerMenuState?: SellerMenuState | null;
 }
 
-const { locale, user, labels } = Astro.props;
+const { locale, user, labels, sellerMenuState } = Astro.props;
 const firstName = getUserFirstName(user);
 const menuId = 'user-menu-dropdown';
 const buttonId = 'user-menu-button';
@@ -76,41 +85,67 @@ const buttonId = 'user-menu-button';
 			{labels.myAccount}
 		</a>
 		<a
-			href={`${localizedPath(locale, '/account')}#orders`}
+			href={localizedPath(locale, '/account/orders')}
 			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
 			role="menuitem"
 		>
 			{labels.orders}
 		</a>
 		<a
-			href={`${localizedPath(locale, '/account')}#wishlist`}
+			href={localizedPath(locale, '/account/wishlist')}
 			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
 			role="menuitem"
 		>
 			{labels.wishlist}
 		</a>
 		<a
-			href={`${localizedPath(locale, '/account')}#addresses`}
+			href={localizedPath(locale, '/account/addresses')}
 			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
 			role="menuitem"
 		>
 			{labels.addresses}
 		</a>
 		<a
-			href={`${localizedPath(locale, '/account')}#settings`}
+			href={localizedPath(locale, '/account/profile')}
 			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
 			role="menuitem"
 		>
 			{labels.settings}
 		</a>
 		<div class="my-1 border-t border-neutral-200" role="separator"></div>
-		<a
-			href={localizedPath(locale, '/become-a-seller')}
-			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
-			role="menuitem"
-		>
-			{labels.becomeSeller}
-		</a>
+		{
+			sellerMenuState?.showSellerDashboard ? (
+				<a
+					href={localizedPath(locale, '/seller')}
+					class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+					role="menuitem"
+				>
+					{labels.sellerDashboard}
+				</a>
+			) : null
+		}
+		{
+			sellerMenuState?.showSellerApplication ? (
+				<a
+					href={localizedPath(locale, '/seller/application')}
+					class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+					role="menuitem"
+				>
+					{labels.sellerApplication}
+				</a>
+			) : null
+		}
+		{
+			sellerMenuState?.showBecomeSeller ? (
+				<a
+					href={localizedPath(locale, '/become-a-seller')}
+					class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+					role="menuitem"
+				>
+					{labels.becomeSeller}
+				</a>
+			) : null
+		}
 		<a
 			href={localizedPath(locale, '/auth/logout')}
 			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"

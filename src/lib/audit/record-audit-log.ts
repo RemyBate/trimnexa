@@ -34,4 +34,9 @@ export const AuditActions = {
 	USER_REACTIVATED: 'user.reactivated',
 	SETTING_UPDATED: 'setting.updated',
 	SEED_EXECUTED: 'seed.executed',
+	SELLER_APPLICATION_REVIEW_STARTED: 'seller.application.review_started',
+	SELLER_APPLICATION_APPROVED: 'seller.application.approved',
+	SELLER_APPLICATION_REJECTED: 'seller.application.rejected',
+	SELLER_SUSPENDED: 'seller.suspended',
+	SELLER_REACTIVATED: 'seller.reactivated',
 } as const;

@@ -1,0 +1,372 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import type { AdminSellerDetail } from '@/lib/admin/sellers';
+import type { SupportedLocale } from '@/config/site';
+import { localizedPath } from '@/i18n';
+
+interface Labels {
+	overview: string;
+	application: string;
+	businessName: string;
+	description: string;
+	contactPhone: string;
+	contactEmail: string;
+	location: string;
+	reviewNotes: string;
+	reviewNotesRequired: string;
+	approve: string;
+	approving: string;
+	reject: string;
+	rejecting: string;
+	rejectConfirm: string;
+	suspend: string;
+	reactivate: string;
+	suspensionReason: string;
+	successApproved: string;
+	successRejected: string;
+	errorGeneric: string;
+	errorNotFound: string;
+	errorAlreadyReviewed: string;
+	errorUnauthorized: string;
+	errorApprovalFailed: string;
+	errorRejectionFailed: string;
+	errorRejectionReasonRequired: string;
+	status: string;
+	applicationStatus: string;
+	profileStatus: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	seller: AdminSellerDetail;
+	labels: Labels;
+}
+
+const { locale, seller, labels } = Astro.props;
+const application = seller.application;
+const canReview =
+	seller.status !== 'APPROVED' &&
+	seller.status !== 'SUSPENDED' &&
+	(application?.status === 'SUBMITTED' || application?.status === 'UNDER_REVIEW');
+
+const config = JSON.stringify({
+	sellerId: seller.id,
+	redirectUrlApproved: localizedPath(locale, '/admin/sellers?flash=approved'),
+	redirectUrlRejected: localizedPath(locale, '/admin/sellers?flash=rejected'),
+	labels,
+});
+---
+
+<div id="seller-review-success" class="mb-4 hidden" role="status" tabindex="-1">
+	<Alert variant="success">
+		<span id="seller-review-success-text">{labels.successApproved}</span>
+	</Alert>
+</div>
+
+<div id="seller-review-error" class="mb-4 hidden" role="alert" tabindex="-1">
+	<Alert variant="error">
+		<span id="seller-review-error-text">{labels.errorGeneric}</span>
+	</Alert>
+</div>
+
+<div class="space-y-6" data-review-config={config}>
+	<Card class="p-6">
+		<h2 class="text-lg font-semibold text-neutral-900">{labels.overview}</h2>
+		<dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+			<div>
+				<dt class="text-neutral-500">{labels.profileStatus}</dt>
+				<dd class="font-medium text-neutral-900">
+					<span
+						class="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-neutral-800"
+					>
+						{seller.status}
+					</span>
+				</dd>
+			</div>
+			<div>
+				<dt class="text-neutral-500">{labels.applicationStatus}</dt>
+				<dd class="font-medium text-neutral-900">
+					{
+						application ? (
+							<span class="inline-flex rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary-800">
+								{application.status}
+							</span>
+						) : (
+							'—'
+						)
+					}
+				</dd>
+			</div>
+			<div>
+				<dt class="text-neutral-500">Email</dt>
+				<dd class="font-medium text-neutral-900">{seller.email}</dd>
+			</div>
+		</dl>
+	</Card>
+
+	{
+		application ? (
+			<Card class="p-6">
+				<h2 class="text-lg font-semibold text-neutral-900">{labels.application}</h2>
+				<dl class="mt-4 space-y-3 text-sm">
+					<div>
+						<dt class="text-neutral-500">{labels.businessName}</dt>
+						<dd class="font-medium text-neutral-900">{application.businessName}</dd>
+					</div>
+					{application.description ? (
+						<div>
+							<dt class="text-neutral-500">{labels.description}</dt>
+							<dd class="text-neutral-800">{application.description}</dd>
+						</div>
+					) : null}
+					<div class="grid gap-3 sm:grid-cols-2">
+						<div>
+							<dt class="text-neutral-500">{labels.contactPhone}</dt>
+							<dd class="font-medium text-neutral-900">{application.contactPhone}</dd>
+						</div>
+						<div>
+							<dt class="text-neutral-500">{labels.contactEmail}</dt>
+							<dd class="font-medium text-neutral-900">{application.contactEmail}</dd>
+						</div>
+					</div>
+					<div>
+						<dt class="text-neutral-500">{labels.location}</dt>
+						<dd class="font-medium text-neutral-900">
+							{application.businessCity}, {application.businessRegion}
+						</dd>
+					</div>
+				</dl>
+			</Card>
+		) : null
+	}
+
+	<Card class="p-6">
+		<label for="review-notes" class="mb-1 block text-sm font-medium text-neutral-800">
+			{labels.reviewNotes}
+		</label>
+		<textarea
+			id="review-notes"
+			rows="3"
+			class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+		>
+			{application?.reviewNotes ?? ''}
+		</textarea>
+		<p id="review-notes-help" class="mt-1 hidden text-sm text-error-700">
+			{labels.reviewNotesRequired}
+		</p>
+
+		{
+			seller.status === 'SUSPENDED' ? (
+				<div class="mt-4">
+					<Button type="button" data-action="reactivate" id="seller-action-reactivate">
+						{labels.reactivate}
+					</Button>
+				</div>
+			) : seller.status === 'APPROVED' ? (
+				<div class="mt-4 space-y-3">
+					<label for="suspension-reason" class="block text-sm font-medium text-neutral-800">
+						{labels.suspensionReason}
+					</label>
+					<input
+						id="suspension-reason"
+						type="text"
+						class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+					/>
+					<Button
+						type="button"
+						data-action="suspend"
+						variant="secondary"
+						id="seller-action-suspend"
+					>
+						{labels.suspend}
+					</Button>
+				</div>
+			) : canReview ? (
+				<div class="mt-4 flex flex-wrap gap-3">
+					<Button type="button" data-action="approve" id="seller-action-approve">
+						<span id="seller-action-approve-label">{labels.approve}</span>
+					</Button>
+					<Button type="button" data-action="reject" variant="secondary" id="seller-action-reject">
+						<span id="seller-action-reject-label">{labels.reject}</span>
+					</Button>
+				</div>
+			) : null
+		}
+	</Card>
+</div>
+
+<script>
+	const root = document.querySelector('[data-review-config]') as HTMLElement | null;
+	if (!root) {
+		throw new Error('Seller review panel config not found');
+	}
+
+	const config = JSON.parse(root.dataset.reviewConfig ?? '{}') as {
+		sellerId: string;
+		redirectUrlApproved: string;
+		redirectUrlRejected: string;
+		labels: {
+			approving: string;
+			rejecting: string;
+			approve: string;
+			reject: string;
+			rejectConfirm: string;
+			successApproved: string;
+			successRejected: string;
+			errorGeneric: string;
+			errorNotFound: string;
+			errorAlreadyReviewed: string;
+			errorUnauthorized: string;
+			errorApprovalFailed: string;
+			errorRejectionFailed: string;
+			errorRejectionReasonRequired: string;
+			reviewNotesRequired: string;
+		};
+	};
+
+	const successBox = document.getElementById('seller-review-success');
+	const successText = document.getElementById('seller-review-success-text');
+	const errorBox = document.getElementById('seller-review-error');
+	const errorText = document.getElementById('seller-review-error-text');
+	const reviewNotes = document.getElementById('review-notes') as HTMLTextAreaElement;
+	const reviewNotesHelp = document.getElementById('review-notes-help');
+	const actionButtons = root.querySelectorAll<HTMLButtonElement>('[data-action]');
+
+	const errorMessages: Record<string, string> = {
+		not_found: config.labels.errorNotFound,
+		already_reviewed: config.labels.errorAlreadyReviewed,
+		unauthorized: config.labels.errorUnauthorized,
+		forbidden: config.labels.errorUnauthorized,
+		approval_failed: config.labels.errorApprovalFailed,
+		rejection_failed: config.labels.errorRejectionFailed,
+		rejection_reason_required: config.labels.errorRejectionReasonRequired,
+	};
+
+	function setBusy(isBusy: boolean) {
+		for (const button of actionButtons) {
+			button.disabled = isBusy;
+		}
+	}
+
+	function showError(message: string) {
+		successBox?.classList.add('hidden');
+		if (errorText) {
+			errorText.textContent = message;
+		}
+		errorBox?.classList.remove('hidden');
+		errorBox?.focus();
+	}
+
+	function showSuccess(message: string) {
+		errorBox?.classList.add('hidden');
+		reviewNotesHelp?.classList.add('hidden');
+		if (successText) {
+			successText.textContent = message;
+		}
+		successBox?.classList.remove('hidden');
+		successBox?.focus();
+	}
+
+	async function postAction(action: string, body?: Record<string, string>) {
+		successBox?.classList.add('hidden');
+		errorBox?.classList.add('hidden');
+		reviewNotesHelp?.classList.add('hidden');
+		setBusy(true);
+
+		const approveLabel = document.getElementById('seller-action-approve-label');
+		const rejectLabel = document.getElementById('seller-action-reject-label');
+		const previousApprove = approveLabel?.textContent;
+		const previousReject = rejectLabel?.textContent;
+
+		if (action === 'approve' && approveLabel) {
+			approveLabel.textContent = config.labels.approving;
+		}
+
+		if (action === 'reject' && rejectLabel) {
+			rejectLabel.textContent = config.labels.rejecting;
+		}
+
+		try {
+			const response = await fetch(`/api/admin/sellers/${config.sellerId}/${action}`, {
+				method: 'POST',
+				headers: body ? { 'Content-Type': 'application/json' } : undefined,
+				body: body ? JSON.stringify(body) : undefined,
+				credentials: 'same-origin',
+			});
+
+			let payload: { error?: string } = {};
+			try {
+				payload = (await response.json()) as { error?: string };
+			} catch {
+				payload = {};
+			}
+
+			if (!response.ok) {
+				const message =
+					(payload.error && errorMessages[payload.error]) || config.labels.errorGeneric;
+				showError(message);
+				return;
+			}
+
+			const successMessage =
+				action === 'approve' ? config.labels.successApproved : config.labels.successRejected;
+			const redirectUrl =
+				action === 'approve' ? config.redirectUrlApproved : config.redirectUrlRejected;
+			showSuccess(successMessage);
+			window.setTimeout(() => {
+				window.location.href = redirectUrl;
+			}, 1200);
+		} catch {
+			showError(config.labels.errorGeneric);
+		} finally {
+			setBusy(false);
+			if (approveLabel && previousApprove) {
+				approveLabel.textContent = previousApprove;
+			}
+			if (rejectLabel && previousReject) {
+				rejectLabel.textContent = previousReject;
+			}
+		}
+	}
+
+	for (const button of actionButtons) {
+		button.addEventListener('click', () => {
+			const action = button.dataset.action;
+			if (!action) {
+				return;
+			}
+
+			if (action === 'approve') {
+				void postAction('approve', { reviewNotes: reviewNotes.value });
+				return;
+			}
+
+			if (action === 'reject') {
+				const reason = reviewNotes.value.trim();
+				if (reason.length < 3) {
+					reviewNotesHelp?.classList.remove('hidden');
+					reviewNotes.focus();
+					showError(config.labels.errorRejectionReasonRequired);
+					return;
+				}
+
+				if (!window.confirm(config.labels.rejectConfirm)) {
+					return;
+				}
+
+				void postAction('reject', { reviewNotes: reason });
+				return;
+			}
+
+			if (action === 'suspend') {
+				const reasonInput = document.getElementById('suspension-reason') as HTMLInputElement;
+				void postAction('suspend', { reason: reasonInput.value });
+				return;
+			}
+
+			void postAction(action);
+		});
+	}
+</script>

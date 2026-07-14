@@ -32,6 +32,25 @@ export async function provisionMarketplaceUser(userId: string): Promise<void> {
 				create: { userId },
 			});
 
+			const profile = await tx.customerProfile.findUniqueOrThrow({
+				where: { userId },
+			});
+
+			await tx.wishlist.upsert({
+				where: { customerProfileId: profile.id },
+				update: {},
+				create: { customerProfileId: profile.id },
+			});
+
+			await tx.notification.create({
+				data: {
+					userId,
+					type: 'ACCOUNT',
+					title: 'Welcome to Trimnexa',
+					body: 'Your customer account is ready. Complete your profile and save delivery addresses for faster checkout.',
+				},
+			});
+
 			await tx.user.update({
 				where: { id: userId },
 				data: { status: UserStatus.ACTIVE },

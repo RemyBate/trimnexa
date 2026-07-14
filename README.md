@@ -4,7 +4,7 @@ A trusted multi-vendor e-commerce marketplace for Cameroon. Trimnexa connects ve
 
 **Website:** [https://trimnexa.com](https://trimnexa.com)
 
-**Current project phase:** Milestone 3 — Phase 3 complete; Phase 4 blocked on auth provider approval
+**Current project phase:** Milestone 5 — Phase 5 complete; pending owner review
 
 **Last roadmap update:** 2026-07-14
 
@@ -24,8 +24,8 @@ Full vision, mission, values, and business goals: [docs/PRD.md](docs/PRD.md)
 - [x] Phase 1 — Foundation (1A, 1B, 1C complete)
 - [x] Phase 2 — Public website (EN/FR, header, footer, homepage)
 - [x] Phase 3 — Database foundation (Prisma, migrations, seed)
-- [ ] Phase 4 — Authentication (blocked — provider selection)
-- [ ] Phase 5 — Customer account
+- [x] Phase 4 — Authentication (Better Auth)
+- [x] Phase 5 — Customer account
 - [ ] Phase 6 — Seller and shop
 - [ ] Phase 7 — Products
 - [ ] Phase 8 — Catalogue and search
@@ -55,12 +55,13 @@ Full roadmap with tasks and acceptance criteria: [docs/ROADMAP.md](docs/ROADMAP.
 | Framework            | Astro `^7.0.9`                                                     |
 | Language             | TypeScript (strict)                                                |
 | Node.js              | `>=22.12.0`                                                        |
-| Database             | Prisma 7 + PostgreSQL (Phase 3 — configure `DATABASE_URL` locally) |
-| Authentication       | Not configured (Phase 4 — provider selection required)             |
-| Marketplace features | Not started                                                        |
-| Deployment adapter   | Not installed (deferred to Phase 4 auth/API routes)                |
+| Database             | Prisma 7 + PostgreSQL                                              |
+| Authentication       | Better Auth (email/password, sessions, RBAC)                       |
+| Customer account     | Dashboard, profile, addresses, orders/wishlist/support foundations |
+| Marketplace features | Catalogue and checkout not started                                 |
+| Deployment adapter   | `@astrojs/node` (server output)                                    |
 
-Phase 3 database foundation is in place. Run `npm run db:migrate:dev` and `npm run db:seed` after configuring PostgreSQL. Phase 4 authentication is blocked pending provider selection.
+Run `npm run db:migrate:dev` and `npm run db:seed` after configuring PostgreSQL and `.env`.
 
 ---
 

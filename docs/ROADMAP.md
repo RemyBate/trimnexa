@@ -4,7 +4,7 @@
 
 Progress is tracked with checkboxes. **Do not begin a new phase until the previous phase is stable.** Update checkboxes when work is verified complete. Never remove completed phases from this document.
 
-**Current project phase:** Milestone 4 — Phase 4 complete; pending owner review
+**Current project phase:** Milestone 6 — Phase 6 complete; pending owner review
 
 **Last roadmap update:** 2026-07-14
 
@@ -35,9 +35,9 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 - [x] **Phase 1** — Project foundation (1A, 1B, 1C complete)
 - [x] **Phase 2** — Public website and brand identity
 - [x] **Phase 3** — Database and server foundation
-- [x] **Phase 4** — Authentication and authorization (pending owner review)
-- [ ] **Phase 5** — Customer account
-- [ ] **Phase 6** — Seller application and shop management
+- [x] **Phase 4** — Authentication and authorization
+- [x] **Phase 5** — Customer account (pending owner review)
+- [x] **Phase 6** — Seller application and shop management (pending owner review)
 - [ ] **Phase 7** — Categories and product management
 - [ ] **Phase 8** — Marketplace catalogue and search
 - [ ] **Phase 9** — Cart and wishlist
@@ -206,32 +206,36 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 ## Phase 5 — Customer account
 
-- [ ] Build account dashboard
-- [ ] Build profile management
-- [ ] Build address management
-- [ ] Build order-history foundation
-- [ ] Build wishlist foundation
-- [ ] Build notification centre
-- [ ] Build support-ticket foundation
+**Status: complete — pending owner review.**
 
-**Acceptance criteria:** Customers manage their own data only; forms have server-side validation; mobile layout works.
+- [x] Build account dashboard
+- [x] Build profile management
+- [x] Build address management
+- [x] Build order-history foundation
+- [x] Build wishlist foundation
+- [x] Build notification centre
+- [x] Build support-ticket foundation
+
+**Acceptance criteria:** Customers manage their own data only; forms have server-side validation; mobile layout works. **Status: complete — pending owner review.**
 
 ---
 
 ## Phase 6 — Seller application and shop management
 
-- [ ] Build seller application form
-- [ ] Add seller status workflow
-- [ ] Add administrator seller review
-- [ ] Build seller onboarding
-- [ ] Build shop profile
-- [ ] Add shop logo and banner uploads
-- [ ] Add shop address
-- [ ] Add seller policies
-- [ ] Add seller dashboard shell
-- [ ] Add seller suspension and rejection handling
+**Status: complete — pending owner review.**
 
-**Acceptance criteria:** Customer can apply to become a seller; administrator can approve or reject; only approved sellers access seller tools; files validated and protected; status changes audited.
+- [x] Build seller application form
+- [x] Add seller status workflow
+- [x] Add administrator seller review
+- [x] Build seller onboarding
+- [x] Build shop profile
+- [x] Add shop logo and banner uploads
+- [x] Add shop address
+- [x] Add seller policies
+- [x] Add seller dashboard shell
+- [x] Add seller suspension and rejection handling
+
+**Acceptance criteria:** Customer can apply to become a seller; administrator can approve or reject; only approved sellers access seller tools; files validated and protected; status changes audited. **Status: complete — pending owner review.**
 
 ---
 
@@ -551,17 +555,19 @@ A task is complete only when:
 
 ## Current phase
 
-**Milestone 4 — Phase 4 complete; pending owner review**
+**Milestone 6 — Phase 6 complete; pending owner review**
 
-- Better Auth with Prisma adapter, `@astrojs/node` server output, session middleware
-- Localized auth pages (`/en/auth/login`, register, forgot/reset password, verify placeholder)
-- Protected route stubs: account, seller, admin with server-side role checks
-- Migration `20260714160000_better_auth`; seed creates dev admin credential account
-- Quality checks: build (25 static + SSR auth routes), typecheck, lint, test (24/24), format:check — all pass
+- Seller application form with status workflow (pending, approved, rejected, suspended)
+- Administrator seller review at `/admin/sellers`
+- Seller dashboard shell with shop profile, onboarding, logo/banner uploads
+- Prisma migration `20260714160001_seller_shop_management`
+- Audit logging for seller status changes
+- Bilingual seller and admin UI (EN/FR)
+- Quality checks: build, typecheck, lint, test, format — run before owner review
 
 Do not commit until owner review and explicit approval.
 
-**Milestone 3 — Phase 3 complete (pushed)**
+**Milestone 4 — Phase 4 complete (pushed)**
 
 - Prisma 7 + PostgreSQL schema, migration, seed, money utilities, audit log foundation
 - Quality checks: build (25 pages), typecheck, lint, test (18/18), format:check — all pass

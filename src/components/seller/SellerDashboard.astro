@@ -1,0 +1,113 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import { localizedPath } from '@/i18n';
+import type { SupportedLocale } from '@/config/site';
+import type { SellerDashboardSummary } from '@/lib/seller/summary';
+
+interface Labels {
+	welcome: string;
+	shopLabel: string;
+	onboardingTitle: string;
+	onboardingDescription: string;
+	completeOnboarding: string;
+	completing: string;
+	onboardingDone: string;
+	manageShop: string;
+	productsSoon: string;
+	ordersSoon: string;
+	checklistShop: string;
+	checklistAddress: string;
+	checklistLogo: string;
+	checklistPolicies: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	summary: SellerDashboardSummary;
+	labels: Labels;
+}
+
+const { locale, summary, labels } = Astro.props;
+const config = JSON.stringify({ labels });
+---
+
+<section class="space-y-6">
+	<div>
+		<p class="text-sm font-medium uppercase tracking-wide text-primary-700">{labels.welcome}</p>
+		<h2 class="mt-1 text-3xl font-bold text-neutral-900">{summary.shopName ?? labels.shopLabel}</h2>
+	</div>
+
+	{
+		!summary.onboardingComplete ? (
+			<Alert variant="info" title={labels.onboardingTitle}>
+				{labels.onboardingDescription}
+			</Alert>
+		) : (
+			<Alert variant="success" title={labels.onboardingDone}>
+				{labels.onboardingDescription}
+			</Alert>
+		)
+	}
+
+	<div class="grid gap-4 sm:grid-cols-2">
+		<Card class="p-5">
+			<h3 class="font-semibold text-neutral-900">{labels.manageShop}</h3>
+			<p class="mt-2 text-sm text-neutral-600">
+				{labels.checklistShop}
+			</p>
+			<a
+				href={localizedPath(locale, '/seller/shop')}
+				class="mt-4 inline-flex text-sm font-medium text-primary-700 hover:text-primary-800"
+			>
+				{labels.manageShop}
+			</a>
+		</Card>
+		<Card class="p-5">
+			<h3 class="font-semibold text-neutral-900">{labels.productsSoon}</h3>
+			<p class="mt-2 text-sm text-neutral-600">{labels.ordersSoon}</p>
+		</Card>
+	</div>
+
+	<Card class="p-5">
+		<h3 class="font-semibold text-neutral-900">{labels.onboardingTitle}</h3>
+		<ul class="mt-3 space-y-2 text-sm text-neutral-700">
+			<li>{labels.checklistShop}</li>
+			<li>{labels.checklistAddress}</li>
+			<li>{summary.hasLogo ? '✓' : '○'} {labels.checklistLogo}</li>
+			<li>{summary.hasPolicies ? '✓' : '○'} {labels.checklistPolicies}</li>
+		</ul>
+		{
+			!summary.onboardingComplete ? (
+				<Button type="button" id="complete-onboarding" class="mt-4" data-config={config}>
+					{labels.completeOnboarding}
+				</Button>
+			) : null
+		}
+	</Card>
+</section>
+
+<script>
+	const button = document.getElementById('complete-onboarding') as HTMLButtonElement | null;
+	if (button) {
+		const config = JSON.parse(button.dataset.config ?? '{}') as {
+			labels: { completeOnboarding: string; completing: string };
+		};
+
+		button.addEventListener('click', async () => {
+			button.disabled = true;
+			button.textContent = config.labels.completing;
+
+			try {
+				const response = await fetch('/api/seller/onboarding/complete', { method: 'POST' });
+				if (response.ok) {
+					window.location.reload();
+				}
+			} finally {
+				button.disabled = false;
+				button.textContent = config.labels.completeOnboarding;
+			}
+		});
+	}
+</script>

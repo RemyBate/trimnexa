@@ -1,36 +1,40 @@
 ---
 import Alert from '@/components/common/Alert.astro';
 import AccountDashboard from '@/components/account/AccountDashboard.astro';
-import Container from '@/components/common/Container.astro';
 import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
-import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
 import { formatWelcomeMessage, getUserFirstName } from '@/lib/auth/display-name';
+import { getAccountNavItems } from '@/lib/account/navigation';
+import { getAccountSummary } from '@/lib/account/summary';
 import { requireSessionUser } from '@/lib/authz';
-import PublicLayout from '@/layouts/PublicLayout.astro';
+import AccountLayout from '@/layouts/AccountLayout.astro';
 
 export const prerender = false;
 export const getStaticPaths = getStaticPathsForLocale;
 
 const { locale, t } = getPageContext(Astro);
 const currentPath = Astro.url.pathname;
-await requireSessionUser(Astro, locale);
-
+const marketplaceUser = await requireSessionUser(Astro, locale);
 const sessionUser = Astro.locals.user;
+
 if (!sessionUser) {
-	return Astro.redirect(`/${locale}/auth/login`);
+	return Astro.redirect(localizedPath(locale, '/auth/login'));
 }
 
+const summary = await getAccountSummary(marketplaceUser.id);
+const navItems = getAccountNavItems(t);
 const showWelcome = Astro.url.searchParams.get('welcome') === '1';
 const welcomeMessage = showWelcome
 	? formatWelcomeMessage(t('account.welcomeMessage'), getUserFirstName(sessionUser))
 	: undefined;
 ---
 
-<PublicLayout
+<AccountLayout
 	locale={locale}
 	currentPath={currentPath}
 	t={t}
-	showCategoryNav={false}
+	title={t('account.dashboardTitle')}
+	navItems={navItems}
 	seo={createLocalizedPageMetadata(
 		locale,
 		currentPath,
@@ -39,26 +43,31 @@ const welcomeMessage = showWelcome
 		{ noindex: true },
 	)}
 >
-	<Container class="py-8 sm:py-10">
-		{
-			welcomeMessage ? (
-				<Alert variant="success" class="mb-6">
-					{welcomeMessage}
-				</Alert>
-			) : null
-		}
-		<AccountDashboard
-			user={sessionUser}
-			labels={{
-				welcomeBack: t('account.welcomeBack'),
-				signedInAs: t('account.signedInAs'),
-				myProfile: t('account.myProfile'),
-				myOrders: t('account.myOrders'),
-				savedAddresses: t('account.savedAddresses'),
-				wishlist: t('account.wishlist'),
-				accountSettings: t('account.accountSettings'),
-				comingSoon: t('account.comingSoon'),
-			}}
-		/>
-	</Container>
-</PublicLayout>
+	{
+		welcomeMessage ? (
+			<Alert variant="success" class="mb-6">
+				{welcomeMessage}
+			</Alert>
+		) : null
+	}
+	<AccountDashboard
+		locale={locale}
+		user={sessionUser}
+		summary={summary}
+		labels={{
+			welcomeBack: t('account.welcomeBack'),
+			signedInAs: t('account.signedInAs'),
+			overview: t('account.overview'),
+			myProfile: t('account.myProfile'),
+			myOrders: t('account.myOrders'),
+			savedAddresses: t('account.savedAddresses'),
+			wishlist: t('account.wishlist'),
+			notifications: t('account.nav.notifications'),
+			support: t('account.nav.support'),
+			manage: t('account.manage'),
+			items: t('account.items'),
+			unread: t('account.unread'),
+			openTickets: t('account.openTickets'),
+		}}
+	/>
+</AccountLayout>

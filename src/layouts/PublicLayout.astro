@@ -10,6 +10,8 @@ import CategoryNav from '@/components/layout/CategoryNav.astro';
 import Footer from '@/components/layout/Footer.astro';
 import Header from '@/components/layout/Header.astro';
 import SkipLink from '@/components/layout/SkipLink.astro';
+import { isDatabaseConfigured } from '@/lib/db';
+import { getUserSellerMenuState } from '@/lib/seller/guards';
 
 interface Props {
 	locale: SupportedLocale;
@@ -31,6 +33,9 @@ const {
 
 const sessionUser = Astro.locals.user;
 
+const sellerMenuState =
+	sessionUser && isDatabaseConfigured() ? await getUserSellerMenuState(sessionUser.id) : null;
+
 const metadata: PageMetadata =
 	seoInput && 'openGraph' in seoInput
 		? seoInput
@@ -45,7 +50,13 @@ const metadata: PageMetadata =
 	<SkipLink>{t('common.skipToContent')}</SkipLink>
 	<div class="flex min-h-screen flex-col">
 		<AnnouncementBar>{t('announcement.message')}</AnnouncementBar>
-		<Header locale={locale} currentPath={currentPath} t={t} user={sessionUser} />
+		<Header
+			locale={locale}
+			currentPath={currentPath}
+			t={t}
+			user={sessionUser}
+			sellerMenuState={sellerMenuState}
+		/>
 		{showCategoryNav && <CategoryNav locale={locale} t={t} />}
 		<main id="main-content" class="flex-1 focus:outline-none" tabindex="-1">
 			<slot />

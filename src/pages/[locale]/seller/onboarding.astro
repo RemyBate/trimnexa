@@ -1,0 +1,62 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { getSellerNavItems } from '@/lib/seller/navigation';
+import { getSellerProfileByUserId, isOnboardingComplete } from '@/lib/seller/profile';
+import { requireApprovedSeller } from '@/lib/seller/guards';
+import SellerLayout from '@/layouts/SellerLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireApprovedSeller(Astro, locale);
+
+const profile = await getSellerProfileByUserId(Astro.locals.user!.id);
+const navItems = getSellerNavItems(t);
+const complete = profile ? isOnboardingComplete(profile) : false;
+---
+
+<SellerLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('seller.onboardingTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('seller.onboardingTitle'),
+		t('seller.onboardingPageDescription'),
+		{ noindex: true },
+	)}
+>
+	<div class="space-y-6">
+		{
+			complete ? (
+				<Alert variant="success" title={t('seller.onboardingDone')}>
+					{t('seller.onboardingDoneDescription')}
+				</Alert>
+			) : (
+				<Alert variant="info" title={t('seller.onboardingTitle')}>
+					{t('seller.onboardingDescription')}
+				</Alert>
+			)
+		}
+		<Card class="p-6">
+			<ol class="space-y-3 text-sm text-neutral-700">
+				<li>1. {t('seller.onboardingStepShop')}</li>
+				<li>2. {t('seller.onboardingStepAddress')}</li>
+				<li>3. {t('seller.onboardingStepMedia')}</li>
+				<li>4. {t('seller.onboardingStepPolicies')}</li>
+			</ol>
+			<Button href={localizedPath(locale, '/seller/shop')} class="mt-4">
+				{t('seller.manageShop')}
+			</Button>
+		</Card>
+	</div>
+</SellerLayout>

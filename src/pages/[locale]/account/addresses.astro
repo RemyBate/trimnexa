@@ -1,0 +1,69 @@
+---
+import AccountEmptyState from '@/components/account/AccountEmptyState.astro';
+import AddressBook from '@/components/account/AddressBook.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { listCustomerAddresses } from '@/lib/account/addresses';
+import { getAccountNavItems } from '@/lib/account/navigation';
+import { requireSessionUser } from '@/lib/authz';
+import AccountLayout from '@/layouts/AccountLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const marketplaceUser = await requireSessionUser(Astro, locale);
+const addresses = await listCustomerAddresses(marketplaceUser.id);
+const navItems = getAccountNavItems(t);
+---
+
+<AccountLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('account.addressesTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('account.addressesTitle'),
+		t('account.addressesDescription'),
+		{ noindex: true },
+	)}
+>
+	{
+		addresses.length === 0 ? (
+			<AccountEmptyState
+				title={t('account.noAddressesTitle')}
+				description={t('account.noAddressesDescription')}
+			>
+				<p class="text-sm text-neutral-500">{t('account.addFirstAddress')}</p>
+			</AccountEmptyState>
+		) : null
+	}
+	<AddressBook
+		addresses={addresses}
+		labels={{
+			addAddress: t('account.addAddress'),
+			edit: t('account.edit'),
+			delete: t('account.delete'),
+			setDefault: t('account.setDefault'),
+			defaultBadge: t('account.defaultBadge'),
+			save: t('account.saveChanges'),
+			saving: t('auth.submitting'),
+			cancel: t('account.cancel'),
+			label: t('account.addressLabel'),
+			recipientName: t('account.recipientName'),
+			phone: t('account.phone'),
+			line1: t('account.line1'),
+			line2: t('account.line2'),
+			city: t('account.city'),
+			region: t('account.region'),
+			country: t('account.country'),
+			isDefault: t('account.isDefault'),
+			errorGeneric: t('auth.errorGeneric'),
+			confirmDelete: t('account.confirmDeleteAddress'),
+		}}
+	/>
+</AccountLayout>

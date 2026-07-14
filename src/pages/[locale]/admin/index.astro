@@ -1,11 +1,12 @@
 ---
-import Container from '@/components/common/Container.astro';
 import Card from '@/components/common/Card.astro';
+import Button from '@/components/common/Button.astro';
 import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
-import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { getAdminNavItems } from '@/lib/admin/navigation';
 import { requireRoles } from '@/lib/authz';
 import { Role } from '@prisma/client';
-import PublicLayout from '@/layouts/PublicLayout.astro';
+import AdminLayout from '@/layouts/AdminLayout.astro';
 
 export const prerender = false;
 export const getStaticPaths = getStaticPathsForLocale;
@@ -13,13 +14,15 @@ export const getStaticPaths = getStaticPathsForLocale;
 const { locale, t } = getPageContext(Astro);
 const currentPath = Astro.url.pathname;
 await requireRoles(Astro, locale, [Role.ADMINISTRATOR, Role.STAFF]);
+const navItems = getAdminNavItems(t);
 ---
 
-<PublicLayout
+<AdminLayout
 	locale={locale}
 	currentPath={currentPath}
 	t={t}
-	showCategoryNav={false}
+	title={t('admin.dashboardTitle')}
+	navItems={navItems}
 	seo={createLocalizedPageMetadata(
 		locale,
 		currentPath,
@@ -28,11 +31,10 @@ await requireRoles(Astro, locale, [Role.ADMINISTRATOR, Role.STAFF]);
 		{ noindex: true },
 	)}
 >
-	<Container class="py-10">
-		<Card class="mx-auto max-w-2xl p-6 sm:p-8">
-			<h1 class="text-2xl font-bold text-neutral-900">{t('admin.dashboardTitle')}</h1>
-			<p class="mt-2 text-neutral-600">{t('admin.dashboardSubtitle')}</p>
-			<p class="mt-4 text-sm text-neutral-500">{t('admin.placeholder')}</p>
-		</Card>
-	</Container>
-</PublicLayout>
+	<Card class="p-6 sm:p-8">
+		<p class="text-neutral-600">{t('admin.dashboardSubtitle')}</p>
+		<Button href={localizedPath(locale, '/admin/sellers')} class="mt-4">
+			{t('admin.manageSellers')}
+		</Button>
+	</Card>
+</AdminLayout>

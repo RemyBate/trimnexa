@@ -1,0 +1,59 @@
+---
+import AccountEmptyState from '@/components/account/AccountEmptyState.astro';
+import SupportCenter from '@/components/account/SupportCenter.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { listSupportTickets } from '@/lib/account/support';
+import { getAccountNavItems } from '@/lib/account/navigation';
+import { requireSessionUser } from '@/lib/authz';
+import AccountLayout from '@/layouts/AccountLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const marketplaceUser = await requireSessionUser(Astro, locale);
+const tickets = await listSupportTickets(marketplaceUser.id);
+const navItems = getAccountNavItems(t);
+---
+
+<AccountLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('account.supportTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('account.supportTitle'),
+		t('account.supportDescription'),
+		{ noindex: true },
+	)}
+>
+	{
+		tickets.length === 0 ? (
+			<AccountEmptyState
+				title={t('account.noSupportTitle')}
+				description={t('account.noSupportDescription')}
+			/>
+		) : null
+	}
+	<SupportCenter
+		tickets={tickets}
+		labels={{
+			newTicket: t('account.newTicket'),
+			subject: t('account.ticketSubject'),
+			message: t('account.ticketMessage'),
+			submit: t('account.submitTicket'),
+			submitting: t('auth.submitting'),
+			success: t('account.ticketSubmitted'),
+			errorGeneric: t('auth.errorGeneric'),
+			statusOpen: t('account.ticketStatus.open'),
+			statusInProgress: t('account.ticketStatus.inProgress'),
+			statusResolved: t('account.ticketStatus.resolved'),
+			statusClosed: t('account.ticketStatus.closed'),
+		}}
+	/>
+</AccountLayout>

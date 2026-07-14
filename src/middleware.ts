@@ -74,7 +74,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
 			return context.redirect(localizedPath(locale, '/auth/login'));
 		}
 
-		if (path === '/seller' || path.startsWith('/seller/')) {
+		if (path === '/seller/application') {
+			// Logged-in customers may submit or track a seller application.
+		} else if (path === '/seller' || path.startsWith('/seller/')) {
 			if (!canAccessSellerArea(marketplaceUser.roles)) {
 				return context.redirect(localizedPath(locale, '/'));
 			}

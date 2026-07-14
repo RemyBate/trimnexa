@@ -1,0 +1,70 @@
+---
+import AccountEmptyState from '@/components/account/AccountEmptyState.astro';
+import Card from '@/components/common/Card.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { listCustomerOrders } from '@/lib/account/orders';
+import { getAccountNavItems } from '@/lib/account/navigation';
+import { requireSessionUser } from '@/lib/authz';
+import AccountLayout from '@/layouts/AccountLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const marketplaceUser = await requireSessionUser(Astro, locale);
+const orders = await listCustomerOrders(marketplaceUser.id);
+const navItems = getAccountNavItems(t);
+
+const statusLabels: Record<string, string> = {
+	PENDING_PAYMENT: t('account.orderStatus.pendingPayment'),
+	PAID: t('account.orderStatus.paid'),
+	PROCESSING: t('account.orderStatus.processing'),
+	SHIPPED: t('account.orderStatus.shipped'),
+	DELIVERED: t('account.orderStatus.delivered'),
+	CANCELLED: t('account.orderStatus.cancelled'),
+	REFUNDED: t('account.orderStatus.refunded'),
+};
+---
+
+<AccountLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('account.ordersTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('account.ordersTitle'),
+		t('account.ordersDescription'),
+		{ noindex: true },
+	)}
+>
+	{
+		orders.length === 0 ? (
+			<AccountEmptyState
+				title={t('account.noOrdersTitle')}
+				description={t('account.noOrdersDescription')}
+			/>
+		) : (
+			<div class="space-y-4">
+				{orders.map((order) => (
+					<Card class="p-5">
+						<div class="flex flex-wrap items-start justify-between gap-3">
+							<div>
+								<h2 class="font-semibold text-neutral-900">{order.orderNumber}</h2>
+								<p class="mt-1 text-sm text-neutral-600">{statusLabels[order.status]}</p>
+								{order.placedAt ? (
+									<p class="mt-2 text-xs text-neutral-500">{order.placedAt.toLocaleString()}</p>
+								) : null}
+							</div>
+							<p class="text-sm font-semibold text-neutral-900">{order.totalFormatted}</p>
+						</div>
+					</Card>
+				))}
+			</div>
+		)
+	}
+</AccountLayout>

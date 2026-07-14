@@ -1,0 +1,76 @@
+---
+import SellerReviewPanel from '@/components/admin/SellerReviewPanel.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { getSellerDetailForAdmin } from '@/lib/admin/sellers';
+import { getAdminNavItems } from '@/lib/admin/navigation';
+import { requireRoles } from '@/lib/authz';
+import { Role } from '@prisma/client';
+import AdminLayout from '@/layouts/AdminLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireRoles(Astro, locale, [Role.ADMINISTRATOR, Role.STAFF]);
+
+const sellerId = (Astro.params as Record<string, string | undefined>).id;
+const seller = sellerId ? await getSellerDetailForAdmin(sellerId) : null;
+const navItems = getAdminNavItems(t);
+
+if (!seller) {
+	return Astro.redirect(localizedPath(locale, '/admin/sellers'));
+}
+---
+
+<AdminLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={seller.shopName ?? seller.application?.businessName ?? t('admin.sellerReview')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('admin.sellerReview'),
+		t('admin.sellersDescription'),
+		{ noindex: true },
+	)}
+>
+	<SellerReviewPanel
+		locale={locale}
+		seller={seller}
+		labels={{
+			overview: t('admin.overview'),
+			application: t('admin.application'),
+			businessName: t('seller.businessName'),
+			description: t('seller.businessDescription'),
+			contactPhone: t('seller.contactPhone'),
+			contactEmail: t('seller.contactEmail'),
+			location: t('admin.location'),
+			reviewNotes: t('admin.reviewNotes'),
+			reviewNotesRequired: t('admin.reviewNotesRequired'),
+			approve: t('admin.approve'),
+			approving: t('admin.approving'),
+			reject: t('admin.reject'),
+			rejecting: t('admin.rejecting'),
+			rejectConfirm: t('admin.rejectConfirm'),
+			suspend: t('admin.suspend'),
+			reactivate: t('admin.reactivate'),
+			suspensionReason: t('admin.suspensionReason'),
+			successApproved: t('admin.successApproved'),
+			successRejected: t('admin.successRejected'),
+			errorGeneric: t('admin.reviewError'),
+			errorNotFound: t('admin.errorNotFound'),
+			errorAlreadyReviewed: t('admin.errorAlreadyReviewed'),
+			errorUnauthorized: t('admin.errorUnauthorized'),
+			errorApprovalFailed: t('admin.errorApprovalFailed'),
+			errorRejectionFailed: t('admin.errorRejectionFailed'),
+			errorRejectionReasonRequired: t('admin.errorRejectionReasonRequired'),
+			status: t('admin.status'),
+			applicationStatus: t('admin.applicationStatusLabel'),
+			profileStatus: t('admin.profileStatus'),
+		}}
+	/>
+</AdminLayout>

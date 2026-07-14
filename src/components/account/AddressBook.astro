@@ -1,0 +1,323 @@
+---
+import type { CustomerAddressView } from '@/lib/account/addresses';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+
+interface Labels {
+	addAddress: string;
+	edit: string;
+	delete: string;
+	setDefault: string;
+	defaultBadge: string;
+	save: string;
+	saving: string;
+	cancel: string;
+	label: string;
+	recipientName: string;
+	phone: string;
+	line1: string;
+	line2: string;
+	city: string;
+	region: string;
+	country: string;
+	isDefault: string;
+	errorGeneric: string;
+	confirmDelete: string;
+}
+
+interface Props {
+	addresses: CustomerAddressView[];
+	labels: Labels;
+}
+
+const { addresses, labels } = Astro.props;
+const formConfig = JSON.stringify({ labels });
+---
+
+<div data-address-book data-config={formConfig}>
+	<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+		<h2 class="text-lg font-semibold text-neutral-900">{labels.addAddress}</h2>
+		<Button type="button" id="address-toggle-form" variant="secondary">
+			{labels.addAddress}
+		</Button>
+	</div>
+
+	<form
+		id="address-form"
+		class="mb-8 hidden space-y-4 rounded-lg border border-neutral-200 bg-neutral-50 p-4 sm:p-6"
+	>
+		<input type="hidden" id="address-id" name="addressId" value="" />
+		<div class="grid gap-4 sm:grid-cols-2">
+			<div>
+				<label for="address-label" class="mb-1 block text-sm font-medium text-neutral-800"
+					>{labels.label}</label
+				>
+				<input
+					id="address-label"
+					name="label"
+					required
+					class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+				/>
+			</div>
+			<div>
+				<label for="address-recipient" class="mb-1 block text-sm font-medium text-neutral-800"
+					>{labels.recipientName}</label
+				>
+				<input
+					id="address-recipient"
+					name="recipientName"
+					required
+					class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+				/>
+			</div>
+		</div>
+		<div>
+			<label for="address-phone" class="mb-1 block text-sm font-medium text-neutral-800"
+				>{labels.phone}</label
+			>
+			<input
+				id="address-phone"
+				name="phone"
+				required
+				class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+			/>
+		</div>
+		<div>
+			<label for="address-line1" class="mb-1 block text-sm font-medium text-neutral-800"
+				>{labels.line1}</label
+			>
+			<input
+				id="address-line1"
+				name="line1"
+				required
+				class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+			/>
+		</div>
+		<div>
+			<label for="address-line2" class="mb-1 block text-sm font-medium text-neutral-800"
+				>{labels.line2}</label
+			>
+			<input
+				id="address-line2"
+				name="line2"
+				class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+			/>
+		</div>
+		<div class="grid gap-4 sm:grid-cols-2">
+			<div>
+				<label for="address-city" class="mb-1 block text-sm font-medium text-neutral-800"
+					>{labels.city}</label
+				>
+				<input
+					id="address-city"
+					name="city"
+					required
+					class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+				/>
+			</div>
+			<div>
+				<label for="address-region" class="mb-1 block text-sm font-medium text-neutral-800"
+					>{labels.region}</label
+				>
+				<input
+					id="address-region"
+					name="region"
+					required
+					class="block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+				/>
+			</div>
+		</div>
+		<label class="inline-flex items-center gap-2 text-sm text-neutral-700">
+			<input
+				id="address-default"
+				name="isDefault"
+				type="checkbox"
+				class="rounded border-neutral-300 text-primary-700 focus:ring-primary-200"
+			/>
+			{labels.isDefault}
+		</label>
+		<div class="flex flex-wrap gap-3">
+			<Button type="submit" id="address-submit">{labels.save}</Button>
+			<Button type="button" id="address-cancel" variant="secondary">{labels.cancel}</Button>
+		</div>
+	</form>
+
+	<div id="address-list" class="space-y-4">
+		{
+			addresses.map((address) => (
+				<Card class="p-5" data-address-card={address.id}>
+					<div class="flex flex-wrap items-start justify-between gap-3">
+						<div>
+							<div class="flex items-center gap-2">
+								<h3 class="font-semibold text-neutral-900">{address.label}</h3>
+								{address.isDefault ? (
+									<span class="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-800">
+										{labels.defaultBadge}
+									</span>
+								) : null}
+							</div>
+							<p class="mt-2 text-sm text-neutral-700">{address.recipientName}</p>
+							<p class="text-sm text-neutral-700">{address.phone}</p>
+							<p class="mt-2 text-sm text-neutral-600">
+								{address.line1}
+								{address.line2 ? `, ${address.line2}` : ''}
+							</p>
+							<p class="text-sm text-neutral-600">
+								{address.city}, {address.region}
+							</p>
+						</div>
+						<div class="flex flex-wrap gap-2">
+							<button
+								type="button"
+								class="address-edit rounded-md px-3 py-1.5 text-sm font-medium text-primary-700 hover:bg-primary-50"
+								data-address={JSON.stringify(address)}
+							>
+								{labels.edit}
+							</button>
+							{!address.isDefault ? (
+								<button
+									type="button"
+									class="address-default rounded-md px-3 py-1.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+									data-id={address.id}
+								>
+									{labels.setDefault}
+								</button>
+							) : null}
+							<button
+								type="button"
+								class="address-delete rounded-md px-3 py-1.5 text-sm font-medium text-error-700 hover:bg-error-50"
+								data-id={address.id}
+							>
+								{labels.delete}
+							</button>
+						</div>
+					</div>
+				</Card>
+			))
+		}
+	</div>
+</div>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-address-book]');
+	if (!root) {
+		throw new Error('Address book not found');
+	}
+
+	const config = JSON.parse(root.dataset.config ?? '{}') as {
+		labels: { confirmDelete: string; errorGeneric: string };
+	};
+
+	const form = document.getElementById('address-form') as HTMLFormElement;
+	const toggleButton = document.getElementById('address-toggle-form');
+	const cancelButton = document.getElementById('address-cancel');
+	const addressIdInput = document.getElementById('address-id') as HTMLInputElement;
+
+	function showForm(show: boolean) {
+		form.classList.toggle('hidden', !show);
+	}
+
+	function resetForm() {
+		form.reset();
+		addressIdInput.value = '';
+	}
+
+	toggleButton?.addEventListener('click', () => {
+		resetForm();
+		showForm(form.classList.contains('hidden'));
+	});
+
+	cancelButton?.addEventListener('click', () => {
+		resetForm();
+		showForm(false);
+	});
+
+	function readPayload() {
+		const formData = new FormData(form);
+		return {
+			label: String(formData.get('label') ?? ''),
+			recipientName: String(formData.get('recipientName') ?? ''),
+			phone: String(formData.get('phone') ?? ''),
+			line1: String(formData.get('line1') ?? ''),
+			line2: String(formData.get('line2') ?? ''),
+			city: String(formData.get('city') ?? ''),
+			region: String(formData.get('region') ?? ''),
+			country: 'CM',
+			isDefault: formData.get('isDefault') === 'on',
+		};
+	}
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const addressId = addressIdInput.value;
+		const payload = readPayload();
+		const url = addressId ? `/api/account/addresses/${addressId}` : '/api/account/addresses';
+		const method = addressId ? 'PATCH' : 'POST';
+
+		const response = await fetch(url, {
+			method,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload),
+		});
+
+		if (response.ok) {
+			window.location.reload();
+			return;
+		}
+
+		alert(config.labels.errorGeneric);
+	});
+
+	for (const button of root.querySelectorAll<HTMLButtonElement>('.address-edit')) {
+		button.addEventListener('click', () => {
+			const address = JSON.parse(button.dataset.address ?? '{}') as Record<string, unknown>;
+			addressIdInput.value = String(address.id ?? '');
+			(form.elements.namedItem('label') as HTMLInputElement).value = String(address.label ?? '');
+			(form.elements.namedItem('recipientName') as HTMLInputElement).value = String(
+				address.recipientName ?? '',
+			);
+			(form.elements.namedItem('phone') as HTMLInputElement).value = String(address.phone ?? '');
+			(form.elements.namedItem('line1') as HTMLInputElement).value = String(address.line1 ?? '');
+			(form.elements.namedItem('line2') as HTMLInputElement).value = String(address.line2 ?? '');
+			(form.elements.namedItem('city') as HTMLInputElement).value = String(address.city ?? '');
+			(form.elements.namedItem('region') as HTMLInputElement).value = String(address.region ?? '');
+			(form.elements.namedItem('isDefault') as HTMLInputElement).checked = Boolean(
+				address.isDefault,
+			);
+			showForm(true);
+		});
+	}
+
+	for (const button of root.querySelectorAll<HTMLButtonElement>('.address-default')) {
+		button.addEventListener('click', async () => {
+			const id = button.dataset.id;
+			if (!id) {
+				return;
+			}
+
+			const response = await fetch(`/api/account/addresses/${id}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ action: 'set_default' }),
+			});
+
+			if (response.ok) {
+				window.location.reload();
+			}
+		});
+	}
+
+	for (const button of root.querySelectorAll<HTMLButtonElement>('.address-delete')) {
+		button.addEventListener('click', async () => {
+			const id = button.dataset.id;
+			if (!id || !confirm(config.labels.confirmDelete)) {
+				return;
+			}
+
+			const response = await fetch(`/api/account/addresses/${id}`, { method: 'DELETE' });
+			if (response.ok) {
+				window.location.reload();
+			}
+		});
+	}
+</script>
