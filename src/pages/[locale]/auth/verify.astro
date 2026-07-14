@@ -1,0 +1,39 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	showCategoryNav={false}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('auth.verifyTitle'),
+		t('auth.verifyDescription'),
+		{ noindex: true },
+	)}
+>
+	<AuthLayout title={t('auth.verifyTitle')} subtitle={t('auth.verifySubtitle')}>
+		<Alert variant="info">{t('auth.verifyPending')}</Alert>
+		<Fragment slot="footer">
+			<a
+				href={localizedPath(locale, '/auth/login')}
+				class="font-medium text-primary-700 hover:text-primary-800"
+			>
+				{t('auth.backToLogin')}
+			</a>
+		</Fragment>
+	</AuthLayout>
+</PublicLayout>

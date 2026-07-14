@@ -1,0 +1,35 @@
+---
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale } = getPageContext(Astro);
+
+if (!Astro.locals.session) {
+	return Astro.redirect(localizedPath(locale, '/auth/login'));
+}
+---
+
+<html lang={locale}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Signing out…</title>
+		<meta http-equiv="refresh" content={`0;url=${localizedPath(locale, '/')}`} />
+	</head>
+	<body>
+		<p>Signing out…</p>
+		<script>
+			import { signOut } from '@/lib/auth-client';
+
+			signOut({
+				fetchOptions: {
+					onSuccess: () => {
+						window.location.href = `/${document.documentElement.lang}/`;
+					},
+				},
+			});
+		</script>
+	</body>
+</html>

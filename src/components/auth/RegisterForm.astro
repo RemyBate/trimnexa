@@ -1,0 +1,361 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import AuthFormField from '@/components/auth/AuthFormField.astro';
+import { PASSWORD_MIN_LENGTH } from '@/lib/auth/validation';
+
+interface Labels {
+	fullName: string;
+	email: string;
+	password: string;
+	confirmPassword: string;
+	passwordHint: string;
+	showPassword: string;
+	hidePassword: string;
+	submit: string;
+	submitting: string;
+	errorGeneric: string;
+	errorServiceUnavailable: string;
+	errorDuplicateEmail: string;
+	errorNameRequired: string;
+	errorEmailRequired: string;
+	errorEmailInvalid: string;
+	errorPasswordRequired: string;
+	errorPasswordTooShort: string;
+	errorConfirmRequired: string;
+	errorPasswordMismatch: string;
+}
+
+interface Props {
+	locale: string;
+	labels: Labels;
+}
+
+const { locale, labels } = Astro.props;
+
+const formConfig = JSON.stringify({ locale, labels });
+---
+
+<div id="register-form-error" class="mb-4 hidden" role="alert">
+	<Alert variant="error">
+		<span id="register-form-error-text"></span>
+	</Alert>
+</div>
+
+<form id="register-form" class="space-y-4" data-config={formConfig} novalidate>
+	<AuthFormField
+		id="register-full-name"
+		name="fullName"
+		type="text"
+		label={labels.fullName}
+		required
+		autocomplete="name"
+		errorId="register-full-name-error"
+	/>
+	<AuthFormField
+		id="register-email"
+		name="email"
+		type="email"
+		label={labels.email}
+		required
+		autocomplete="email"
+		errorId="register-email-error"
+	/>
+	<div class="auth-field">
+		<label for="register-password" class="mb-1 block text-sm font-medium text-neutral-800">
+			{labels.password}
+			<span class="text-error-700" aria-hidden="true"> *</span>
+		</label>
+		<p class="mb-1 text-xs text-neutral-600">{labels.passwordHint}</p>
+		<div class="relative">
+			<input
+				id="register-password"
+				name="password"
+				type="password"
+				required
+				minlength={PASSWORD_MIN_LENGTH}
+				autocomplete="new-password"
+				aria-describedby="register-password-error"
+				aria-invalid="false"
+				class="auth-input block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 pr-24 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			/>
+			<button
+				type="button"
+				class="password-toggle absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs font-medium text-primary-700 hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+				aria-pressed="false"
+				aria-controls="register-password"
+				data-target="register-password"
+				data-show-label={labels.showPassword}
+				data-hide-label={labels.hidePassword}
+			>
+				{labels.showPassword}
+			</button>
+		</div>
+		<p id="register-password-error" class="mt-1 hidden text-sm text-error-700" role="alert"></p>
+	</div>
+	<div class="auth-field">
+		<label for="register-confirm-password" class="mb-1 block text-sm font-medium text-neutral-800">
+			{labels.confirmPassword}
+			<span class="text-error-700" aria-hidden="true"> *</span>
+		</label>
+		<div class="relative">
+			<input
+				id="register-confirm-password"
+				name="confirmPassword"
+				type="password"
+				required
+				minlength={PASSWORD_MIN_LENGTH}
+				autocomplete="off"
+				aria-describedby="register-confirm-password-error"
+				aria-invalid="false"
+				class="auth-input block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 pr-24 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			/>
+			<button
+				type="button"
+				class="password-toggle absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs font-medium text-primary-700 hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+				aria-pressed="false"
+				aria-controls="register-confirm-password"
+				data-target="register-confirm-password"
+				data-show-label={labels.showPassword}
+				data-hide-label={labels.hidePassword}
+			>
+				{labels.showPassword}
+			</button>
+		</div>
+		<p id="register-confirm-password-error" class="mt-1 hidden text-sm text-error-700" role="alert">
+		</p>
+	</div>
+	<Button type="submit" class="w-full" id="register-submit">
+		<span id="register-submit-label">{labels.submit}</span>
+	</Button>
+</form>
+
+<script>
+	import { signUp } from '@/lib/auth-client';
+	import { mapAuthError, logAuthClientFailure } from '@/lib/auth/errors';
+	import { buildRegistrationSuccessLoginPath } from '@/lib/auth/register-flow';
+	import {
+		hasValidationErrors,
+		readRegisterFormValues,
+		validateRegisterForm,
+	} from '@/lib/auth/validation';
+
+	interface RegisterFormConfig {
+		locale: string;
+		labels: {
+			fullName: string;
+			email: string;
+			password: string;
+			confirmPassword: string;
+			passwordHint: string;
+			showPassword: string;
+			hidePassword: string;
+			submit: string;
+			submitting: string;
+			errorGeneric: string;
+			errorServiceUnavailable: string;
+			errorDuplicateEmail: string;
+			errorNameRequired: string;
+			errorEmailRequired: string;
+			errorEmailInvalid: string;
+			errorPasswordRequired: string;
+			errorPasswordTooShort: string;
+			errorConfirmRequired: string;
+			errorPasswordMismatch: string;
+		};
+	}
+
+	const form = document.getElementById('register-form') as HTMLFormElement | null;
+	if (!form) {
+		throw new Error('Register form not found');
+	}
+
+	const config = JSON.parse(form.dataset.config ?? '{}') as RegisterFormConfig;
+	const errorBox = document.getElementById('register-form-error');
+	const errorText = document.getElementById('register-form-error-text');
+	const submitButton = document.getElementById('register-submit') as HTMLButtonElement | null;
+	const submitLabel = document.getElementById('register-submit-label');
+
+	function showFormError(message: string) {
+		if (!errorBox || !errorText) {
+			return;
+		}
+
+		errorText.textContent = message;
+		errorBox.classList.remove('hidden');
+	}
+
+	function hideFormError() {
+		errorBox?.classList.add('hidden');
+	}
+
+	function setFieldError(fieldId: string, message: string | null) {
+		const input = document.getElementById(fieldId) as HTMLInputElement | null;
+		const errorElement = document.getElementById(`${fieldId}-error`);
+
+		if (!input || !errorElement) {
+			return;
+		}
+
+		if (message) {
+			errorElement.textContent = message;
+			errorElement.classList.remove('hidden');
+			input.setAttribute('aria-invalid', 'true');
+			return;
+		}
+
+		errorElement.textContent = '';
+		errorElement.classList.add('hidden');
+		input.setAttribute('aria-invalid', 'false');
+	}
+
+	function clearFieldErrors() {
+		setFieldError('register-full-name', null);
+		setFieldError('register-email', null);
+		setFieldError('register-password', null);
+		setFieldError('register-confirm-password', null);
+	}
+
+	function setSubmitting(isSubmitting: boolean) {
+		if (submitButton) {
+			submitButton.disabled = isSubmitting;
+		}
+
+		if (submitLabel) {
+			submitLabel.textContent = isSubmitting ? config.labels.submitting : config.labels.submit;
+		}
+	}
+
+	for (const toggle of document.querySelectorAll<HTMLButtonElement>('.password-toggle')) {
+		toggle.addEventListener('click', () => {
+			const targetId = toggle.dataset.target;
+			const input = targetId
+				? (document.getElementById(targetId) as HTMLInputElement | null)
+				: null;
+
+			if (!input) {
+				return;
+			}
+
+			const isHidden = input.type === 'password';
+			input.type = isHidden ? 'text' : 'password';
+			toggle.setAttribute('aria-pressed', String(isHidden));
+			toggle.textContent = isHidden
+				? (toggle.dataset.hideLabel ?? '')
+				: (toggle.dataset.showLabel ?? '');
+		});
+	}
+
+	function updateConfirmPasswordError() {
+		const passwordInput = document.getElementById('register-password') as HTMLInputElement | null;
+		const confirmInput = document.getElementById(
+			'register-confirm-password',
+		) as HTMLInputElement | null;
+
+		if (!passwordInput || !confirmInput) {
+			return;
+		}
+
+		const password = passwordInput.value;
+		const confirmPassword = confirmInput.value;
+
+		if (!confirmPassword) {
+			setFieldError('register-confirm-password', null);
+			return;
+		}
+
+		if (password && password !== confirmPassword) {
+			setFieldError('register-confirm-password', config.labels.errorPasswordMismatch);
+			return;
+		}
+
+		setFieldError('register-confirm-password', null);
+	}
+
+	const passwordInput = document.getElementById('register-password');
+	const confirmPasswordInput = document.getElementById('register-confirm-password');
+
+	for (const input of [passwordInput, confirmPasswordInput]) {
+		input?.addEventListener('input', updateConfirmPasswordError);
+		input?.addEventListener('change', updateConfirmPasswordError);
+	}
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		hideFormError();
+		clearFieldErrors();
+
+		const values = readRegisterFormValues(form);
+
+		const validationErrors = validateRegisterForm(values);
+
+		if (hasValidationErrors(validationErrors)) {
+			if (validationErrors.fullName) {
+				setFieldError('register-full-name', config.labels.errorNameRequired);
+			}
+
+			if (validationErrors.email === 'required') {
+				setFieldError('register-email', config.labels.errorEmailRequired);
+			} else if (validationErrors.email === 'invalid_email') {
+				setFieldError('register-email', config.labels.errorEmailInvalid);
+			}
+
+			if (validationErrors.password === 'required') {
+				setFieldError('register-password', config.labels.errorPasswordRequired);
+			} else if (validationErrors.password === 'password_too_short') {
+				setFieldError('register-password', config.labels.errorPasswordTooShort);
+			}
+
+			if (validationErrors.confirmPassword === 'required') {
+				setFieldError('register-confirm-password', config.labels.errorConfirmRequired);
+			} else if (validationErrors.confirmPassword === 'password_mismatch') {
+				setFieldError('register-confirm-password', config.labels.errorPasswordMismatch);
+			}
+
+			return;
+		}
+
+		setSubmitting(true);
+
+		try {
+			const trimmedName = values.fullName.trim();
+			const nameParts = trimmedName.split(/\s+/);
+			const firstName = nameParts[0] ?? '';
+			const lastName = nameParts.slice(1).join(' ');
+
+			const result = await signUp.email({
+				email: values.email.trim(),
+				password: values.password,
+				name: trimmedName,
+				firstName,
+				lastName: lastName || undefined,
+				locale: config.locale,
+			} as Parameters<typeof signUp.email>[0]);
+
+			if (result.error) {
+				logAuthClientFailure('register', result.error);
+				showFormError(
+					mapAuthError('register', result.error, {
+						generic: config.labels.errorGeneric,
+						serviceUnavailable: config.labels.errorServiceUnavailable,
+						suspended: config.labels.errorGeneric,
+						invalidCredentials: config.labels.errorGeneric,
+						duplicateEmail: config.labels.errorDuplicateEmail,
+					}),
+				);
+				return;
+			}
+
+			const loginUrl = new URL(
+				buildRegistrationSuccessLoginPath(config.locale),
+				window.location.origin,
+			);
+			window.location.href = `${loginUrl.pathname}${loginUrl.search}`;
+		} catch (error) {
+			logAuthClientFailure('register', error);
+			showFormError(config.labels.errorServiceUnavailable);
+		} finally {
+			setSubmitting(false);
+		}
+	});
+</script>

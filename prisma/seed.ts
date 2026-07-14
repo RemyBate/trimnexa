@@ -1,5 +1,6 @@
 import { PrismaClient, Role, UserStatus } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { hashPassword } from 'better-auth/crypto';
 import pg from 'pg';
 
 const connectionString = process.env.DATABASE_URL;
@@ -20,6 +21,33 @@ const categorySeeds = [
 	{ slug: 'groceries', en: 'Groceries', fr: 'Épicerie' },
 	{ slug: 'sports', en: 'Sports & outdoors', fr: 'Sport & plein air' },
 ];
+
+async function ensureAdminCredentialAccount(userId: string, password: string): Promise<void> {
+	const passwordHash = await hashPassword(password);
+	const existingAccount = await prisma.account.findFirst({
+		where: {
+			userId,
+			providerId: 'credential',
+		},
+	});
+
+	if (existingAccount) {
+		await prisma.account.update({
+			where: { id: existingAccount.id },
+			data: { password: passwordHash },
+		});
+		return;
+	}
+
+	await prisma.account.create({
+		data: {
+			accountId: userId,
+			providerId: 'credential',
+			userId,
+			password: passwordHash,
+		},
+	});
+}
 
 async function main() {
 	console.log('Seeding Trimnexa database...');
@@ -61,19 +89,24 @@ async function main() {
 	}
 
 	const adminEmail = 'admin@trimnexa.local';
+	const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? 'ChangeMe123!';
 
 	const adminUser = await prisma.user.upsert({
 		where: { email: adminEmail },
 		update: {
-			status: UserStatus.ACTIVE,
-			emailVerifiedAt: new Date(),
-		},
-		create: {
-			email: adminEmail,
+			name: 'Platform Administrator',
 			firstName: 'Platform',
 			lastName: 'Administrator',
 			status: UserStatus.ACTIVE,
-			emailVerifiedAt: new Date(),
+			emailVerified: true,
+		},
+		create: {
+			email: adminEmail,
+			name: 'Platform Administrator',
+			firstName: 'Platform',
+			lastName: 'Administrator',
+			status: UserStatus.ACTIVE,
+			emailVerified: true,
 			locale: 'en',
 			roles: {
 				create: [{ role: Role.ADMINISTRATOR }],
@@ -81,11 +114,13 @@ async function main() {
 		},
 	});
 
+	await ensureAdminCredentialAccount(adminUser.id, adminPassword);
+
 	await prisma.auditLog.create({
 		data: {
 			action: 'seed.executed',
 			entityType: 'seed',
-			entityId: 'phase-3',
+			entityId: 'phase-4',
 			actorId: adminUser.id,
 			metadata: {
 				categories: categorySeeds.length,
@@ -95,6 +130,7 @@ async function main() {
 	});
 
 	console.log('Seed complete.');
+	console.log(`Admin login: ${adminEmail} / ${adminPassword} (override with SEED_ADMIN_PASSWORD)`);
 }
 
 main()

@@ -29,6 +29,8 @@ const {
 	showCategoryNav = true,
 } = Astro.props;
 
+const sessionUser = Astro.locals.user;
+
 const metadata: PageMetadata =
 	seoInput && 'openGraph' in seoInput
 		? seoInput
@@ -43,7 +45,7 @@ const metadata: PageMetadata =
 	<SkipLink>{t('common.skipToContent')}</SkipLink>
 	<div class="flex min-h-screen flex-col">
 		<AnnouncementBar>{t('announcement.message')}</AnnouncementBar>
-		<Header locale={locale} currentPath={currentPath} t={t} />
+		<Header locale={locale} currentPath={currentPath} t={t} user={sessionUser} />
 		{showCategoryNav && <CategoryNav locale={locale} t={t} />}
 		<main id="main-content" class="flex-1 focus:outline-none" tabindex="-1">
 			<slot />

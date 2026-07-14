@@ -6,6 +6,8 @@ import { getDictionary } from '@/i18n';
 import { createPageMetadata } from '@/seo/metadata';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
+export const prerender = true;
+
 const locale = site.defaultLocale;
 const dictionary = getDictionary(locale);
 const t = (key: string) => {

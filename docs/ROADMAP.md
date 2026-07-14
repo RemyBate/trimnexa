@@ -4,7 +4,7 @@
 
 Progress is tracked with checkboxes. **Do not begin a new phase until the previous phase is stable.** Update checkboxes when work is verified complete. Never remove completed phases from this document.
 
-**Current project phase:** Milestone 3 — Phase 3 complete; Phase 4 blocked on auth provider approval
+**Current project phase:** Milestone 4 — Phase 4 complete; pending owner review
 
 **Last roadmap update:** 2026-07-14
 
@@ -35,7 +35,7 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 - [x] **Phase 1** — Project foundation (1A, 1B, 1C complete)
 - [x] **Phase 2** — Public website and brand identity
 - [x] **Phase 3** — Database and server foundation
-- [ ] **Phase 4** — Authentication and authorization (blocked — provider selection)
+- [x] **Phase 4** — Authentication and authorization (pending owner review)
 - [ ] **Phase 5** — Customer account
 - [ ] **Phase 6** — Seller application and shop management
 - [ ] **Phase 7** — Categories and product management
@@ -174,33 +174,33 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 - [x] Add audit-log foundation
 - [x] Document financial data handling
 - [x] Add database tests
-- [ ] Install deployment adapter if SSR is required for database routes (deferred to Phase 4 auth/API routes)
+- [ ] Install deployment adapter if SSR is required for database routes (done in Phase 4 — `@astrojs/node`)
 
-**Acceptance criteria:** Migrations work from a clean database; seed command works; money is represented safely; important relationships documented; no production credentials committed. **Status: complete — pending owner review.** SSR adapter deferred until Phase 4.
+**Acceptance criteria:** Migrations work from a clean database; seed command works; money is represented safely; important relationships documented; no production credentials committed. **Status: complete.**
 
 ---
 
 ## Phase 4 — Authentication and authorization
 
-**Status: not started — blocked on authentication provider selection (owner approval required).**
+**Status: complete — pending owner review.**
 
-See Milestone 3 review report for candidate evaluation.
+- [x] Choose an Astro-compatible authentication solution — **Better Auth** (see [DECISIONS.md](./DECISIONS.md))
+- [x] Create registration
+- [x] Create login
+- [x] Create logout
+- [x] Create session handling
+- [x] Create password reset (UI + API; email delivery deferred to Phase 16)
+- [x] Add email verification where supported (placeholder route; transactional email in Phase 16)
+- [x] Add customer, seller, administrator, and optional staff roles (`UserRoleAssignment` + marketplace RBAC helpers)
+- [x] Add protected-route handling (middleware + server-side page guards)
+- [x] Add server-side authorization helpers (`src/lib/authz/`)
+- [x] Add account suspension (session block + login rejection)
+- [x] Add rate limiting (in-memory for `/api/auth/*`; production hardening in Phase 18)
+- [x] Test role isolation (`src/lib/authz/authz.test.ts`)
 
-- [ ] Choose an Astro-compatible authentication solution (evaluate candidates — see [ARCHITECTURE.md](./ARCHITECTURE.md#authentication-evaluation-phase-4))
-- [ ] Create registration
-- [ ] Create login
-- [ ] Create logout
-- [ ] Create session handling
-- [ ] Create password reset
-- [ ] Add email verification where supported
-- [ ] Add customer, seller, administrator, and optional staff roles
-- [ ] Add protected-route handling
-- [ ] Add server-side authorization helpers
-- [ ] Add account suspension
-- [ ] Add rate limiting
-- [ ] Test role isolation
+**Acceptance criteria:** Guests cannot access protected pages; customers cannot access seller or admin pages; sellers cannot access admin pages; role checks occur on the server; authentication tests pass. **Status: complete — pending owner review.**
 
-**Acceptance criteria:** Guests cannot access protected pages; customers cannot access seller or admin pages; sellers cannot access admin pages; role checks occur on the server; authentication tests pass.
+**Setup:** Run `npm run db:migrate:dev` after pulling, then `npm run db:seed`. Set `AUTH_SECRET` (or `BETTER_AUTH_SECRET`) in `.env` before using auth in production.
 
 ---
 
@@ -551,13 +551,22 @@ A task is complete only when:
 
 ## Current phase
 
-**Milestone 3 — Phase 3 complete; Phase 4 blocked on authentication provider selection**
+**Milestone 4 — Phase 4 complete; pending owner review**
+
+- Better Auth with Prisma adapter, `@astrojs/node` server output, session middleware
+- Localized auth pages (`/en/auth/login`, register, forgot/reset password, verify placeholder)
+- Protected route stubs: account, seller, admin with server-side role checks
+- Migration `20260714160000_better_auth`; seed creates dev admin credential account
+- Quality checks: build (25 static + SSR auth routes), typecheck, lint, test (24/24), format:check — all pass
+
+Do not commit until owner review and explicit approval.
+
+**Milestone 3 — Phase 3 complete (pushed)**
 
 - Prisma 7 + PostgreSQL schema, migration, seed, money utilities, audit log foundation
-- Phase 4 **not implemented** — owner must select auth provider (see review report)
 - Quality checks: build (25 pages), typecheck, lint, test (18/18), format:check — all pass
 
-**Milestone 2 complete — Phase 2 (Public website and brand identity) pending owner review**
+**Milestone 2 complete — Phase 2 (Public website and brand identity)**
 
 - Bilingual public site with locale path prefix (`/en/`, `/fr/`)
 - Responsive header, footer, search UI, category navigation, homepage sections

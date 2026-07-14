@@ -1,0 +1,198 @@
+---
+import type { SupportedLocale } from '@/config/site';
+import { localizedPath } from '@/i18n';
+import { getUserFirstName } from '@/lib/auth/display-name';
+
+interface SessionUser {
+	email: string;
+	name?: string | null;
+	firstName?: string | null;
+}
+
+interface MenuLabels {
+	openMenu: string;
+	myAccount: string;
+	orders: string;
+	wishlist: string;
+	addresses: string;
+	settings: string;
+	becomeSeller: string;
+	signOut: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	user: SessionUser;
+	labels: MenuLabels;
+}
+
+const { locale, user, labels } = Astro.props;
+const firstName = getUserFirstName(user);
+const menuId = 'user-menu-dropdown';
+const buttonId = 'user-menu-button';
+---
+
+<div class="user-menu relative" data-user-menu>
+	<button
+		type="button"
+		id={buttonId}
+		class="inline-flex max-w-[12rem] items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:px-3 sm:py-2"
+		aria-expanded="false"
+		aria-haspopup="true"
+		aria-controls={menuId}
+		aria-label={`${labels.openMenu} (${firstName})`}
+	>
+		<span
+			class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-800"
+			aria-hidden="true"
+		>
+			{firstName.charAt(0).toUpperCase()}
+		</span>
+		<span class="hidden truncate sm:inline">{firstName}</span>
+		<svg
+			class="h-4 w-4 shrink-0 text-neutral-500"
+			viewBox="0 0 20 20"
+			fill="currentColor"
+			aria-hidden="true"
+		>
+			<path
+				fill-rule="evenodd"
+				d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+				clip-rule="evenodd"></path>
+		</svg>
+	</button>
+
+	<div
+		id={menuId}
+		class="user-menu-panel absolute right-0 z-50 mt-2 hidden w-56 origin-top-right rounded-md border border-neutral-200 bg-white py-1 shadow-lg focus:outline-none"
+		role="menu"
+		aria-labelledby={buttonId}
+	>
+		<a
+			href={localizedPath(locale, '/account')}
+			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+			role="menuitem"
+		>
+			{labels.myAccount}
+		</a>
+		<a
+			href={`${localizedPath(locale, '/account')}#orders`}
+			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+			role="menuitem"
+		>
+			{labels.orders}
+		</a>
+		<a
+			href={`${localizedPath(locale, '/account')}#wishlist`}
+			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+			role="menuitem"
+		>
+			{labels.wishlist}
+		</a>
+		<a
+			href={`${localizedPath(locale, '/account')}#addresses`}
+			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+			role="menuitem"
+		>
+			{labels.addresses}
+		</a>
+		<a
+			href={`${localizedPath(locale, '/account')}#settings`}
+			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+			role="menuitem"
+		>
+			{labels.settings}
+		</a>
+		<div class="my-1 border-t border-neutral-200" role="separator"></div>
+		<a
+			href={localizedPath(locale, '/become-a-seller')}
+			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+			role="menuitem"
+		>
+			{labels.becomeSeller}
+		</a>
+		<a
+			href={localizedPath(locale, '/auth/logout')}
+			class="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:bg-primary-50 focus-visible:outline-none"
+			role="menuitem"
+		>
+			{labels.signOut}
+		</a>
+	</div>
+</div>
+
+<script>
+	for (const menuRoot of document.querySelectorAll<HTMLElement>('[data-user-menu]')) {
+		const button = menuRoot.querySelector<HTMLButtonElement>('button');
+		const panel = menuRoot.querySelector<HTMLElement>('.user-menu-panel');
+		const menuItems = panel?.querySelectorAll<HTMLElement>('[role="menuitem"]');
+
+		if (!button || !panel || !menuItems) {
+			continue;
+		}
+
+		const menuButton = button;
+		const menuPanel = panel;
+		const menuLinks = Array.from(menuItems);
+
+		let isOpen = false;
+
+		function setOpen(open: boolean) {
+			isOpen = open;
+			menuButton.setAttribute('aria-expanded', String(open));
+
+			if (open) {
+				menuPanel.classList.remove('hidden');
+				menuLinks[0]?.focus();
+				return;
+			}
+
+			menuPanel.classList.add('hidden');
+		}
+
+		menuButton.addEventListener('click', (event) => {
+			event.stopPropagation();
+			setOpen(!isOpen);
+		});
+
+		document.addEventListener('click', (event) => {
+			if (!isOpen) {
+				return;
+			}
+
+			if (!menuRoot.contains(event.target as Node)) {
+				setOpen(false);
+			}
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (!isOpen) {
+				return;
+			}
+
+			if (event.key === 'Escape') {
+				setOpen(false);
+				menuButton.focus();
+				return;
+			}
+
+			if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp' && event.key !== 'Tab') {
+				return;
+			}
+
+			const currentIndex = menuLinks.indexOf(document.activeElement as HTMLElement);
+
+			if (event.key === 'ArrowDown') {
+				event.preventDefault();
+				const nextIndex = currentIndex < menuLinks.length - 1 ? currentIndex + 1 : 0;
+				menuLinks[nextIndex]?.focus();
+			}
+
+			if (event.key === 'ArrowUp') {
+				event.preventDefault();
+				const previousIndex = currentIndex > 0 ? currentIndex - 1 : menuLinks.length - 1;
+				menuLinks[previousIndex]?.focus();
+			}
+		});
+	}
+</script>

@@ -1,0 +1,64 @@
+---
+type InputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
+
+interface Props {
+	id: string;
+	name: string;
+	type: InputType;
+	label: string;
+	required?: boolean;
+	autocomplete?: string;
+	minlength?: number;
+	hint?: string;
+	errorId: string;
+}
+
+const {
+	id,
+	name,
+	type,
+	label,
+	required = false,
+	autocomplete,
+	minlength,
+	hint,
+	errorId,
+} = Astro.props;
+
+const inputClass =
+	'auth-input block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-500 focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200';
+---
+
+<div class="auth-field">
+	<label for={id} class="mb-1 block text-sm font-medium text-neutral-800">
+		{label}
+		{
+			required ? (
+				<span class="text-error-700" aria-hidden="true">
+					{' '}
+					*
+				</span>
+			) : null
+		}
+	</label>
+	{hint ? <p class="mb-1 text-xs text-neutral-600">{hint}</p> : null}
+	<input
+		id={id}
+		name={name}
+		type={type}
+		class={inputClass}
+		required={required}
+		autocomplete={autocomplete}
+		minlength={minlength}
+		aria-describedby={errorId}
+		aria-invalid="false"
+	/>
+	<p id={errorId} class="mt-1 hidden text-sm text-error-700" role="alert"></p>
+</div>
+
+<style>
+	.auth-input:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+</style>

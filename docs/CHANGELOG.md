@@ -8,6 +8,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+---
+
+## [0.4.0] — 2026-07-14
+
+Milestone 4 — Phase 4 authentication and authorization (pending owner review).
+
+### Added
+
+- Better Auth (`better-auth`) with Prisma adapter and email/password authentication
+- `@astrojs/node` adapter with `output: 'server'`; public pages remain prerendered
+- `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/middleware.ts`
+- Better Auth API handled in `src/middleware.ts` (avoids Astro catch-all `GetStaticPathsRequired` in dev)
+- API route `src/pages/api/auth/redirect-target.ts`
+- Authz helpers and path utilities (`src/lib/authz/`)
+- In-memory rate limiting for `/api/auth/*` (`src/lib/rate-limit.ts`)
+- Localized auth pages: login, register, forgot-password, reset-password, verify, logout
+- Protected stubs: `/account`, `/seller`, `/admin` with server-side role gates
+- React auth form islands (`src/components/auth/`) — replaced with Astro forms after hydration issue
+- Prisma migration `20260714160000_better_auth` (sessions, accounts, verifications)
+- Auth, account, seller, and admin i18n strings (EN/FR)
+- Unit tests for role isolation (`src/lib/authz/authz.test.ts`)
+
+### Changed
+
+- `User` model aligned with Better Auth (`emailVerified`, `name`, `image`; password in `Account`)
+- Seed script creates dev admin credential account (`SEED_ADMIN_PASSWORD` override)
+- [.env.example](../.env.example) — `BETTER_AUTH_SECRET`, `SEED_ADMIN_PASSWORD`
+- [ROADMAP.md](./ROADMAP.md): Phase 4 complete; Phase 5 next
+- [DECISIONS.md](./DECISIONS.md): Better Auth accepted
+
+### Notes
+
+- Email verification and password-reset emails require Phase 16 email provider
+- Run `npm run db:migrate:dev` and `npm run db:seed` after pulling
+- Set `AUTH_SECRET` or `BETTER_AUTH_SECRET` before production deployment
+
+---
+
 ## [0.3.0] — 2026-07-14
 
 Milestone 3 — Phase 3 database and server foundation (Phase 4 not started).

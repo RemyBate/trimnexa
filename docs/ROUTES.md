@@ -131,13 +131,14 @@ Complete route structure for the Trimnexa marketplace. Routes are implemented in
 
 API endpoints under `src/pages/api/` must perform authorization checks on every mutating request.
 
-| Route                    | Purpose                                             | Phase |
-| ------------------------ | --------------------------------------------------- | ----- |
-| `/api/auth/[...all]`     | Authentication handler (solution TBD — Phase 4)     | 4     |
-| `/api/webhooks/payments` | Payment webhooks; signature-verified and idempotent | 11    |
-| `/api/cart/*`            | Cart operations (if not handled in page actions)    | 9     |
-| `/api/checkout/*`        | Checkout and order creation                         | 10    |
-| `/api/uploads/*`         | File upload handling with validation                | 7     |
+| Route                       | Purpose                                             | Phase |
+| --------------------------- | --------------------------------------------------- | ----- |
+| `/api/auth/*`               | Better Auth handler (via middleware)                | 4     |
+| `/api/auth/redirect-target` | Post-login redirect helper                          | 4     |
+| `/api/webhooks/payments`    | Payment webhooks; signature-verified and idempotent | 11    |
+| `/api/cart/*`               | Cart operations (if not handled in page actions)    | 9     |
+| `/api/checkout/*`           | Checkout and order creation                         | 10    |
+| `/api/uploads/*`            | File upload handling with validation                | 7     |
 
 Additional API routes will be added as needed. All must:
 

@@ -2,19 +2,38 @@
 import Logo from '@/components/brand/Logo.astro';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.astro';
 import SearchBar from '@/components/layout/SearchBar.astro';
+import UserMenu from '@/components/layout/UserMenu.astro';
 import { mainNavLinks, resolveNavHref } from '@/config/navigation';
 import type { SupportedLocale } from '@/config/site';
 import type { PageContext } from '@/i18n';
 import { localizedPath } from '@/i18n';
 
+interface SessionUser {
+	email: string;
+	name?: string | null;
+	firstName?: string | null;
+}
+
 interface Props {
 	locale: SupportedLocale;
 	currentPath: string;
 	t: PageContext['t'];
+	user: SessionUser | null;
 }
 
-const { locale, currentPath, t } = Astro.props;
+const { locale, currentPath, t, user } = Astro.props;
 const toggleId = 'mobile-nav-toggle';
+
+const userMenuLabels = {
+	openMenu: t('userMenu.openMenu'),
+	myAccount: t('userMenu.myAccount'),
+	orders: t('userMenu.orders'),
+	wishlist: t('userMenu.wishlist'),
+	addresses: t('userMenu.addresses'),
+	settings: t('userMenu.settings'),
+	becomeSeller: t('userMenu.becomeSeller'),
+	signOut: t('userMenu.signOut'),
+};
 ---
 
 <header class="sticky top-0 z-40 border-b border-neutral-200 bg-white shadow-sm">
@@ -47,12 +66,26 @@ const toggleId = 'mobile-nav-toggle';
 
 			<nav class="ml-auto hidden items-center gap-2 lg:flex" aria-label="Account">
 				<LanguageSwitcher locale={locale} currentPath={currentPath} t={t} />
-				<a
-					href={localizedPath(locale, '/auth/login')}
-					class="rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
-				>
-					{t('common.signIn')}
-				</a>
+				{
+					user ? (
+						<UserMenu locale={locale} user={user} labels={userMenuLabels} />
+					) : (
+						<>
+							<a
+								href={localizedPath(locale, '/auth/login')}
+								class="rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+							>
+								{t('common.signIn')}
+							</a>
+							<a
+								href={localizedPath(locale, '/auth/register')}
+								class="rounded-md bg-primary-700 px-3 py-2 text-sm font-medium text-white hover:bg-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+							>
+								{t('common.createAccount')}
+							</a>
+						</>
+					)
+				}
 				<a
 					href={localizedPath(locale, '/cart')}
 					class="inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
@@ -90,6 +123,44 @@ const toggleId = 'mobile-nav-toggle';
 			}
 			<div class="border-t border-neutral-200 pt-3">
 				<LanguageSwitcher locale={locale} currentPath={currentPath} t={t} />
+			</div>
+			<div class="border-t border-neutral-200 pt-3">
+				{
+					user ? (
+						<div class="space-y-1">
+							<p class="px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-500">
+								{t('common.account')}
+							</p>
+							<a
+								href={localizedPath(locale, '/account')}
+								class="block rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-primary-50 hover:text-primary-800"
+							>
+								{t('userMenu.myAccount')}
+							</a>
+							<a
+								href={localizedPath(locale, '/auth/logout')}
+								class="block rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-primary-50 hover:text-primary-800"
+							>
+								{t('userMenu.signOut')}
+							</a>
+						</div>
+					) : (
+						<div class="space-y-1">
+							<a
+								href={localizedPath(locale, '/auth/login')}
+								class="block rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-primary-50 hover:text-primary-800"
+							>
+								{t('common.signIn')}
+							</a>
+							<a
+								href={localizedPath(locale, '/auth/register')}
+								class="block rounded-md bg-primary-700 px-3 py-2 text-sm font-medium text-white hover:bg-primary-800"
+							>
+								{t('common.createAccount')}
+							</a>
+						</div>
+					)
+				}
 			</div>
 		</div>
 	</nav>

@@ -1,0 +1,69 @@
+---
+import RegisterForm from '@/components/auth/RegisterForm.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+
+if (Astro.locals.user) {
+	return Astro.redirect(localizedPath(locale, '/account'));
+}
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	showCategoryNav={false}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('auth.registerTitle'),
+		t('auth.registerDescription'),
+		{ noindex: true },
+	)}
+>
+	<AuthLayout title={t('auth.registerTitle')} subtitle={t('auth.registerSubtitle')}>
+		<RegisterForm
+			locale={locale}
+			labels={{
+				fullName: t('auth.fullName'),
+				email: t('auth.email'),
+				password: t('auth.password'),
+				confirmPassword: t('auth.confirmPassword'),
+				passwordHint: t('auth.passwordHint'),
+				showPassword: t('auth.showPassword'),
+				hidePassword: t('auth.hidePassword'),
+				submit: t('auth.registerSubmit'),
+				submitting: t('auth.submitting'),
+				errorGeneric: t('auth.errorGeneric'),
+				errorServiceUnavailable: t('auth.errorServiceUnavailable'),
+				errorDuplicateEmail: t('auth.errorDuplicateEmail'),
+				errorNameRequired: t('auth.errorNameRequired'),
+				errorEmailRequired: t('auth.errorEmailRequired'),
+				errorEmailInvalid: t('auth.errorEmailInvalid'),
+				errorPasswordRequired: t('auth.errorPasswordRequired'),
+				errorPasswordTooShort: t('auth.errorPasswordTooShort'),
+				errorConfirmRequired: t('auth.errorConfirmRequired'),
+				errorPasswordMismatch: t('auth.passwordMismatch'),
+			}}
+		/>
+		<Fragment slot="footer">
+			<p>
+				{t('auth.haveAccount')}
+				<a
+					href={localizedPath(locale, '/auth/login')}
+					class="font-medium text-primary-700 hover:text-primary-800"
+				>
+					{t('auth.signInLink')}
+				</a>
+			</p>
+		</Fragment>
+	</AuthLayout>
+</PublicLayout>

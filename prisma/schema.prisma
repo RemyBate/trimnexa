@@ -1,4 +1,4 @@
-// Trimnexa Prisma schema — Phase 3 initial foundation.
+// Trimnexa Prisma schema — marketplace foundation + Better Auth (Phase 4).
 // Full marketplace entities are added in later phases per docs/DATABASE.md.
 
 generator client {
@@ -25,26 +25,75 @@ enum Role {
 }
 
 model User {
-	id              String     @id @default(cuid())
-	email           String     @unique
-	emailVerifiedAt DateTime?  @map("email_verified_at")
-	phone           String?
-	passwordHash    String?    @map("password_hash")
-	firstName       String?    @map("first_name")
-	lastName        String?    @map("last_name")
-	status          UserStatus @default(PENDING_VERIFICATION)
-	suspendedAt     DateTime?  @map("suspended_at")
-	suspendedReason String?    @map("suspended_reason")
-	locale          String     @default("en")
-	createdAt       DateTime   @default(now()) @map("created_at")
-	updatedAt       DateTime   @updatedAt @map("updated_at")
+	id            String     @id @default(cuid())
+	name          String?
+	email         String     @unique
+	emailVerified Boolean    @default(false) @map("email_verified")
+	image         String?
+	phone         String?
+	firstName     String?    @map("first_name")
+	lastName      String?    @map("last_name")
+	status        UserStatus @default(PENDING_VERIFICATION)
+	suspendedAt   DateTime?  @map("suspended_at")
+	suspendedReason String?  @map("suspended_reason")
+	locale        String     @default("en")
+	createdAt     DateTime   @default(now()) @map("created_at")
+	updatedAt     DateTime   @updatedAt @map("updated_at")
 
+	sessions        Session[]
+	accounts        Account[]
 	roles           UserRoleAssignment[]
 	customerProfile CustomerProfile?
 	sellerProfile   SellerProfile?
 	auditLogs       AuditLog[]           @relation("AuditActor")
 
 	@@map("users")
+}
+
+model Session {
+	id        String   @id @default(cuid())
+	expiresAt DateTime @map("expires_at")
+	token     String   @unique
+	createdAt DateTime @default(now()) @map("created_at")
+	updatedAt DateTime @updatedAt @map("updated_at")
+	ipAddress String?  @map("ip_address")
+	userAgent String?  @map("user_agent")
+	userId    String   @map("user_id")
+
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@map("sessions")
+}
+
+model Account {
+	id                    String    @id @default(cuid())
+	accountId             String    @map("account_id")
+	providerId            String    @map("provider_id")
+	userId                String    @map("user_id")
+	accessToken           String?   @map("access_token")
+	refreshToken          String?   @map("refresh_token")
+	idToken               String?   @map("id_token")
+	accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+	refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+	scope                 String?
+	password              String?
+	createdAt             DateTime  @default(now()) @map("created_at")
+	updatedAt             DateTime  @updatedAt @map("updated_at")
+
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@map("accounts")
+}
+
+model Verification {
+	id         String    @id @default(cuid())
+	identifier String
+	value      String
+	expiresAt  DateTime  @map("expires_at")
+	createdAt  DateTime? @default(now()) @map("created_at")
+	updatedAt  DateTime? @updatedAt @map("updated_at")
+
+	@@map("verifications")
 }
 
 model UserRoleAssignment {

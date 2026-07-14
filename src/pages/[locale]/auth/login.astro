@@ -1,0 +1,79 @@
+---
+import LoginForm from '@/components/auth/LoginForm.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const returnTo = Astro.url.searchParams.get('returnTo') ?? localizedPath(locale, '/account');
+const errorCode = Astro.url.searchParams.get('error');
+const registered = Astro.url.searchParams.get('registered') === '1';
+
+if (Astro.locals.user) {
+	return Astro.redirect(returnTo);
+}
+
+const initialError = errorCode === 'account_suspended' ? t('auth.errorSuspended') : undefined;
+const successMessage = registered ? t('auth.registerSuccess') : undefined;
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	showCategoryNav={false}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('auth.loginTitle'),
+		t('auth.loginDescription'),
+		{ noindex: true },
+	)}
+>
+	<AuthLayout title={t('auth.loginTitle')} subtitle={t('auth.loginSubtitle')}>
+		<LoginForm
+			locale={locale}
+			returnTo={returnTo}
+			successMessage={successMessage}
+			initialError={initialError}
+			labels={{
+				email: t('auth.email'),
+				password: t('auth.password'),
+				showPassword: t('auth.showPassword'),
+				hidePassword: t('auth.hidePassword'),
+				submit: t('auth.loginSubmit'),
+				submitting: t('auth.submitting'),
+				errorGeneric: t('auth.errorGeneric'),
+				errorSuspended: t('auth.errorSuspended'),
+				errorInvalidCredentials: t('auth.errorInvalidCredentials'),
+				errorEmailRequired: t('auth.errorEmailRequired'),
+				errorEmailInvalid: t('auth.errorEmailInvalid'),
+				errorPasswordRequired: t('auth.errorPasswordRequired'),
+			}}
+		/>
+		<Fragment slot="footer">
+			<p>
+				{t('auth.noAccount')}
+				<a
+					href={localizedPath(locale, '/auth/register')}
+					class="font-medium text-primary-700 hover:text-primary-800"
+				>
+					{t('auth.createAccount')}
+				</a>
+			</p>
+			<p class="mt-2">
+				<a
+					href={localizedPath(locale, '/auth/forgot-password')}
+					class="font-medium text-primary-700 hover:text-primary-800"
+				>
+					{t('auth.forgotPasswordLink')}
+				</a>
+			</p>
+		</Fragment>
+	</AuthLayout>
+</PublicLayout>

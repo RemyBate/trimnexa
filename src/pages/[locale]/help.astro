@@ -5,6 +5,7 @@ import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
 import { getPageContext, getStaticPathsForLocale } from '@/i18n';
 import PublicLayout from '@/layouts/PublicLayout.astro';
 
+export const prerender = true;
 export const getStaticPaths = getStaticPathsForLocale;
 
 const { locale, t } = getPageContext(Astro);

@@ -1,0 +1,64 @@
+---
+import Card from '@/components/common/Card.astro';
+import { getUserFirstName } from '@/lib/auth/display-name';
+
+interface SessionUser {
+	email: string;
+	name?: string | null;
+	firstName?: string | null;
+}
+
+interface DashboardLabels {
+	welcomeBack: string;
+	signedInAs: string;
+	myProfile: string;
+	myOrders: string;
+	savedAddresses: string;
+	wishlist: string;
+	accountSettings: string;
+	comingSoon: string;
+}
+
+interface DashboardCard {
+	id: string;
+	title: string;
+}
+
+interface Props {
+	user: SessionUser;
+	labels: DashboardLabels;
+}
+
+const { user, labels } = Astro.props;
+const firstName = getUserFirstName(user);
+
+const cards: DashboardCard[] = [
+	{ id: 'profile', title: labels.myProfile },
+	{ id: 'orders', title: labels.myOrders },
+	{ id: 'addresses', title: labels.savedAddresses },
+	{ id: 'wishlist', title: labels.wishlist },
+	{ id: 'settings', title: labels.accountSettings },
+];
+---
+
+<section class="space-y-8">
+	<div>
+		<p class="text-sm font-medium uppercase tracking-wide text-primary-700">{labels.welcomeBack}</p>
+		<h1 class="mt-1 text-3xl font-bold text-neutral-900 sm:text-4xl">{firstName}</h1>
+		<p class="mt-4 text-sm text-neutral-600">{labels.signedInAs}</p>
+		<p class="mt-1 font-medium text-neutral-900">{user.email}</p>
+	</div>
+
+	<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+		{
+			cards.map((card) => (
+				<div id={card.id}>
+					<Card class="flex h-full flex-col p-5 sm:p-6">
+						<h2 class="text-lg font-semibold text-neutral-900">{card.title}</h2>
+						<p class="mt-3 flex-1 text-sm text-neutral-600">{labels.comingSoon}</p>
+					</Card>
+				</div>
+			))
+		}
+	</div>
+</section>

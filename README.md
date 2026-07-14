@@ -50,11 +50,11 @@ Full roadmap with tasks and acceptance criteria: [docs/ROADMAP.md](docs/ROADMAP.
 
 ## Current status
 
-| Item                 | Status                                         |
-| -------------------- | ---------------------------------------------- |
-| Framework            | Astro `^7.0.9`                                 |
-| Language             | TypeScript (strict)                            |
-| Node.js              | `>=22.12.0`                                    |
+| Item                 | Status                                                             |
+| -------------------- | ------------------------------------------------------------------ |
+| Framework            | Astro `^7.0.9`                                                     |
+| Language             | TypeScript (strict)                                                |
+| Node.js              | `>=22.12.0`                                                        |
 | Database             | Prisma 7 + PostgreSQL (Phase 3 — configure `DATABASE_URL` locally) |
 | Authentication       | Not configured (Phase 4 — provider selection required)             |
 | Marketplace features | Not started                                                        |
@@ -103,18 +103,18 @@ Development server: [http://localhost:4321](http://localhost:4321)
 
 ### Commands
 
-| Command             | Action                   |
-| ------------------- | ------------------------ |
-| `npm install`       | Install dependencies     |
-| `npm run dev`       | Start dev server         |
-| `npm run build`     | Build for production     |
-| `npm run preview`   | Preview production build |
-| `npm run lint`      | Run ESLint               |
-| `npm run format`    | Format with Prettier     |
-| `npm run typecheck` | Astro + TypeScript check |
-| `npm run test`      | Run Vitest unit tests    |
+| Command                  | Action                              |
+| ------------------------ | ----------------------------------- |
+| `npm install`            | Install dependencies                |
+| `npm run dev`            | Start dev server                    |
+| `npm run build`          | Build for production                |
+| `npm run preview`        | Preview production build            |
+| `npm run lint`           | Run ESLint                          |
+| `npm run format`         | Format with Prettier                |
+| `npm run typecheck`      | Astro + TypeScript check            |
+| `npm run test`           | Run Vitest unit tests               |
 | `npm run db:migrate:dev` | Apply migrations (local PostgreSQL) |
-| `npm run db:seed`   | Seed categories and dev settings |
+| `npm run db:seed`        | Seed categories and dev settings    |
 
 Optional background dev server: `astro dev --background` (see [AGENTS.md](AGENTS.md))
 

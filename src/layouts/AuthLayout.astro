@@ -1,0 +1,26 @@
+---
+import Card from '@/components/common/Card.astro';
+import Container from '@/components/common/Container.astro';
+
+interface Props {
+	title: string;
+	subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<Container class="py-10 sm:py-14">
+	<div class="mx-auto max-w-md">
+		<header class="mb-6 text-center">
+			<h1 class="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">{title}</h1>
+			{subtitle ? <p class="mt-2 text-sm text-neutral-600">{subtitle}</p> : null}
+		</header>
+		<Card class="sm:p-8">
+			<slot />
+		</Card>
+		<div class="mt-4 text-center text-sm text-neutral-600">
+			<slot name="footer" />
+		</div>
+	</div>
+</Container>

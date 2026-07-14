@@ -1,0 +1,277 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import AuthFormField from '@/components/auth/AuthFormField.astro';
+
+interface Labels {
+	email: string;
+	password: string;
+	showPassword: string;
+	hidePassword: string;
+	submit: string;
+	submitting: string;
+	errorGeneric: string;
+	errorSuspended: string;
+	errorInvalidCredentials: string;
+	errorEmailRequired: string;
+	errorEmailInvalid: string;
+	errorPasswordRequired: string;
+}
+
+interface Props {
+	locale: string;
+	returnTo: string;
+	successMessage?: string;
+	initialError?: string;
+	labels: Labels;
+}
+
+const { locale, returnTo, successMessage, initialError, labels } = Astro.props;
+
+const formConfig = JSON.stringify({
+	locale,
+	returnTo,
+	labels,
+	initialError: initialError ?? '',
+});
+---
+
+{
+	successMessage ? (
+		<Alert variant="success" class="mb-4">
+			{successMessage}
+		</Alert>
+	) : null
+}
+
+{
+	initialError ? (
+		<Alert variant="error" class="mb-4">
+			{initialError}
+		</Alert>
+	) : null
+}
+
+<div id="login-form-error" class="mb-4 hidden" role="alert">
+	<Alert variant="error">
+		<span id="login-form-error-text"></span>
+	</Alert>
+</div>
+
+<form id="login-form" class="space-y-4" data-config={formConfig} novalidate>
+	<AuthFormField
+		id="login-email"
+		name="email"
+		type="email"
+		label={labels.email}
+		required
+		autocomplete="email"
+		errorId="login-email-error"
+	/>
+	<div class="auth-field">
+		<label for="login-password" class="mb-1 block text-sm font-medium text-neutral-800">
+			{labels.password}
+			<span class="text-error-700" aria-hidden="true"> *</span>
+		</label>
+		<div class="relative">
+			<input
+				id="login-password"
+				name="password"
+				type="password"
+				required
+				autocomplete="current-password"
+				aria-describedby="login-password-error"
+				aria-invalid="false"
+				class="auth-input block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 pr-24 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			/>
+			<button
+				type="button"
+				id="login-password-toggle"
+				class="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs font-medium text-primary-700 hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+				aria-pressed="false"
+				aria-controls="login-password"
+				data-show-label={labels.showPassword}
+				data-hide-label={labels.hidePassword}
+			>
+				{labels.showPassword}
+			</button>
+		</div>
+		<p id="login-password-error" class="mt-1 hidden text-sm text-error-700" role="alert"></p>
+	</div>
+	<Button type="submit" class="w-full" id="login-submit">
+		<span id="login-submit-label">{labels.submit}</span>
+	</Button>
+</form>
+
+<script>
+	import { signIn } from '@/lib/auth-client';
+	import { mapAuthError } from '@/lib/auth/errors';
+	import { hasValidationErrors, validateLoginForm } from '@/lib/auth/validation';
+
+	interface LoginFormConfig {
+		locale: string;
+		returnTo: string;
+		initialError: string;
+		labels: {
+			email: string;
+			password: string;
+			showPassword: string;
+			hidePassword: string;
+			submit: string;
+			submitting: string;
+			errorGeneric: string;
+			errorSuspended: string;
+			errorInvalidCredentials: string;
+			errorEmailRequired: string;
+			errorEmailInvalid: string;
+			errorPasswordRequired: string;
+		};
+	}
+
+	const form = document.getElementById('login-form') as HTMLFormElement | null;
+	if (!form) {
+		throw new Error('Login form not found');
+	}
+
+	const config = JSON.parse(form.dataset.config ?? '{}') as LoginFormConfig;
+	const errorBox = document.getElementById('login-form-error');
+	const errorText = document.getElementById('login-form-error-text');
+	const submitButton = document.getElementById('login-submit') as HTMLButtonElement | null;
+	const submitLabel = document.getElementById('login-submit-label');
+	const passwordInput = document.getElementById('login-password') as HTMLInputElement | null;
+	const passwordToggle = document.getElementById('login-password-toggle');
+
+	const fieldErrorMessages: Record<string, string> = {
+		'login-email': config.labels.errorEmailRequired,
+		'login-email-invalid': config.labels.errorEmailInvalid,
+		'login-password': config.labels.errorPasswordRequired,
+	};
+
+	function showFormError(message: string) {
+		if (!errorBox || !errorText) {
+			return;
+		}
+
+		errorText.textContent = message;
+		errorBox.classList.remove('hidden');
+	}
+
+	function hideFormError() {
+		errorBox?.classList.add('hidden');
+	}
+
+	function setFieldError(fieldId: string, message: string | null) {
+		const input = document.getElementById(fieldId) as HTMLInputElement | null;
+		const errorElement = document.getElementById(`${fieldId}-error`);
+
+		if (!input || !errorElement) {
+			return;
+		}
+
+		if (message) {
+			errorElement.textContent = message;
+			errorElement.classList.remove('hidden');
+			input.setAttribute('aria-invalid', 'true');
+			return;
+		}
+
+		errorElement.textContent = '';
+		errorElement.classList.add('hidden');
+		input.setAttribute('aria-invalid', 'false');
+	}
+
+	function clearFieldErrors() {
+		setFieldError('login-email', null);
+		setFieldError('login-password', null);
+	}
+
+	function setSubmitting(isSubmitting: boolean) {
+		if (submitButton) {
+			submitButton.disabled = isSubmitting;
+		}
+
+		if (submitLabel) {
+			submitLabel.textContent = isSubmitting ? config.labels.submitting : config.labels.submit;
+		}
+	}
+
+	passwordToggle?.addEventListener('click', () => {
+		if (!passwordInput || !passwordToggle) {
+			return;
+		}
+
+		const isHidden = passwordInput.type === 'password';
+		passwordInput.type = isHidden ? 'text' : 'password';
+		passwordToggle.setAttribute('aria-pressed', String(isHidden));
+		passwordToggle.textContent = isHidden
+			? (passwordToggle.dataset.hideLabel ?? '')
+			: (passwordToggle.dataset.showLabel ?? '');
+	});
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		hideFormError();
+		clearFieldErrors();
+
+		const formData = new FormData(form);
+		const email = String(formData.get('email') ?? '');
+		const password = String(formData.get('password') ?? '');
+		const validationErrors = validateLoginForm({ email, password });
+
+		if (hasValidationErrors(validationErrors)) {
+			if (validationErrors.email === 'required') {
+				setFieldError('login-email', fieldErrorMessages['login-email']);
+			} else if (validationErrors.email === 'invalid_email') {
+				setFieldError('login-email', fieldErrorMessages['login-email-invalid']);
+			}
+
+			if (validationErrors.password === 'required') {
+				setFieldError('login-password', fieldErrorMessages['login-password']);
+			}
+
+			return;
+		}
+
+		setSubmitting(true);
+
+		try {
+			const result = await signIn.email({ email: email.trim(), password });
+
+			if (result.error) {
+				showFormError(
+					mapAuthError('login', result.error, {
+						generic: config.labels.errorGeneric,
+						suspended: config.labels.errorSuspended,
+						invalidCredentials: config.labels.errorInvalidCredentials,
+						duplicateEmail: config.labels.errorGeneric,
+					}),
+				);
+				return;
+			}
+
+			const redirectParams = new URLSearchParams({
+				locale: config.locale,
+				returnTo: config.returnTo,
+			});
+			const redirectResponse = await fetch(
+				`/api/auth/redirect-target?${redirectParams.toString()}`,
+			);
+
+			if (redirectResponse.ok) {
+				const payload = (await redirectResponse.json()) as { path?: string };
+				const destination = new URL(payload.path ?? config.returnTo, window.location.origin);
+				destination.searchParams.set('welcome', '1');
+				window.location.href = `${destination.pathname}${destination.search}`;
+				return;
+			}
+
+			const fallback = new URL(config.returnTo, window.location.origin);
+			fallback.searchParams.set('welcome', '1');
+			window.location.href = `${fallback.pathname}${fallback.search}`;
+		} catch {
+			showFormError(config.labels.errorGeneric);
+		} finally {
+			setSubmitting(false);
+		}
+	});
+</script>

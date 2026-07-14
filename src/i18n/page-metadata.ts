@@ -8,11 +8,13 @@ export function createLocalizedPageMetadata(
 	path: string,
 	title: string,
 	description: string,
+	options?: { noindex?: boolean },
 ): PageMetadata {
 	return createPageMetadata({
 		title,
 		description,
 		path,
 		locale: getOpenGraphLocale(locale),
+		noindex: options?.noindex,
 	});
 }
