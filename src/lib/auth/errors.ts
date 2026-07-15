@@ -19,6 +19,8 @@ export function mapAuthError(
 		invalidCredentials: string;
 		duplicateEmail: string;
 		serviceUnavailable?: string;
+		invalidResetToken?: string;
+		rateLimited?: string;
 	},
 ): string {
 	if (!error) {
@@ -51,6 +53,22 @@ export function mapAuthError(
 			message.includes('ALREADY IN USE')
 		) {
 			return labels.duplicateEmail;
+		}
+	}
+
+	if (action === 'reset_password') {
+		if (
+			code.includes('INVALID_TOKEN') ||
+			message.includes('INVALID TOKEN') ||
+			message.includes('EXPIRED')
+		) {
+			return labels.invalidResetToken ?? labels.generic;
+		}
+	}
+
+	if (action === 'forgot_password') {
+		if (error.status === 429 || code.includes('RATE') || message.includes('RATE')) {
+			return labels.rateLimited ?? labels.generic;
 		}
 	}
 

@@ -1,0 +1,76 @@
+---
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import { localizedPath } from '@/i18n';
+import type { SupportedLocale } from '@/config/site';
+import type { AdminProductListItem } from '@/lib/admin/products';
+
+interface Labels {
+	title: string;
+	seller: string;
+	category: string;
+	status: string;
+	price: string;
+	stock: string;
+	submitted: string;
+	review: string;
+	noProducts: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	products: AdminProductListItem[];
+	labels: Labels;
+}
+
+const { locale, products, labels } = Astro.props;
+---
+
+{
+	products.length === 0 ? (
+		<Card class="p-6 text-sm text-neutral-600">{labels.noProducts}</Card>
+	) : (
+		<div class="overflow-x-auto rounded-lg border border-neutral-200">
+			<table class="min-w-full divide-y divide-neutral-200 text-sm">
+				<thead class="bg-neutral-50">
+					<tr>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.title}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.seller}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.category}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.status}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.price}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.stock}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.submitted}</th>
+						<th class="px-4 py-3 text-right font-medium text-neutral-700">{labels.review}</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-neutral-200 bg-white">
+					{products.map((product) => (
+						<tr>
+							<td class="px-4 py-3 font-medium text-neutral-900">{product.title}</td>
+							<td class="px-4 py-3 text-neutral-700">
+								{product.sellerShopName ?? product.sellerEmail}
+							</td>
+							<td class="px-4 py-3 text-neutral-700">{product.categoryName}</td>
+							<td class="px-4 py-3 text-neutral-700">{product.status}</td>
+							<td class="px-4 py-3 text-neutral-700">{product.priceFormatted}</td>
+							<td class="px-4 py-3 text-neutral-700">{product.stockQty}</td>
+							<td class="px-4 py-3 text-neutral-700">
+								{product.submittedAt ? product.submittedAt.toLocaleDateString(locale) : '—'}
+							</td>
+							<td class="px-4 py-3 text-right">
+								<Button
+									href={localizedPath(locale, `/admin/products/${product.id}`)}
+									variant="secondary"
+									size="sm"
+								>
+									{labels.review}
+								</Button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	)
+}

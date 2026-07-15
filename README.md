@@ -27,7 +27,8 @@ Full vision, mission, values, and business goals: [docs/PRD.md](docs/PRD.md)
 - [x] Phase 4 — Authentication (Better Auth)
 - [x] Phase 5 — Customer account
 - [ ] Phase 6 — Seller and shop
-- [ ] Phase 7 — Products
+- [x] Phase 6 — Seller application & shop
+- [x] Phase 7 — Products *(MVP: single-SKU; attributes/variants deferred)*
 - [ ] Phase 8 — Catalogue and search
 - [ ] Phase 9 — Cart and wishlist
 - [ ] Phase 10 — Checkout

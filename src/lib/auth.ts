@@ -3,6 +3,13 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
 import { env } from '@/config/env';
+import {
+	buildLocalizedPasswordResetUrl,
+	deliverPasswordResetEmail,
+	PASSWORD_RESET_TOKEN_EXPIRES_SECONDS,
+	recordPasswordResetCompleted,
+} from '@/lib/auth/password-reset-email';
+import { capturePasswordResetTokenForTests } from '@/lib/auth/password-reset-test-capture';
 import { provisionMarketplaceUser } from '@/lib/auth/provision-user';
 import { prisma } from '@/lib/db';
 
@@ -33,6 +40,32 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: false,
+		minPasswordLength: 8,
+		maxPasswordLength: 128,
+		resetPasswordTokenExpiresIn: PASSWORD_RESET_TOKEN_EXPIRES_SECONDS,
+		revokeSessionsOnPasswordReset: true,
+		sendResetPassword: async ({ user, url: _url, token }, request) => {
+			capturePasswordResetTokenForTests(user.email, token);
+
+			const resetUrl = buildLocalizedPasswordResetUrl(
+				(user as { locale?: string | null }).locale,
+				token,
+			);
+
+			// Fire-and-forget to reduce timing side channels (Better Auth recommendation).
+			void deliverPasswordResetEmail({
+				userId: user.id,
+				email: user.email,
+				locale: (user as { locale?: string | null }).locale,
+				resetUrl,
+				request,
+			}).catch((error) => {
+				console.error('[auth] password reset email delivery failed', error);
+			});
+		},
+		onPasswordReset: async ({ user }, request) => {
+			await recordPasswordResetCompleted(user.id, request);
+		},
 	},
 	user: {
 		additionalFields: {

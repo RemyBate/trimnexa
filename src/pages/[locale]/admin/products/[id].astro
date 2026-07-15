@@ -1,0 +1,71 @@
+---
+import ProductReviewPanel from '@/components/admin/ProductReviewPanel.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { getProductDetailForAdmin } from '@/lib/admin/products';
+import { getAdminNavItems } from '@/lib/admin/navigation';
+import { requireRoles } from '@/lib/authz';
+import { Role } from '@prisma/client';
+import AdminLayout from '@/layouts/AdminLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireRoles(Astro, locale, [Role.ADMINISTRATOR, Role.STAFF]);
+
+const productId = (Astro.params as Record<string, string | undefined>).id;
+const product = productId ? await getProductDetailForAdmin(productId) : null;
+const navItems = getAdminNavItems(t);
+
+if (!product) {
+	return Astro.redirect(localizedPath(locale, '/admin/products'));
+}
+---
+
+<AdminLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={product.title}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		product.title,
+		t('admin.productsDescription'),
+		{ noindex: true },
+	)}
+>
+	<ProductReviewPanel
+		locale={locale}
+		product={product}
+		labels={{
+			overview: t('admin.overview'),
+			description: t('seller.productDescription'),
+			seller: t('admin.productSeller'),
+			category: t('admin.productCategory'),
+			price: t('admin.productPrice'),
+			stock: t('admin.productStock'),
+			status: t('admin.productStatus'),
+			reviewNotes: t('admin.reviewNotes'),
+			reviewNotesRequired: t('admin.reviewNotesRequired'),
+			approve: t('admin.approveProduct'),
+			approving: t('admin.approvingProduct'),
+			reject: t('admin.rejectProduct'),
+			rejecting: t('admin.rejectingProduct'),
+			rejectConfirm: t('admin.rejectProductConfirm'),
+			suspend: t('admin.suspendProduct'),
+			suspensionReason: t('admin.suspensionReason'),
+			successApproved: t('admin.productSuccessApproved'),
+			successRejected: t('admin.productSuccessRejected'),
+			errorGeneric: t('admin.productReviewError'),
+			errorNotFound: t('admin.productNotFound'),
+			errorAlreadyReviewed: t('admin.productAlreadyReviewed'),
+			errorUnauthorized: t('admin.errorUnauthorized'),
+			errorRejectionReasonRequired: t('admin.errorRejectionReasonRequired'),
+			images: t('seller.productImages'),
+		}}
+	/>
+</AdminLayout>

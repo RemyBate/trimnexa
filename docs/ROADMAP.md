@@ -241,20 +241,20 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 ## Phase 7 — Categories and product management
 
-- [ ] Build category management
-- [ ] Build subcategories
-- [ ] Build product attributes
-- [ ] Build seller product creation
-- [ ] Build product editing
-- [ ] Build product images
-- [ ] Build product variants
-- [ ] Build stock management
-- [ ] Build draft and moderation workflow
-- [ ] Build administrator product approval
-- [ ] Build prohibited-product controls
-- [ ] Add inventory history
+- [x] Build category management
+- [x] Build subcategories
+- [ ] Build product attributes *(deferred — single-SKU MVP; attributes in follow-up)*
+- [x] Build seller product creation
+- [x] Build product editing
+- [x] Build product images
+- [ ] Build product variants *(deferred — single-SKU MVP)*
+- [x] Build stock management
+- [x] Build draft and moderation workflow
+- [x] Build administrator product approval
+- [x] Build prohibited-product controls
+- [x] Add inventory history
 
-**Acceptance criteria:** Sellers manage only their own products; drafts and review workflow work; administrators can approve or reject; prices and stock validate correctly; images optimized and secured.
+**Acceptance criteria:** Sellers manage only their own products; drafts and review workflow work; administrators can approve or reject; prices and stock validate correctly; images optimized and secured. **Status: complete — pending owner review.**
 
 ---
 

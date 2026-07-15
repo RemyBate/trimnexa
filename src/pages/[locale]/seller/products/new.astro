@@ -1,0 +1,74 @@
+---
+import ProductForm from '@/components/seller/ProductForm.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { listActiveCategoriesForLocale } from '@/lib/product/categories';
+import { requireApprovedSeller } from '@/lib/seller/guards';
+import { getSellerNavItems } from '@/lib/seller/navigation';
+import { getSellerProfileByUserId } from '@/lib/seller/profile';
+import SellerLayout from '@/layouts/SellerLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireApprovedSeller(Astro, locale);
+
+const profile = await getSellerProfileByUserId(Astro.locals.user!.id);
+const navItems = getSellerNavItems(t);
+
+if (!profile) {
+	return Astro.redirect(localizedPath(locale, '/seller/application'));
+}
+
+const categories = await listActiveCategoriesForLocale(locale);
+---
+
+<SellerLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('seller.newProductTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('seller.newProductTitle'),
+		t('seller.productsDescription'),
+		{ noindex: true },
+	)}
+>
+	<ProductForm
+		locale={locale}
+		mode="create"
+		categories={categories}
+		labels={{
+			title: t('seller.productTitle'),
+			description: t('seller.productDescription'),
+			category: t('seller.productCategory'),
+			price: t('seller.productPriceXaf'),
+			stock: t('seller.productStock'),
+			status: t('seller.productStatus'),
+			save: t('seller.saveProduct'),
+			saving: t('seller.savingProduct'),
+			create: t('seller.createProduct'),
+			creating: t('seller.creatingProduct'),
+			submit: t('seller.submitProduct'),
+			submitting: t('seller.submittingProduct'),
+			archive: t('seller.archiveProduct'),
+			archiving: t('seller.archivingProduct'),
+			uploadImage: t('seller.uploadProductImage'),
+			removeImage: t('seller.removeProductImage'),
+			successSaved: t('seller.productSaved'),
+			successCreated: t('seller.productCreated'),
+			successSubmitted: t('seller.productSubmitted'),
+			successArchived: t('seller.productArchived'),
+			errorGeneric: t('seller.productError'),
+			errorProhibited: t('seller.productProhibited'),
+			errorSubmitNeedsImage: t('seller.productSubmitNeedsImage'),
+			reviewNotes: t('seller.productReviewNotes'),
+			images: t('seller.productImages'),
+		}}
+	/>
+</SellerLayout>

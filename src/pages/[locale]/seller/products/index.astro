@@ -1,0 +1,56 @@
+---
+import ProductList from '@/components/seller/ProductList.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { listSellerProducts } from '@/lib/product/seller-products';
+import { requireApprovedSeller } from '@/lib/seller/guards';
+import { getSellerNavItems } from '@/lib/seller/navigation';
+import { getSellerProfileByUserId } from '@/lib/seller/profile';
+import SellerLayout from '@/layouts/SellerLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireApprovedSeller(Astro, locale);
+
+const profile = await getSellerProfileByUserId(Astro.locals.user!.id);
+const navItems = getSellerNavItems(t);
+
+if (!profile) {
+	return Astro.redirect(localizedPath(locale, '/seller/application'));
+}
+
+const products = await listSellerProducts(Astro.locals.user!.id);
+---
+
+<SellerLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('seller.productsTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('seller.productsTitle'),
+		t('seller.productsDescription'),
+		{ noindex: true },
+	)}
+>
+	<ProductList
+		locale={locale}
+		products={products}
+		labels={{
+			title: t('seller.productsTitle'),
+			status: t('seller.productStatus'),
+			price: t('seller.productPrice'),
+			stock: t('seller.productStock'),
+			updated: t('seller.productUpdated'),
+			edit: t('seller.editProduct'),
+			newProduct: t('seller.newProduct'),
+			noProducts: t('seller.noProducts'),
+		}}
+	/>
+</SellerLayout>

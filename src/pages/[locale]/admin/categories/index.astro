@@ -1,0 +1,50 @@
+---
+import CategoryList from '@/components/admin/CategoryList.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { listCategoriesForAdmin } from '@/lib/admin/categories';
+import { getAdminNavItems } from '@/lib/admin/navigation';
+import { requireRoles } from '@/lib/authz';
+import { Role } from '@prisma/client';
+import AdminLayout from '@/layouts/AdminLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireRoles(Astro, locale, [Role.ADMINISTRATOR, Role.STAFF]);
+
+const categories = await listCategoriesForAdmin();
+const navItems = getAdminNavItems(t);
+---
+
+<AdminLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('admin.categoriesTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('admin.categoriesTitle'),
+		t('admin.categoriesDescription'),
+		{ noindex: true },
+	)}
+>
+	<CategoryList
+		categories={categories}
+		labels={{
+			name: t('admin.categoryName'),
+			slug: t('admin.categorySlug'),
+			parent: t('admin.categoryParent'),
+			products: t('admin.categoryProducts'),
+			status: t('admin.categoryStatus'),
+			active: t('admin.categoryActive'),
+			inactive: t('admin.categoryInactive'),
+			toggle: t('admin.categoryToggle'),
+			noCategories: t('admin.noCategories'),
+		}}
+	/>
+</AdminLayout>

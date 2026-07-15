@@ -1,0 +1,464 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import type { CategoryOption } from '@/lib/product/categories';
+import type { ProductView } from '@/lib/product/serialize';
+import type { SupportedLocale } from '@/config/site';
+import { localizedPath } from '@/i18n';
+
+interface Labels {
+	title: string;
+	description: string;
+	category: string;
+	price: string;
+	stock: string;
+	status: string;
+	save: string;
+	saving: string;
+	create: string;
+	creating: string;
+	submit: string;
+	submitting: string;
+	archive: string;
+	archiving: string;
+	uploadImage: string;
+	removeImage: string;
+	successSaved: string;
+	successCreated: string;
+	successSubmitted: string;
+	successArchived: string;
+	errorGeneric: string;
+	errorProhibited: string;
+	errorSubmitNeedsImage: string;
+	reviewNotes: string;
+	images: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	mode: 'create' | 'edit';
+	categories: CategoryOption[];
+	product?: ProductView;
+	labels: Labels;
+}
+
+const { locale, mode, categories, product, labels } = Astro.props;
+const config = JSON.stringify({
+	mode,
+	productId: product?.id ?? null,
+	redirectAfterCreate: localizedPath(locale, '/seller/products'),
+	labels,
+});
+---
+
+<div id="product-form-success" class="mb-4 hidden" role="status">
+	<Alert variant="success">
+		<span id="product-form-success-text">{labels.successSaved}</span>
+	</Alert>
+</div>
+
+<div id="product-form-error" class="mb-4 hidden" role="alert">
+	<Alert variant="error">
+		<span id="product-form-error-text">{labels.errorGeneric}</span>
+	</Alert>
+</div>
+
+<Card class="p-6 sm:p-8">
+	<form id="product-form" class="space-y-6" data-config={config} novalidate>
+		<div>
+			<label for="product-title" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.title}
+			</label>
+			<input
+				id="product-title"
+				name="title"
+				type="text"
+				required
+				minlength="3"
+				maxlength="200"
+				value={product?.title ?? ''}
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+			/>
+		</div>
+
+		<div>
+			<label for="product-description" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.description}
+			</label>
+			<textarea
+				id="product-description"
+				name="description"
+				rows="5"
+				maxlength="5000"
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				>{product?.description ?? ''}</textarea
+			>
+		</div>
+
+		<div class="grid gap-6 md:grid-cols-2">
+			<div>
+				<label for="product-category" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.category}
+				</label>
+				<select
+					id="product-category"
+					name="categoryId"
+					required
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				>
+					<option value="">—</option>
+					{
+						categories.map((category) => (
+							<option
+								value={category.id}
+								selected={product?.categoryId === category.id}
+								style={`padding-left: ${category.depth * 12}px`}
+							>
+								{'—'.repeat(category.depth)}
+								{category.depth > 0 ? ' ' : ''}
+								{category.name}
+							</option>
+						))
+					}
+				</select>
+			</div>
+			<div>
+				<label for="product-price" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.price}
+				</label>
+				<input
+					id="product-price"
+					name="priceMajor"
+					type="number"
+					min="1"
+					step="1"
+					required
+					value={product ? product.priceMinor : ''}
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				/>
+			</div>
+		</div>
+
+		<div class="grid gap-6 md:grid-cols-2">
+			<div>
+				<label for="product-stock" class="mb-1 block text-sm font-medium text-neutral-800">
+					{labels.stock}
+				</label>
+				<input
+					id="product-stock"
+					name="stockQty"
+					type="number"
+					min="0"
+					step="1"
+					required
+					value={product?.stockQty ?? 0}
+					class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200"
+				/>
+			</div>
+			{
+				product ? (
+					<div>
+						<p class="mb-1 text-sm font-medium text-neutral-800">{labels.status}</p>
+						<p class="rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-800">
+							{product.status}
+						</p>
+						{product.reviewNotes ? (
+							<p class="mt-2 text-sm text-neutral-600">
+								<strong>{labels.reviewNotes}:</strong> {product.reviewNotes}
+							</p>
+						) : null}
+					</div>
+				) : null
+			}
+		</div>
+
+		{
+			product ? (
+				<div>
+					<p class="mb-2 text-sm font-medium text-neutral-800">{labels.images}</p>
+					<div id="product-images" class="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+						{product.images.map((image) => (
+							<div class="relative rounded-md border border-neutral-200 p-2" data-image-id={image.id}>
+								<img src={image.url} alt={image.altText ?? ''} class="h-24 w-full object-cover" />
+								<Button
+									type="button"
+									variant="secondary"
+									size="sm"
+									class="mt-2 w-full"
+									data-action="remove-image"
+									data-image-id={image.id}
+								>
+									{labels.removeImage}
+								</Button>
+							</div>
+						))}
+					</div>
+					<input
+						id="product-image-file"
+						type="file"
+						accept="image/jpeg,image/png,image/webp"
+						class="text-sm"
+					/>
+					<Button type="button" id="product-image-upload" variant="secondary" class="mt-2">
+						{labels.uploadImage}
+					</Button>
+				</div>
+			) : null
+		}
+
+		<div class="flex flex-wrap gap-3">
+			<Button type="submit" id="product-save">
+				<span id="product-save-label">{mode === 'create' ? labels.create : labels.save}</span>
+			</Button>
+			{
+				product &&
+				(product.status === 'DRAFT' || product.status === 'REJECTED') ? (
+					<Button type="button" id="product-submit" variant="secondary">
+						<span id="product-submit-label">{labels.submit}</span>
+					</Button>
+				) : null
+			}
+			{
+				product && product.status !== 'PENDING_REVIEW' && product.status !== 'ARCHIVED' ? (
+					<Button type="button" id="product-archive" variant="secondary">
+						<span id="product-archive-label">{labels.archive}</span>
+					</Button>
+				) : null
+			}
+		</div>
+	</form>
+</Card>
+
+<script>
+	const form = document.getElementById('product-form') as HTMLFormElement | null;
+	if (!form) {
+		throw new Error('Product form not found');
+	}
+
+	const config = JSON.parse(form.dataset.config ?? '{}') as {
+		mode: 'create' | 'edit';
+		productId: string | null;
+		redirectAfterCreate: string;
+		labels: Record<string, string>;
+	};
+
+	const successBox = document.getElementById('product-form-success');
+	const successText = document.getElementById('product-form-success-text');
+	const errorBox = document.getElementById('product-form-error');
+	const errorText = document.getElementById('product-form-error-text');
+	const saveLabel = document.getElementById('product-save-label');
+
+	function showError(message: string) {
+		successBox?.classList.add('hidden');
+		if (errorText) {
+			errorText.textContent = message;
+		}
+		errorBox?.classList.remove('hidden');
+	}
+
+	function showSuccess(message: string) {
+		errorBox?.classList.add('hidden');
+		if (successText) {
+			successText.textContent = message;
+		}
+		successBox?.classList.remove('hidden');
+	}
+
+	function readPayload() {
+		const title = (document.getElementById('product-title') as HTMLInputElement).value.trim();
+		const description = (
+			document.getElementById('product-description') as HTMLTextAreaElement
+		).value.trim();
+		const categoryId = (document.getElementById('product-category') as HTMLSelectElement).value;
+		const priceMajor = Number((document.getElementById('product-price') as HTMLInputElement).value);
+		const stockQty = Number((document.getElementById('product-stock') as HTMLInputElement).value);
+
+		return { title, description, categoryId, priceMajor, stockQty };
+	}
+
+	const errorMessages: Record<string, string> = {
+		prohibited_content: config.labels.errorProhibited,
+		invalid_transition: config.labels.errorSubmitNeedsImage,
+	};
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		errorBox?.classList.add('hidden');
+
+		const payload = readPayload();
+		const previousLabel = saveLabel?.textContent;
+		if (saveLabel) {
+			saveLabel.textContent =
+				config.mode === 'create' ? config.labels.creating : config.labels.saving;
+		}
+
+		try {
+			const url =
+				config.mode === 'create' ? '/api/seller/products' : `/api/seller/products/${config.productId}`;
+			const method = config.mode === 'create' ? 'POST' : 'PATCH';
+			const response = await fetch(url, {
+				method,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+				credentials: 'same-origin',
+			});
+
+			const body = (await response.json()) as { error?: string; product?: { id: string } };
+
+			if (!response.ok) {
+				showError(errorMessages[body.error ?? ''] ?? config.labels.errorGeneric);
+				return;
+			}
+
+			if (config.mode === 'create' && body.product?.id) {
+				window.location.href = `${window.location.pathname.replace(/\/new$/, '')}/${body.product.id}`;
+				return;
+			}
+
+			showSuccess(config.labels.successSaved);
+		} catch {
+			showError(config.labels.errorGeneric);
+		} finally {
+			if (saveLabel && previousLabel) {
+				saveLabel.textContent = previousLabel;
+			}
+		}
+	});
+
+	const submitButton = document.getElementById('product-submit');
+	submitButton?.addEventListener('click', async () => {
+		if (!config.productId) {
+			return;
+		}
+
+		const submitLabel = document.getElementById('product-submit-label');
+		const previous = submitLabel?.textContent;
+		if (submitLabel) {
+			submitLabel.textContent = config.labels.submitting;
+		}
+
+		try {
+			const response = await fetch(`/api/seller/products/${config.productId}/submit`, {
+				method: 'POST',
+				credentials: 'same-origin',
+			});
+			const body = (await response.json()) as { error?: string };
+
+			if (!response.ok) {
+				showError(errorMessages[body.error ?? ''] ?? config.labels.errorGeneric);
+				return;
+			}
+
+			showSuccess(config.labels.successSubmitted);
+			window.setTimeout(() => window.location.reload(), 900);
+		} catch {
+			showError(config.labels.errorGeneric);
+		} finally {
+			if (submitLabel && previous) {
+				submitLabel.textContent = previous;
+			}
+		}
+	});
+
+	const archiveButton = document.getElementById('product-archive');
+	archiveButton?.addEventListener('click', async () => {
+		if (!config.productId) {
+			return;
+		}
+
+		const archiveLabel = document.getElementById('product-archive-label');
+		const previous = archiveLabel?.textContent;
+		if (archiveLabel) {
+			archiveLabel.textContent = config.labels.archiving;
+		}
+
+		try {
+			const response = await fetch(`/api/seller/products/${config.productId}`, {
+				method: 'DELETE',
+				credentials: 'same-origin',
+			});
+
+			if (!response.ok) {
+				showError(config.labels.errorGeneric);
+				return;
+			}
+
+			showSuccess(config.labels.successArchived);
+			window.setTimeout(() => {
+				window.location.href = config.redirectAfterCreate;
+			}, 900);
+		} catch {
+			showError(config.labels.errorGeneric);
+		} finally {
+			if (archiveLabel && previous) {
+				archiveLabel.textContent = previous;
+			}
+		}
+	});
+
+	const uploadButton = document.getElementById('product-image-upload');
+	uploadButton?.addEventListener('click', async () => {
+		if (!config.productId) {
+			return;
+		}
+
+		const fileInput = document.getElementById('product-image-file') as HTMLInputElement;
+		const file = fileInput.files?.[0];
+		if (!file) {
+			return;
+		}
+
+		const formData = new FormData();
+		formData.append('file', file);
+
+		try {
+			const response = await fetch(`/api/seller/products/${config.productId}/images`, {
+				method: 'POST',
+				body: formData,
+				credentials: 'same-origin',
+			});
+
+			if (!response.ok) {
+				showError(config.labels.errorGeneric);
+				return;
+			}
+
+			window.location.reload();
+		} catch {
+			showError(config.labels.errorGeneric);
+		}
+	});
+
+	form.querySelectorAll('[data-action="remove-image"]').forEach((button) => {
+		button.addEventListener('click', async () => {
+			if (!config.productId) {
+				return;
+			}
+
+			const imageId = (button as HTMLButtonElement).dataset.imageId;
+			if (!imageId) {
+				return;
+			}
+
+			try {
+				const response = await fetch(
+					`/api/seller/products/${config.productId}/images/${imageId}`,
+					{
+						method: 'DELETE',
+						credentials: 'same-origin',
+					},
+				);
+
+				if (!response.ok) {
+					showError(config.labels.errorGeneric);
+					return;
+				}
+
+				window.location.reload();
+			} catch {
+				showError(config.labels.errorGeneric);
+			}
+		});
+	});
+</script>

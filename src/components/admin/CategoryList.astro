@@ -1,0 +1,109 @@
+---
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import type { AdminCategoryView } from '@/lib/product/categories';
+
+interface Labels {
+	name: string;
+	slug: string;
+	parent: string;
+	products: string;
+	status: string;
+	active: string;
+	inactive: string;
+	toggle: string;
+	noCategories: string;
+}
+
+interface Props {
+	categories: AdminCategoryView[];
+	labels: Labels;
+}
+
+const { categories, labels } = Astro.props;
+const config = JSON.stringify({ labels });
+---
+
+{
+	categories.length === 0 ? (
+		<Card class="p-6 text-sm text-neutral-600">{labels.noCategories}</Card>
+	) : (
+		<div class="overflow-x-auto rounded-lg border border-neutral-200" data-category-config={config}>
+			<table class="min-w-full divide-y divide-neutral-200 text-sm">
+				<thead class="bg-neutral-50">
+					<tr>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.name}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.slug}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.parent}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.products}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.status}</th>
+						<th class="px-4 py-3 text-right font-medium text-neutral-700">{labels.toggle}</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-neutral-200 bg-white">
+					{categories.map((category) => (
+						<tr>
+							<td class="px-4 py-3 font-medium text-neutral-900">
+								{category.nameEn} / {category.nameFr}
+							</td>
+							<td class="px-4 py-3 text-neutral-700">{category.slug}</td>
+							<td class="px-4 py-3 text-neutral-700">{category.parentNameEn ?? '—'}</td>
+							<td class="px-4 py-3 text-neutral-700">{category.productCount}</td>
+							<td class="px-4 py-3 text-neutral-700">
+								{category.isActive ? labels.active : labels.inactive}
+							</td>
+							<td class="px-4 py-3 text-right">
+								<Button
+									type="button"
+									variant="secondary"
+									size="sm"
+									data-action="toggle-category"
+									data-category-id={category.id}
+									data-is-active={String(category.isActive)}
+								>
+									{category.isActive ? labels.inactive : labels.active}
+								</Button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	)
+}
+
+<script>
+	const root = document.querySelector('[data-category-config]') as HTMLElement | null;
+	if (!root) {
+		throw new Error('Category list config not found');
+	}
+
+	root.querySelectorAll('[data-action="toggle-category"]').forEach((button) => {
+		button.addEventListener('click', async () => {
+			const categoryId = (button as HTMLButtonElement).dataset.categoryId;
+			const isActive = (button as HTMLButtonElement).dataset.isActive === 'true';
+			if (!categoryId) {
+				return;
+			}
+
+			(button as HTMLButtonElement).disabled = true;
+
+			try {
+				const response = await fetch(`/api/admin/categories/${categoryId}`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ isActive: !isActive }),
+					credentials: 'same-origin',
+				});
+
+				if (!response.ok) {
+					return;
+				}
+
+				window.location.reload();
+			} finally {
+				(button as HTMLButtonElement).disabled = false;
+			}
+		});
+	});
+</script>

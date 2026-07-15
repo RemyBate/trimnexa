@@ -88,6 +88,56 @@ async function main() {
 		});
 	}
 
+	const fashionCategory = await prisma.category.findUniqueOrThrow({ where: { slug: 'fashion' } });
+	const homeCategory = await prisma.category.findUniqueOrThrow({ where: { slug: 'home' } });
+
+	const subcategorySeeds = [
+		{
+			slug: 'mens-clothing',
+			parentId: fashionCategory.id,
+			sortOrder: 0,
+			en: "Men's clothing",
+			fr: 'Vêtements homme',
+		},
+		{
+			slug: 'womens-clothing',
+			parentId: fashionCategory.id,
+			sortOrder: 1,
+			en: "Women's clothing",
+			fr: 'Vêtements femme',
+		},
+		{
+			slug: 'kitchen',
+			parentId: homeCategory.id,
+			sortOrder: 0,
+			en: 'Kitchen',
+			fr: 'Cuisine',
+		},
+	];
+
+	for (const subcategory of subcategorySeeds) {
+		await prisma.category.upsert({
+			where: { slug: subcategory.slug },
+			update: {
+				parentId: subcategory.parentId,
+				sortOrder: subcategory.sortOrder,
+				isActive: true,
+			},
+			create: {
+				slug: subcategory.slug,
+				parentId: subcategory.parentId,
+				sortOrder: subcategory.sortOrder,
+				isActive: true,
+				translations: {
+					create: [
+						{ locale: 'en', name: subcategory.en },
+						{ locale: 'fr', name: subcategory.fr },
+					],
+				},
+			},
+		});
+	}
+
 	const adminEmail = 'admin@trimnexa.local';
 	const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? 'ChangeMe123!';
 
@@ -291,15 +341,69 @@ async function main() {
 		},
 	});
 
+	const kitchenCategory = await prisma.category.findUniqueOrThrow({ where: { slug: 'kitchen' } });
+
+	await prisma.product.upsert({
+		where: { slug: 'bamboo-cutting-board' },
+		update: {
+			sellerProfileId: approvedSellerProfile.id,
+			categoryId: kitchenCategory.id,
+			title: 'Bamboo Cutting Board',
+			description: 'Durable bamboo cutting board for everyday kitchen use.',
+			priceMinor: 8500n,
+			stockQty: 12,
+			status: 'ACTIVE',
+			reviewedAt: new Date(),
+			reviewedById: adminUser.id,
+		},
+		create: {
+			sellerProfileId: approvedSellerProfile.id,
+			categoryId: kitchenCategory.id,
+			title: 'Bamboo Cutting Board',
+			slug: 'bamboo-cutting-board',
+			description: 'Durable bamboo cutting board for everyday kitchen use.',
+			priceMinor: 8500n,
+			stockQty: 12,
+			status: 'ACTIVE',
+			submittedAt: new Date(),
+			reviewedAt: new Date(),
+			reviewedById: adminUser.id,
+		},
+	});
+
+	await prisma.product.upsert({
+		where: { slug: 'ceramic-mixing-bowl-draft' },
+		update: {
+			sellerProfileId: approvedSellerProfile.id,
+			categoryId: kitchenCategory.id,
+			title: 'Ceramic Mixing Bowl',
+			description: 'Draft product awaiting seller images and submission.',
+			priceMinor: 4500n,
+			stockQty: 5,
+			status: 'DRAFT',
+		},
+		create: {
+			sellerProfileId: approvedSellerProfile.id,
+			categoryId: kitchenCategory.id,
+			title: 'Ceramic Mixing Bowl',
+			slug: 'ceramic-mixing-bowl-draft',
+			description: 'Draft product awaiting seller images and submission.',
+			priceMinor: 4500n,
+			stockQty: 5,
+			status: 'DRAFT',
+		},
+	});
+
 	await prisma.auditLog.create({
 		data: {
 			action: 'seed.executed',
 			entityType: 'seed',
-			entityId: 'phase-6',
+			entityId: 'phase-7',
 			actorId: adminUser.id,
 			metadata: {
-				categories: categorySeeds.length,
+				categories: categorySeeds.length + subcategorySeeds.length,
 				sellerSeeds: 2,
+				productSeeds: 2,
 				note: 'Development seed data only — change admin credentials before production.',
 			},
 		},

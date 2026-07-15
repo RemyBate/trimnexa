@@ -37,4 +37,24 @@ describe('mapAuthError', () => {
 	it('falls back to generic message', () => {
 		expect(mapAuthError('login', { message: 'internal failure' }, labels)).toBe('Generic error');
 	});
+
+	it('maps invalid reset tokens', () => {
+		expect(
+			mapAuthError(
+				'reset_password',
+				{ code: 'INVALID_TOKEN' },
+				{ ...labels, invalidResetToken: 'Invalid token' },
+			),
+		).toBe('Invalid token');
+	});
+
+	it('maps forgot-password rate limiting', () => {
+		expect(
+			mapAuthError(
+				'forgot_password',
+				{ status: 429 },
+				{ ...labels, rateLimited: 'Too many attempts' },
+			),
+		).toBe('Too many attempts');
+	});
 });

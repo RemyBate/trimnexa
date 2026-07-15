@@ -10,6 +10,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.7.0] — 2026-07-14
+
+Milestone 7 — Phase 7 categories and product management (pending owner review).
+
+### Added
+
+- Product catalogue models: `Product`, `ProductImage`, `InventoryAdjustment`, `ProductStatus`
+- Migration `20260714180000_product_catalogue`
+- Product services (`src/lib/product/`), admin moderation (`src/lib/admin/products.ts`, `src/lib/admin/categories.ts`)
+- Local product image uploads (`src/lib/storage/product-media.ts`) with type/size validation
+- Seller APIs: `/api/seller/products/*`, `/api/seller/categories`
+- Admin APIs: `/api/admin/products/*`, `/api/admin/categories/*`
+- Pages: `/seller/products`, `/admin/products`, `/admin/categories`
+- Draft → pending review → active/rejected workflow with prohibited-content checks
+- Inventory adjustment history on seller stock updates
+- Category subcategory seeds (fashion, home) and admin activate/deactivate toggles
+- Seed products for approved seller (active + draft)
+
+### Deferred (documented in roadmap)
+
+- Product attributes and multi-SKU variants (single-SKU MVP for Phase 7)
+
+---
+
 ## [0.6.0] — 2026-07-14
 
 Milestone 6 — Phase 6 seller application and shop management (pending owner review).

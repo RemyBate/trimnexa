@@ -1,0 +1,68 @@
+---
+import Alert from '@/components/common/Alert.astro';
+import ProductReviewList from '@/components/admin/ProductReviewList.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { listProductsForReview } from '@/lib/admin/products';
+import { getAdminNavItems } from '@/lib/admin/navigation';
+import { requireRoles } from '@/lib/authz';
+import { Role } from '@prisma/client';
+import AdminLayout from '@/layouts/AdminLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+await requireRoles(Astro, locale, [Role.ADMINISTRATOR, Role.STAFF]);
+
+const products = await listProductsForReview();
+const navItems = getAdminNavItems(t);
+const flash = Astro.url.searchParams.get('flash');
+const flashMessage =
+	flash === 'approved'
+		? t('admin.productApprovedFlash')
+		: flash === 'rejected'
+			? t('admin.productRejectedFlash')
+			: null;
+---
+
+<AdminLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	title={t('admin.productsTitle')}
+	navItems={navItems}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('admin.productsTitle'),
+		t('admin.productsDescription'),
+		{ noindex: true },
+	)}
+>
+	{
+		flashMessage ? (
+			<div role="status">
+				<Alert variant="success" class="mb-6">
+					{flashMessage}
+				</Alert>
+			</div>
+		) : null
+	}
+	<ProductReviewList
+		locale={locale}
+		products={products}
+		labels={{
+			title: t('admin.productTitle'),
+			seller: t('admin.productSeller'),
+			category: t('admin.productCategory'),
+			status: t('admin.productStatus'),
+			price: t('admin.productPrice'),
+			stock: t('admin.productStock'),
+			submitted: t('admin.submitted'),
+			review: t('admin.reviewProduct'),
+			noProducts: t('admin.noProducts'),
+		}}
+	/>
+</AdminLayout>

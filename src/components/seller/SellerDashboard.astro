@@ -17,6 +17,8 @@ interface Labels {
 	manageShop: string;
 	productsSoon: string;
 	ordersSoon: string;
+	manageProducts: string;
+	manageProductsDescription: string;
 	checklistShop: string;
 	checklistAddress: string;
 	checklistLogo: string;
@@ -65,8 +67,14 @@ const config = JSON.stringify({ labels });
 			</a>
 		</Card>
 		<Card class="p-5">
-			<h3 class="font-semibold text-neutral-900">{labels.productsSoon}</h3>
-			<p class="mt-2 text-sm text-neutral-600">{labels.ordersSoon}</p>
+			<h3 class="font-semibold text-neutral-900">{labels.manageProducts}</h3>
+			<p class="mt-2 text-sm text-neutral-600">{labels.manageProductsDescription}</p>
+			<a
+				href={localizedPath(locale, '/seller/products')}
+				class="mt-4 inline-flex text-sm font-medium text-primary-700 hover:text-primary-800"
+			>
+				{labels.manageProducts}
+			</a>
 		</Card>
 	</div>
 

@@ -13,13 +13,18 @@ const currentPath = Astro.url.pathname;
 const returnTo = Astro.url.searchParams.get('returnTo') ?? localizedPath(locale, '/account');
 const errorCode = Astro.url.searchParams.get('error');
 const registered = Astro.url.searchParams.get('registered') === '1';
+const resetSuccess = Astro.url.searchParams.get('reset') === 'success';
 
 if (Astro.locals.user) {
 	return Astro.redirect(returnTo);
 }
 
 const initialError = errorCode === 'account_suspended' ? t('auth.errorSuspended') : undefined;
-const successMessage = registered ? t('auth.registerSuccess') : undefined;
+const successMessage = resetSuccess
+	? t('auth.loginResetSuccess')
+	: registered
+		? t('auth.registerSuccess')
+		: undefined;
 ---
 
 <PublicLayout

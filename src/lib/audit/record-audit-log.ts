@@ -39,4 +39,10 @@ export const AuditActions = {
 	SELLER_APPLICATION_REJECTED: 'seller.application.rejected',
 	SELLER_SUSPENDED: 'seller.suspended',
 	SELLER_REACTIVATED: 'seller.reactivated',
+	PRODUCT_APPROVED: 'product.approved',
+	PRODUCT_REJECTED: 'product.rejected',
+	PRODUCT_SUSPENDED: 'product.suspended',
+	CATEGORY_UPDATED: 'category.updated',
+	PASSWORD_RESET_REQUESTED: 'password.reset.requested',
+	PASSWORD_RESET_COMPLETED: 'password.reset.completed',
 } as const;

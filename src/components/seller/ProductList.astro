@@ -1,0 +1,74 @@
+---
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import { localizedPath } from '@/i18n';
+import type { SupportedLocale } from '@/config/site';
+import type { ProductView } from '@/lib/product/serialize';
+
+interface Labels {
+	title: string;
+	status: string;
+	price: string;
+	stock: string;
+	updated: string;
+	edit: string;
+	newProduct: string;
+	noProducts: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	products: ProductView[];
+	labels: Labels;
+}
+
+const { locale, products, labels } = Astro.props;
+---
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+	<h2 class="text-xl font-semibold text-neutral-900">{labels.title}</h2>
+	<Button href={localizedPath(locale, '/seller/products/new')}>{labels.newProduct}</Button>
+</div>
+
+{
+	products.length === 0 ? (
+		<Card class="p-6 text-sm text-neutral-600">{labels.noProducts}</Card>
+	) : (
+		<div class="overflow-x-auto rounded-lg border border-neutral-200">
+			<table class="min-w-full divide-y divide-neutral-200 text-sm">
+				<thead class="bg-neutral-50">
+					<tr>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.title}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.status}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.price}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.stock}</th>
+						<th class="px-4 py-3 text-left font-medium text-neutral-700">{labels.updated}</th>
+						<th class="px-4 py-3 text-right font-medium text-neutral-700">{labels.edit}</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-neutral-200 bg-white">
+					{products.map((product) => (
+						<tr>
+							<td class="px-4 py-3 font-medium text-neutral-900">{product.title}</td>
+							<td class="px-4 py-3 text-neutral-700">{product.status}</td>
+							<td class="px-4 py-3 text-neutral-700">{product.priceFormatted}</td>
+							<td class="px-4 py-3 text-neutral-700">{product.stockQty}</td>
+							<td class="px-4 py-3 text-neutral-700">
+								{new Date(product.updatedAt).toLocaleDateString(locale)}
+							</td>
+							<td class="px-4 py-3 text-right">
+								<Button
+									href={localizedPath(locale, `/seller/products/${product.id}`)}
+									variant="secondary"
+									size="sm"
+								>
+									{labels.edit}
+								</Button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	)
+}
