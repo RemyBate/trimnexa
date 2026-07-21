@@ -1,0 +1,70 @@
+---
+import Card from '@/components/common/Card.astro';
+import type { SupportedLocale } from '@/config/site';
+import { localizedPath } from '@/i18n';
+import type { CatalogueProductCard } from '@/lib/catalogue/types';
+
+interface Labels {
+	outOfStock: string;
+	inStock: string;
+	bySeller: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	product: CatalogueProductCard;
+	labels: Labels;
+}
+
+const { locale, product, labels } = Astro.props;
+const productHref = localizedPath(locale, `/products/${product.slug}`);
+---
+
+<Card class="overflow-hidden p-0 transition-shadow hover:shadow-md">
+	<a
+		href={productHref}
+		class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+	>
+		<div class="aspect-square bg-neutral-100">
+			{
+				product.imageUrl ? (
+					<img
+						src={product.imageUrl}
+						alt={product.imageAlt ?? product.title}
+						class="h-full w-full object-cover"
+						loading="lazy"
+					/>
+				) : (
+					<div class="flex h-full items-center justify-center text-sm text-neutral-500">
+						{product.title.slice(0, 1)}
+					</div>
+				)
+			}
+		</div>
+		<div class="space-y-2 p-4">
+			<h3 class="line-clamp-2 text-sm font-semibold text-neutral-900">{product.title}</h3>
+			<p class="text-lg font-bold text-neutral-900">{product.priceFormatted}</p>
+			<div class="flex flex-wrap items-center gap-2 text-xs text-neutral-600">
+				{
+					product.inStock ? (
+						<span class="rounded-full bg-success-50 px-2 py-0.5 font-medium text-success-800">
+							{labels.inStock}: {product.stockQty}
+						</span>
+					) : (
+						<span class="rounded-full bg-neutral-100 px-2 py-0.5 font-medium text-neutral-700">
+							{labels.outOfStock}
+						</span>
+					)
+				}
+				{
+					product.sellerShopName && product.sellerShopSlug ? (
+						<span>
+							{labels.bySeller}{' '}
+							<span class="font-medium text-neutral-800">{product.sellerShopName}</span>
+						</span>
+					) : null
+				}
+			</div>
+		</div>
+	</a>
+</Card>

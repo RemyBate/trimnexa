@@ -35,11 +35,7 @@ export const POST: APIRoute = async (context) => {
 	const result = await createSellerProduct(authResult.userId, parsed.data);
 	if (!result.ok) {
 		const status =
-			result.code === 'forbidden'
-				? 403
-				: result.code === 'prohibited_content'
-					? 422
-					: 400;
+			result.code === 'forbidden' ? 403 : result.code === 'prohibited_content' ? 422 : 400;
 		return jsonResponse({ error: result.code }, status);
 	}
 

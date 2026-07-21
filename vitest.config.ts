@@ -14,5 +14,9 @@ export default defineConfig({
 		include: ['src/**/*.test.ts'],
 		environment: 'node',
 		setupFiles: ['./vitest.setup.ts'],
+		// These integration tests hit Prisma + Better Auth and can take longer
+		// on local machines (especially when PostgreSQL is under load).
+		hookTimeout: 30_000,
+		testTimeout: 30_000,
 	},
 });

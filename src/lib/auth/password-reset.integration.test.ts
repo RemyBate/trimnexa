@@ -2,12 +2,40 @@ import { hashPassword } from 'better-auth/crypto';
 import { describe, expect, it, beforeAll, beforeEach } from 'vitest';
 
 import { auth } from '@/lib/auth';
-import { getCapturedPasswordResetToken, clearCapturedPasswordResetTokens } from '@/lib/auth/password-reset-test-capture';
+import {
+	getCapturedPasswordResetToken,
+	clearCapturedPasswordResetTokens,
+} from '@/lib/auth/password-reset-test-capture';
 import { validatePasswordFields } from '@/lib/auth/validation';
 import { clearCapturedEmails, getCapturedEmails } from '@/lib/email/outbox';
 import { prisma } from '@/lib/db';
+import pg from 'pg';
 
-const hasDatabase = Boolean(process.env.DATABASE_URL);
+// This integration suite depends on a reachable PostgreSQL instance.
+// If `DATABASE_URL` is set but the DB is unreachable/hangs, Prisma queries can exceed
+// Vitest timeouts and fail the whole test run. We proactively probe the DB with a
+// short timeout and skip when unavailable.
+const hasDatabase = await (async () => {
+	const databaseUrl = process.env.DATABASE_URL;
+	if (!databaseUrl) return false;
+
+	const pool = new pg.Pool({
+		connectionString: databaseUrl,
+		connectionTimeoutMillis: 2000,
+	});
+
+	try {
+		await Promise.race([
+			pool.query('SELECT 1'),
+			new Promise((_, reject) => setTimeout(() => reject(new Error('db_probe_timeout')), 2500)),
+		]);
+		return true;
+	} catch {
+		return false;
+	} finally {
+		await pool.end();
+	}
+})();
 
 describe.skipIf(!hasDatabase)('password reset integration', () => {
 	const buyerEmail = 'admin@trimnexa.local';

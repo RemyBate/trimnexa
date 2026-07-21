@@ -10,7 +10,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.7.0] — 2026-07-14
+## [0.8.0] — 2026-07-15
+
+Milestone 8 — Phase 8 marketplace catalogue and search (pending owner review).
+
+### Added
+
+- Public catalogue services (`src/lib/catalogue/`) with server-safe listing, search, filters, and pagination
+- Pages: `/products`, `/products/[slug]`, `/categories/[slug]`, `/shops`, `/shops/[slug]`, live `/search`
+- Catalogue UI: product cards, grid, toolbar, breadcrumbs, pagination, empty states, product detail
+- JSON-LD structured data for products and breadcrumbs
+- Home page featured products and live category tiles from the database
+- Category navigation links to real category pages
+- Bilingual `catalogue.*` i18n strings (EN/FR)
+- Unit tests for catalogue query validation
+
+### Notes
+
+- Add to cart remains a placeholder until Phase 9
+- Only `ACTIVE` and `OUT_OF_STOCK` products from approved sellers are visible
+
+---
 
 Milestone 7 — Phase 7 categories and product management (pending owner review).
 

@@ -4,9 +4,9 @@ A trusted multi-vendor e-commerce marketplace for Cameroon. Trimnexa connects ve
 
 **Website:** [https://trimnexa.com](https://trimnexa.com)
 
-**Current project phase:** Milestone 5 — Phase 5 complete; pending owner review
+**Current project phase:** Milestone 8 — Phase 8 complete; pending owner review
 
-**Last roadmap update:** 2026-07-14
+**Last roadmap update:** 2026-07-15
 
 ---
 
@@ -28,8 +28,8 @@ Full vision, mission, values, and business goals: [docs/PRD.md](docs/PRD.md)
 - [x] Phase 5 — Customer account
 - [ ] Phase 6 — Seller and shop
 - [x] Phase 6 — Seller application & shop
-- [x] Phase 7 — Products *(MVP: single-SKU; attributes/variants deferred)*
-- [ ] Phase 8 — Catalogue and search
+- [x] Phase 7 — Products _(MVP: single-SKU; attributes/variants deferred)_
+- [x] Phase 8 — Catalogue and search _(pending owner review)_
 - [ ] Phase 9 — Cart and wishlist
 - [ ] Phase 10 — Checkout
 - [ ] Phase 11 — Payments
@@ -59,7 +59,7 @@ Full roadmap with tasks and acceptance criteria: [docs/ROADMAP.md](docs/ROADMAP.
 | Database             | Prisma 7 + PostgreSQL                                              |
 | Authentication       | Better Auth (email/password, sessions, RBAC)                       |
 | Customer account     | Dashboard, profile, addresses, orders/wishlist/support foundations |
-| Marketplace features | Catalogue and checkout not started                                 |
+| Marketplace features | Public catalogue, search, categories, and seller shops live        |
 | Deployment adapter   | `@astrojs/node` (server output)                                    |
 
 Run `npm run db:migrate:dev` and `npm run db:seed` after configuring PostgreSQL and `.env`.

@@ -47,13 +47,7 @@ export async function saveProductMediaFile(
 
 	const extension = getExtension(file.type);
 	const fileName = `${randomUUID()}.${extension}`;
-	const relativePath = path.posix.join(
-		'uploads',
-		'products',
-		sellerProfileId,
-		productId,
-		fileName,
-	);
+	const relativePath = path.posix.join('uploads', 'products', sellerProfileId, productId, fileName);
 	const absoluteDir = path.join(
 		process.cwd(),
 		'public',

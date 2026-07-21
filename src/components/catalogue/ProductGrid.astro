@@ -1,0 +1,36 @@
+---
+import ProductCard from '@/components/catalogue/ProductCard.astro';
+import EmptyState from '@/components/catalogue/EmptyState.astro';
+import type { SupportedLocale } from '@/config/site';
+import type { CatalogueProductCard } from '@/lib/catalogue/types';
+
+interface Labels {
+	outOfStock: string;
+	inStock: string;
+	bySeller: string;
+	emptyTitle: string;
+	emptyDescription: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	products: CatalogueProductCard[];
+	labels: Labels;
+}
+
+const { locale, products, labels } = Astro.props;
+---
+
+{
+	products.length === 0 ? (
+		<EmptyState title={labels.emptyTitle} description={labels.emptyDescription} />
+	) : (
+		<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+			{products.map((product) => (
+				<li>
+					<ProductCard locale={locale} product={product} labels={labels} />
+				</li>
+			))}
+		</ul>
+	)
+}

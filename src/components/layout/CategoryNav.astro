@@ -1,6 +1,6 @@
 ---
 import type { SupportedLocale } from '@/config/site';
-import { categoryLinks } from '@/config/navigation';
+import { listTopLevelCategories } from '@/lib/catalogue/categories';
 import type { PageContext } from '@/i18n';
 import { localizedPath } from '@/i18n';
 
@@ -10,19 +10,20 @@ interface Props {
 }
 
 const { locale, t } = Astro.props;
+const categories = await listTopLevelCategories(locale);
 ---
 
 <nav aria-label={t('nav.categories')} class="border-b border-neutral-200 bg-white">
 	<div class="mx-auto max-w-7xl overflow-x-auto px-4 sm:px-6 lg:px-8">
 		<ul class="flex min-w-max gap-1 py-2">
 			{
-				categoryLinks.map((category) => (
+				categories.map((category) => (
 					<li>
 						<a
-							href={`${localizedPath(locale)}#categories`}
+							href={localizedPath(locale, `/categories/${category.slug}`)}
 							class="inline-flex whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-primary-50 hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
 						>
-							{t(category.key)}
+							{category.name}
 						</a>
 					</li>
 				))

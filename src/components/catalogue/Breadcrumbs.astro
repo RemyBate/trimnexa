@@ -1,0 +1,36 @@
+---
+import type { SupportedLocale } from '@/config/site';
+
+interface Crumb {
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	items: Crumb[];
+}
+
+const { locale: _locale, items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class="text-sm text-neutral-600">
+	<ol class="flex flex-wrap items-center gap-1">
+		{
+			items.map((item, index) => (
+				<li class="inline-flex items-center gap-1">
+					{index > 0 ? <span aria-hidden="true">/</span> : null}
+					{item.href ? (
+						<a href={item.href} class="font-medium text-primary-700 hover:text-primary-800">
+							{item.label}
+						</a>
+					) : (
+						<span class="text-neutral-900" aria-current="page">
+							{item.label}
+						</span>
+					)}
+				</li>
+			))
+		}
+	</ol>
+</nav>

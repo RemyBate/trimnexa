@@ -1,0 +1,65 @@
+---
+import Button from '@/components/common/Button.astro';
+import type { PaginatedResult } from '@/lib/catalogue/types';
+
+interface Labels {
+	previous: string;
+	next: string;
+	page: string;
+}
+
+interface Props {
+	basePath: string;
+	query: Record<string, string | undefined>;
+	result: Pick<PaginatedResult<unknown>, 'page' | 'totalPages'>;
+	labels: Labels;
+}
+
+const { basePath, query, result, labels } = Astro.props;
+
+function pageHref(page: number): string {
+	const params = new URLSearchParams();
+
+	for (const [key, value] of Object.entries(query)) {
+		if (value) {
+			params.set(key, value);
+		}
+	}
+
+	if (page > 1) {
+		params.set('page', String(page));
+	} else {
+		params.delete('page');
+	}
+
+	const serialized = params.toString();
+	return serialized ? `${basePath}?${serialized}` : basePath;
+}
+
+const previousPage = result.page > 1 ? result.page - 1 : null;
+const nextPage = result.page < result.totalPages ? result.page + 1 : null;
+---
+
+{
+	result.totalPages > 1 ? (
+		<nav class="mt-8 flex items-center justify-between gap-4" aria-label="Pagination">
+			<div>
+				{previousPage ? (
+					<Button href={pageHref(previousPage)} variant="secondary" size="sm">
+						{labels.previous}
+					</Button>
+				) : null}
+			</div>
+			<p class="text-sm text-neutral-600">
+				{labels.page} {result.page} / {result.totalPages}
+			</p>
+			<div>
+				{nextPage ? (
+					<Button href={pageHref(nextPage)} variant="secondary" size="sm">
+						{labels.next}
+					</Button>
+				) : null}
+			</div>
+		</nav>
+	) : null
+}

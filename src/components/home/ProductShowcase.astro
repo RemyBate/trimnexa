@@ -1,0 +1,44 @@
+---
+import Button from '@/components/common/Button.astro';
+import Container from '@/components/common/Container.astro';
+import ProductGrid from '@/components/catalogue/ProductGrid.astro';
+import type { SupportedLocale } from '@/config/site';
+import type { PageContext } from '@/i18n';
+import type { CatalogueProductCard } from '@/lib/catalogue/types';
+
+interface Props {
+	locale: SupportedLocale;
+	title: string;
+	products: CatalogueProductCard[];
+	t: PageContext['t'];
+	viewAllHref?: string;
+}
+
+const { locale, title, products, t, viewAllHref } = Astro.props;
+---
+
+<section class="py-10 sm:py-12">
+	<Container>
+		<div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+			<h2 class="text-2xl font-bold text-neutral-900">{title}</h2>
+			{
+				viewAllHref ? (
+					<Button href={viewAllHref} variant="secondary" size="sm">
+						{t('catalogue.viewAll')}
+					</Button>
+				) : null
+			}
+		</div>
+		<ProductGrid
+			locale={locale}
+			products={products}
+			labels={{
+				outOfStock: t('catalogue.outOfStock'),
+				inStock: t('catalogue.inStock'),
+				bySeller: t('catalogue.bySeller'),
+				emptyTitle: t('catalogue.emptyTitle'),
+				emptyDescription: t('catalogue.emptyDescription'),
+			}}
+		/>
+	</Container>
+</section>

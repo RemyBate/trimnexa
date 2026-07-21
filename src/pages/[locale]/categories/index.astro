@@ -1,18 +1,17 @@
 ---
-import Card from '@/components/common/Card.astro';
 import Container from '@/components/common/Container.astro';
+import Card from '@/components/common/Card.astro';
 import EmptyState from '@/components/catalogue/EmptyState.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
 import { listTopLevelCategories } from '@/lib/catalogue/categories';
-import type { SupportedLocale } from '@/config/site';
-import type { PageContext } from '@/i18n';
-import { localizedPath } from '@/i18n';
+import PublicLayout from '@/layouts/PublicLayout.astro';
 
-interface Props {
-	locale: SupportedLocale;
-	t: PageContext['t'];
-}
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
 
-const { locale, t } = Astro.props;
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
 const categories = await listTopLevelCategories(locale);
 
 const categoryColors = [
@@ -25,22 +24,31 @@ const categoryColors = [
 ];
 ---
 
-<section id="categories" class="bg-white py-12 sm:py-16">
-	<Container>
-		<div class="mx-auto max-w-2xl text-center">
-			<h2 class="text-3xl font-bold text-neutral-900">{t('home.featuredCategories')}</h2>
-			<p class="mt-3 text-neutral-600">{t('home.featuredCategoriesSubtitle')}</p>
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('catalogue.categoriesTitle'),
+		t('catalogue.categoriesDescription'),
+	)}
+>
+	<Container class="space-y-8 py-10">
+		<div>
+			<h1 class="text-3xl font-bold text-neutral-900">{t('catalogue.categoriesTitle')}</h1>
+			<p class="mt-2 text-neutral-600">{t('catalogue.categoriesDescription')}</p>
 		</div>
+
 		{
 			categories.length === 0 ? (
-				<div class="mt-10">
-					<EmptyState
-						title={t('catalogue.emptyCategoriesTitle')}
-						description={t('catalogue.emptyCategoriesDescription')}
-					/>
-				</div>
+				<EmptyState
+					title={t('catalogue.emptyCategoriesTitle')}
+					description={t('catalogue.emptyCategoriesDescription')}
+				/>
 			) : (
-				<ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{categories.map((category, index) => (
 						<li>
 							<a href={localizedPath(locale, `/categories/${category.slug}`)}>
@@ -61,4 +69,4 @@ const categoryColors = [
 			)
 		}
 	</Container>
-</section>
+</PublicLayout>

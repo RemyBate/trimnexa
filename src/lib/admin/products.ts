@@ -7,12 +7,10 @@ import { mapProduct, type ProductView } from '@/lib/product/serialize';
 import type { ProductRejectionInput, ProductReviewInput } from '@/lib/product/validation';
 
 export type AdminProductErrorCode =
-	| 'not_found'
-	| 'already_reviewed'
-	| 'invalid_transition'
-	| 'profile_suspended';
+	'not_found' | 'already_reviewed' | 'invalid_transition' | 'profile_suspended';
 
-export type AdminProductResult<T> = { ok: true; data: T } | { ok: false; code: AdminProductErrorCode };
+export type AdminProductResult<T> =
+	{ ok: true; data: T } | { ok: false; code: AdminProductErrorCode };
 
 export interface AdminProductListItem {
 	id: string;
@@ -55,14 +53,30 @@ const productInclude = {
 };
 
 function mapAdminListItem(product: {
+	// Fields required by `mapProduct()`
 	id: string;
+	sellerProfileId: string;
+	categoryId: string;
 	title: string;
 	slug: string;
-	status: ProductStatus;
+	description: string | null;
 	priceMinor: bigint;
+	currency: string;
 	stockQty: number;
+	status: ProductStatus;
 	submittedAt: Date | null;
+	reviewedAt: Date | null;
+	reviewNotes: string | null;
+	createdAt: Date;
 	updatedAt: Date;
+	images?: Array<{
+		id: string;
+		path: string;
+		altText: string | null;
+		sortOrder: number;
+	}>;
+
+	// Extra fields used for the admin list item
 	sellerProfile: { shopName: string | null; user: { email: string } };
 	category: { translations: Array<{ name: string }> };
 }): AdminProductListItem {
@@ -112,7 +126,9 @@ export async function listProductsForReview(): Promise<AdminProductListItem[]> {
 	return products.map(mapAdminListItem);
 }
 
-export async function getProductDetailForAdmin(productId: string): Promise<AdminProductDetail | null> {
+export async function getProductDetailForAdmin(
+	productId: string,
+): Promise<AdminProductDetail | null> {
 	const product = await prisma.product.findUnique({
 		where: { id: productId },
 		include: productInclude,

@@ -1,17 +1,36 @@
 ---
-import Alert from '@/components/common/Alert.astro';
 import Container from '@/components/common/Container.astro';
 import SearchBar from '@/components/layout/SearchBar.astro';
+import CatalogueToolbar from '@/components/catalogue/CatalogueToolbar.astro';
+import Pagination from '@/components/catalogue/Pagination.astro';
+import ProductGrid from '@/components/catalogue/ProductGrid.astro';
 import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
-import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { listPublicProducts } from '@/lib/catalogue/products';
+import { parseCatalogueSearchParams } from '@/lib/catalogue/validation';
 import PublicLayout from '@/layouts/PublicLayout.astro';
 
-export const prerender = true;
+export const prerender = false;
 export const getStaticPaths = getStaticPathsForLocale;
 
 const { locale, t } = getPageContext(Astro);
 const currentPath = Astro.url.pathname;
-const query = Astro.url.searchParams.get('q')?.trim() ?? '';
+const parsed = parseCatalogueSearchParams(Astro.url.searchParams);
+const query = parsed.q?.trim() ?? '';
+const basePath = localizedPath(locale, '/search');
+
+const result = query
+	? await listPublicProducts({
+			locale,
+			page: parsed.page,
+			pageSize: parsed.pageSize,
+			sort: parsed.sort,
+			q: query,
+			minPriceMajor: parsed.minPrice,
+			maxPriceMajor: parsed.maxPrice,
+			inStockOnly: parsed.inStock,
+		})
+	: { items: [], page: 1, pageSize: parsed.pageSize, totalItems: 0, totalPages: 0 };
 ---
 
 <PublicLayout
@@ -21,24 +40,79 @@ const query = Astro.url.searchParams.get('q')?.trim() ?? '';
 	seo={createLocalizedPageMetadata(
 		locale,
 		currentPath,
-		t('search.metaTitle'),
+		query ? `${t('search.title')}: ${query}` : t('search.metaTitle'),
 		t('search.metaDescription'),
 	)}
 >
-	<Container class="py-12">
-		<div class="mx-auto max-w-3xl space-y-6">
+	<Container class="space-y-6 py-10">
+		<div class="mx-auto max-w-3xl space-y-4">
 			<h1 class="text-3xl font-bold text-neutral-900">{t('search.title')}</h1>
 			<SearchBar locale={locale} t={t} />
-			{
-				query ? (
-					<p class="text-neutral-700">
-						{t('search.resultsFor')}: <strong>{query}</strong>
-					</p>
-				) : (
-					<p class="text-neutral-600">{t('search.noQuery')}</p>
-				)
-			}
-			<Alert variant="info">{t('search.placeholder')}</Alert>
 		</div>
+
+		{
+			query ? (
+				<>
+					<p class="text-neutral-700">
+						{t('search.resultsFor')}: <strong>{query}</strong> ({result.totalItems}{' '}
+						{t('catalogue.resultsLabel')})
+					</p>
+
+					<CatalogueToolbar
+						action={basePath}
+						query={{
+							q: query,
+							sort: parsed.sort,
+							minPrice: parsed.minPrice,
+							maxPrice: parsed.maxPrice,
+							inStock: parsed.inStock,
+						}}
+						labels={{
+							sort: t('catalogue.sort'),
+							sortNewest: t('catalogue.sortNewest'),
+							sortPriceAsc: t('catalogue.sortPriceAsc'),
+							sortPriceDesc: t('catalogue.sortPriceDesc'),
+							sortTitleAsc: t('catalogue.sortTitleAsc'),
+							inStockOnly: t('catalogue.inStockOnly'),
+							minPrice: t('catalogue.minPrice'),
+							maxPrice: t('catalogue.maxPrice'),
+							applyFilters: t('catalogue.applyFilters'),
+							resetFilters: t('catalogue.resetFilters'),
+						}}
+					/>
+
+					<ProductGrid
+						locale={locale}
+						products={result.items}
+						labels={{
+							outOfStock: t('catalogue.outOfStock'),
+							inStock: t('catalogue.inStock'),
+							bySeller: t('catalogue.bySeller'),
+							emptyTitle: t('catalogue.emptySearchTitle'),
+							emptyDescription: t('catalogue.emptySearchDescription'),
+						}}
+					/>
+
+					<Pagination
+						basePath={basePath}
+						query={{
+							q: query,
+							sort: parsed.sort,
+							minPrice: parsed.minPrice?.toString(),
+							maxPrice: parsed.maxPrice?.toString(),
+							inStock: parsed.inStock ? '1' : undefined,
+						}}
+						result={result}
+						labels={{
+							previous: t('catalogue.previousPage'),
+							next: t('catalogue.nextPage'),
+							page: t('catalogue.page'),
+						}}
+					/>
+				</>
+			) : (
+				<p class="text-neutral-600">{t('search.noQuery')}</p>
+			)
+		}
 	</Container>
 </PublicLayout>

@@ -49,11 +49,7 @@ export const POST: APIRoute = async (context) => {
 
 		if (!result.ok) {
 			const status =
-				result.code === 'not_found'
-					? 404
-					: result.code === 'image_limit_reached'
-						? 413
-						: 400;
+				result.code === 'not_found' ? 404 : result.code === 'image_limit_reached' ? 413 : 400;
 			return jsonResponse({ error: result.code }, status);
 		}
 

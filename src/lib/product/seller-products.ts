@@ -20,7 +20,8 @@ export type SellerProductErrorCode =
 	| 'invalid_transition'
 	| 'image_limit_reached';
 
-export type SellerProductResult<T> = { ok: true; data: T } | { ok: false; code: SellerProductErrorCode };
+export type SellerProductResult<T> =
+	{ ok: true; data: T } | { ok: false; code: SellerProductErrorCode };
 
 const productInclude = {
 	images: {

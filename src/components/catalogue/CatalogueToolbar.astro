@@ -1,0 +1,120 @@
+---
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import type { CatalogueSort } from '@/lib/catalogue/types';
+
+interface Labels {
+	sort: string;
+	sortNewest: string;
+	sortPriceAsc: string;
+	sortPriceDesc: string;
+	sortTitleAsc: string;
+	inStockOnly: string;
+	minPrice: string;
+	maxPrice: string;
+	applyFilters: string;
+	resetFilters: string;
+}
+
+interface Props {
+	action: string;
+	query: {
+		q?: string;
+		sort: CatalogueSort;
+		minPrice?: number;
+		maxPrice?: number;
+		inStock?: boolean;
+		category?: string;
+		shop?: string;
+	};
+	labels: Labels;
+	showPriceFilters?: boolean;
+}
+
+const { action, query, labels, showPriceFilters = true } = Astro.props;
+---
+
+<Card class="p-4">
+	<form method="get" action={action} class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+		{query.q ? <input type="hidden" name="q" value={query.q} /> : null}
+		{query.category ? <input type="hidden" name="category" value={query.category} /> : null}
+		{query.shop ? <input type="hidden" name="shop" value={query.shop} /> : null}
+
+		<div>
+			<label for="catalogue-sort" class="mb-1 block text-sm font-medium text-neutral-800">
+				{labels.sort}
+			</label>
+			<select
+				id="catalogue-sort"
+				name="sort"
+				class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm"
+			>
+				<option value="newest" selected={query.sort === 'newest'}>{labels.sortNewest}</option>
+				<option value="price_asc" selected={query.sort === 'price_asc'}
+					>{labels.sortPriceAsc}</option
+				>
+				<option value="price_desc" selected={query.sort === 'price_desc'}
+					>{labels.sortPriceDesc}</option
+				>
+				<option value="title_asc" selected={query.sort === 'title_asc'}
+					>{labels.sortTitleAsc}</option
+				>
+			</select>
+		</div>
+
+		{
+			showPriceFilters ? (
+				<>
+					<div>
+						<label
+							for="catalogue-min-price"
+							class="mb-1 block text-sm font-medium text-neutral-800"
+						>
+							{labels.minPrice}
+						</label>
+						<input
+							id="catalogue-min-price"
+							name="minPrice"
+							type="number"
+							min="0"
+							step="1"
+							value={query.minPrice ?? ''}
+							class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm"
+						/>
+					</div>
+					<div>
+						<label
+							for="catalogue-max-price"
+							class="mb-1 block text-sm font-medium text-neutral-800"
+						>
+							{labels.maxPrice}
+						</label>
+						<input
+							id="catalogue-max-price"
+							name="maxPrice"
+							type="number"
+							min="0"
+							step="1"
+							value={query.maxPrice ?? ''}
+							class="block w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm"
+						/>
+					</div>
+				</>
+			) : null
+		}
+
+		<div class="flex items-end">
+			<label class="inline-flex items-center gap-2 text-sm text-neutral-800">
+				<input type="checkbox" name="inStock" value="1" checked={query.inStock} />
+				{labels.inStockOnly}
+			</label>
+		</div>
+
+		<div class="flex flex-wrap items-end gap-2 md:col-span-2 xl:col-span-4">
+			<Button type="submit">{labels.applyFilters}</Button>
+			<Button href={action} variant="secondary">
+				{labels.resetFilters}
+			</Button>
+		</div>
+	</form>
+</Card>

@@ -1,0 +1,96 @@
+---
+import Container from '@/components/common/Container.astro';
+import PageNotFound from '@/components/common/PageNotFound.astro';
+import ProductDetail from '@/components/catalogue/ProductDetail.astro';
+import { site } from '@/config/site';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getOpenGraphLocale, getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { createPageMetadata } from '@/seo/metadata';
+import {
+	buildBreadcrumbStructuredData,
+	buildProductStructuredData,
+} from '@/lib/catalogue/structured-data';
+import { getPublicProductBySlug } from '@/lib/catalogue/products';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const slug = (Astro.params as Record<string, string | undefined>).slug;
+const product = slug ? await getPublicProductBySlug(slug, locale) : null;
+
+if (!product) {
+	Astro.response.status = 404;
+}
+
+const pageUrl = `${site.url.replace(/\/$/, '')}${currentPath}`;
+const structuredProduct = product ? buildProductStructuredData(product, pageUrl) : null;
+const structuredBreadcrumbs = product
+	? buildBreadcrumbStructuredData([
+			{ name: t('nav.home'), url: `${site.url}/${locale}/` },
+			{ name: t('catalogue.productsTitle'), url: `${site.url}/${locale}/products` },
+			{
+				name: product.categoryName,
+				url: `${site.url}/${locale}/categories/${product.categorySlug}`,
+			},
+			{ name: product.title, url: pageUrl },
+		])
+	: null;
+const primaryImage = product?.images[0]?.url;
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	seo={product
+		? createPageMetadata({
+				title: product.title,
+				description: product.description ?? t('catalogue.productDescriptionFallback'),
+				path: currentPath,
+				locale: getOpenGraphLocale(locale),
+				ogImage: primaryImage ? `${site.url}${primaryImage}` : undefined,
+				ogType: 'product',
+			})
+		: createLocalizedPageMetadata(
+				locale,
+				currentPath,
+				t('catalogue.productNotFoundTitle'),
+				t('catalogue.productNotFoundMessage'),
+				{ noindex: true },
+			)}
+>
+	{
+		product && structuredProduct && structuredBreadcrumbs ? (
+			<>
+				<script type="application/ld+json" set:html={JSON.stringify(structuredProduct)} />
+				<script type="application/ld+json" set:html={JSON.stringify(structuredBreadcrumbs)} />
+				<Container class="py-10">
+					<ProductDetail
+						locale={locale}
+						product={product}
+						labels={{
+							outOfStock: t('catalogue.outOfStock'),
+							inStock: t('catalogue.inStock'),
+							bySeller: t('catalogue.bySeller'),
+							category: t('catalogue.category'),
+							description: t('catalogue.description'),
+							addToCartSoon: t('catalogue.addToCartSoon'),
+							home: t('nav.home'),
+							products: t('catalogue.productsTitle'),
+						}}
+					/>
+				</Container>
+			</>
+		) : (
+			<PageNotFound
+				locale={locale}
+				title={t('catalogue.productNotFoundTitle')}
+				message={t('catalogue.productNotFoundMessage')}
+				homeLabel={t('errors.returnHome')}
+			/>
+		)
+	}
+</PublicLayout>

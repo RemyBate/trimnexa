@@ -4,9 +4,9 @@
 
 Progress is tracked with checkboxes. **Do not begin a new phase until the previous phase is stable.** Update checkboxes when work is verified complete. Never remove completed phases from this document.
 
-**Current project phase:** Milestone 6 — Phase 6 complete; pending owner review
+**Current project phase:** Milestone 8 — Phase 8 complete; pending owner review
 
-**Last roadmap update:** 2026-07-14
+**Last roadmap update:** 2026-07-15
 
 ---
 
@@ -38,8 +38,8 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 - [x] **Phase 4** — Authentication and authorization
 - [x] **Phase 5** — Customer account (pending owner review)
 - [x] **Phase 6** — Seller application and shop management (pending owner review)
-- [ ] **Phase 7** — Categories and product management
-- [ ] **Phase 8** — Marketplace catalogue and search
+- [x] **Phase 7** — Categories and product management (pending owner review)
+- [x] **Phase 8** — Marketplace catalogue and search (pending owner review)
 - [ ] **Phase 9** — Cart and wishlist
 - [ ] **Phase 10** — Checkout and order creation
 - [ ] **Phase 11** — Payment integration
@@ -243,11 +243,11 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 - [x] Build category management
 - [x] Build subcategories
-- [ ] Build product attributes *(deferred — single-SKU MVP; attributes in follow-up)*
+- [ ] Build product attributes _(deferred — single-SKU MVP; attributes in follow-up)_
 - [x] Build seller product creation
 - [x] Build product editing
 - [x] Build product images
-- [ ] Build product variants *(deferred — single-SKU MVP)*
+- [ ] Build product variants _(deferred — single-SKU MVP)_
 - [x] Build stock management
 - [x] Build draft and moderation workflow
 - [x] Build administrator product approval
@@ -260,20 +260,20 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 ## Phase 8 — Marketplace catalogue and search
 
-- [ ] Build product listing
-- [ ] Build product detail page
-- [ ] Build category pages
-- [ ] Build seller shop pages
-- [ ] Add search
-- [ ] Add sorting
-- [ ] Add filters
-- [ ] Add pagination
-- [ ] Add stock display
-- [ ] Add product structured data
-- [ ] Add breadcrumbs
-- [ ] Add empty states
+- [x] Build product listing
+- [x] Build product detail page
+- [x] Build category pages
+- [x] Build seller shop pages
+- [x] Add search
+- [x] Add sorting
+- [x] Add filters
+- [x] Add pagination
+- [x] Add stock display
+- [x] Add product structured data
+- [x] Add breadcrumbs
+- [x] Add empty states
 
-**Acceptance criteria:** Products discoverable; search and filters use server-safe queries; pages crawlable; private and draft products hidden; performance acceptable.
+**Acceptance criteria:** Products discoverable; search and filters use server-safe queries; pages crawlable; private and draft products hidden; performance acceptable. **Status: complete — pending owner review.**
 
 ---
 

@@ -1,0 +1,85 @@
+---
+import Container from '@/components/common/Container.astro';
+import Card from '@/components/common/Card.astro';
+import EmptyState from '@/components/catalogue/EmptyState.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { listPublicShops } from '@/lib/catalogue/products';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+const shops = await listPublicShops(locale);
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('catalogue.shopsTitle'),
+		t('catalogue.shopsDescription'),
+	)}
+>
+	<Container class="space-y-6 py-10">
+		<div>
+			<h1 class="text-3xl font-bold text-neutral-900">{t('catalogue.shopsTitle')}</h1>
+			<p class="mt-2 text-neutral-600">{t('catalogue.shopsDescription')}</p>
+		</div>
+
+		{
+			shops.length === 0 ? (
+				<EmptyState
+					title={t('catalogue.emptyShopsTitle')}
+					description={t('catalogue.emptyShopsDescription')}
+				/>
+			) : (
+				<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					{shops.map((shop) => (
+						<li>
+							<Card class="p-5">
+								<a
+									href={localizedPath(locale, `/shops/${shop.shopSlug}`)}
+									class="block space-y-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+								>
+									<div class="flex items-center gap-3">
+										{shop.logoUrl ? (
+											<img
+												src={shop.logoUrl}
+												alt=""
+												class="h-12 w-12 rounded-md border border-neutral-200 object-cover"
+											/>
+										) : (
+											<div class="flex h-12 w-12 items-center justify-center rounded-md bg-primary-50 text-sm font-bold text-primary-800">
+												{shop.shopName.slice(0, 1)}
+											</div>
+										)}
+										<div>
+											<h2 class="font-semibold text-neutral-900">{shop.shopName}</h2>
+											<p class="text-sm text-neutral-600">
+												{shop.city
+													? `${shop.city}${shop.region ? `, ${shop.region}` : ''}`
+													: shop.region}
+											</p>
+										</div>
+									</div>
+									{shop.description ? (
+										<p class="line-clamp-3 text-sm text-neutral-700">{shop.description}</p>
+									) : null}
+									<p class="text-sm font-medium text-primary-700">
+										{shop.productCount} {t('catalogue.productsLabel')}
+									</p>
+								</a>
+							</Card>
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</Container>
+</PublicLayout>

@@ -1,18 +1,20 @@
 ---
 import CategoryTiles from '@/components/home/CategoryTiles.astro';
 import HeroSection from '@/components/home/HeroSection.astro';
-import PlaceholderSection from '@/components/home/PlaceholderSection.astro';
+import ProductShowcase from '@/components/home/ProductShowcase.astro';
 import SellerCtaSection from '@/components/home/SellerCtaSection.astro';
 import TrustSection from '@/components/home/TrustSection.astro';
 import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
-import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { listFeaturedProducts } from '@/lib/catalogue/products';
 import PublicLayout from '@/layouts/PublicLayout.astro';
 
-export const prerender = true;
+export const prerender = false;
 export const getStaticPaths = getStaticPathsForLocale;
 
 const { locale, t } = getPageContext(Astro);
 const currentPath = Astro.url.pathname;
+const featuredProducts = await listFeaturedProducts(locale, 8);
 ---
 
 <PublicLayout
@@ -28,10 +30,13 @@ const currentPath = Astro.url.pathname;
 >
 	<HeroSection locale={locale} t={t} />
 	<CategoryTiles locale={locale} t={t} />
-	<PlaceholderSection title={t('home.popularProducts')} t={t} />
-	<PlaceholderSection title={t('home.newProducts')} t={t} />
-	<PlaceholderSection title={t('home.deals')} t={t} />
-	<PlaceholderSection title={t('home.featuredSellers')} t={t} />
+	<ProductShowcase
+		locale={locale}
+		title={t('home.newProducts')}
+		products={featuredProducts}
+		t={t}
+		viewAllHref={localizedPath(locale, '/products')}
+	/>
 	<TrustSection t={t} />
 	<SellerCtaSection locale={locale} t={t} />
 </PublicLayout>

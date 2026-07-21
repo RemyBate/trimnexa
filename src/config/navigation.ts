@@ -13,7 +13,7 @@ export interface CategoryLink {
 
 export const mainNavLinks: NavLink[] = [
 	{ key: 'nav.home', href: '/' },
-	{ key: 'nav.deals', href: '/deals' },
+	{ key: 'nav.deals', href: '/products' },
 	{ key: 'nav.shops', href: '/shops' },
 	{ key: 'nav.help', href: '/help' },
 ];
@@ -36,8 +36,8 @@ export const footerSections: FooterSection[] = [
 	{
 		titleKey: 'footer.shop',
 		links: [
-			{ key: 'nav.categories', href: '/#categories' },
-			{ key: 'nav.deals', href: '/deals' },
+			{ key: 'nav.categories', href: '/categories' },
+			{ key: 'nav.deals', href: '/products' },
 			{ key: 'nav.shops', href: '/shops' },
 		],
 	},

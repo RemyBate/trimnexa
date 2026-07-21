@@ -179,7 +179,10 @@ const config = JSON.stringify({
 					<p class="mb-2 text-sm font-medium text-neutral-800">{labels.images}</p>
 					<div id="product-images" class="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
 						{product.images.map((image) => (
-							<div class="relative rounded-md border border-neutral-200 p-2" data-image-id={image.id}>
+							<div
+								class="relative rounded-md border border-neutral-200 p-2"
+								data-image-id={image.id}
+							>
 								<img src={image.url} alt={image.altText ?? ''} class="h-24 w-full object-cover" />
 								<Button
 									type="button"
@@ -212,8 +215,7 @@ const config = JSON.stringify({
 				<span id="product-save-label">{mode === 'create' ? labels.create : labels.save}</span>
 			</Button>
 			{
-				product &&
-				(product.status === 'DRAFT' || product.status === 'REJECTED') ? (
+				product && (product.status === 'DRAFT' || product.status === 'REJECTED') ? (
 					<Button type="button" id="product-submit" variant="secondary">
 						<span id="product-submit-label">{labels.submit}</span>
 					</Button>
@@ -295,7 +297,9 @@ const config = JSON.stringify({
 
 		try {
 			const url =
-				config.mode === 'create' ? '/api/seller/products' : `/api/seller/products/${config.productId}`;
+				config.mode === 'create'
+					? '/api/seller/products'
+					: `/api/seller/products/${config.productId}`;
 			const method = config.mode === 'create' ? 'POST' : 'PATCH';
 			const response = await fetch(url, {
 				method,
@@ -442,13 +446,10 @@ const config = JSON.stringify({
 			}
 
 			try {
-				const response = await fetch(
-					`/api/seller/products/${config.productId}/images/${imageId}`,
-					{
-						method: 'DELETE',
-						credentials: 'same-origin',
-					},
-				);
+				const response = await fetch(`/api/seller/products/${config.productId}/images/${imageId}`, {
+					method: 'DELETE',
+					credentials: 'same-origin',
+				});
 
 				if (!response.ok) {
 					showError(config.labels.errorGeneric);

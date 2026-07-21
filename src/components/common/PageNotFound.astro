@@ -1,0 +1,24 @@
+---
+import Button from '@/components/common/Button.astro';
+import Container from '@/components/common/Container.astro';
+import type { SupportedLocale } from '@/config/site';
+import { localizedPath } from '@/i18n';
+
+interface Props {
+	locale: SupportedLocale;
+	title: string;
+	message: string;
+	homeLabel: string;
+}
+
+const { locale, title, message, homeLabel } = Astro.props;
+---
+
+<Container class="flex min-h-[50vh] flex-col items-center justify-center py-16 text-center">
+	<p class="text-sm font-medium text-primary-600">404</p>
+	<h1 class="mt-2 text-3xl font-bold text-neutral-900">{title}</h1>
+	<p class="mt-4 max-w-md text-neutral-600">{message}</p>
+	<div class="mt-8">
+		<Button href={localizedPath(locale, '/')}>{homeLabel}</Button>
+	</div>
+</Container>

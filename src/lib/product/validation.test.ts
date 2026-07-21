@@ -10,7 +10,9 @@ describe('product prohibited content', () => {
 	});
 
 	it('allows normal product copy', () => {
-		expect(() => assertProductContentAllowed('Bamboo cutting board', 'Kitchen essential')).not.toThrow();
+		expect(() =>
+			assertProductContentAllowed('Bamboo cutting board', 'Kitchen essential'),
+		).not.toThrow();
 	});
 
 	it('blocks prohibited listings', () => {

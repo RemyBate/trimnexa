@@ -1,5 +1,9 @@
 import { AuditActions, recordAuditLog } from '@/lib/audit/record-audit-log';
-import { listCategoriesForAdmin, setCategoryActive, type AdminCategoryView } from '@/lib/product/categories';
+import {
+	listCategoriesForAdmin,
+	setCategoryActive,
+	type AdminCategoryView,
+} from '@/lib/product/categories';
 
 export async function updateCategoryActiveStatus(
 	categoryId: string,
