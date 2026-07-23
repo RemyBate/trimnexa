@@ -34,6 +34,10 @@ This document identifies known project risks and their mitigation strategies. Ad
 | Documentation drift from implementation                  | Update relevant `docs/` file when completing roadmap phases                                                |
 | Provisional brand palette used before Phase 2 approval   | Tokens marked provisional in DESIGN-SYSTEM.md and DECISIONS.md; final palette decided in Phase 2           |
 | Provisional logo used before final brand approval        | SVG mark documented as Proposed; replace before launch if owner selects different identity                 |
+| Guest cart cookie token theft or sharing                 | httpOnly Secure cookie; opaque random token; server-owned cart rows; merge-and-delete on login             |
+| Cart migration not applied before runtime review         | Run `npm run db:migrate` with MySQL up; cart APIs fail closed until tables exist                           |
+| MySQL `VARCHAR(191)` truncating long marketplace text    | Use `@db.Text` / `@db.VarChar(n)` on validated long fields; covered in MySQL baseline migration            |
+| Local MySQL port or credential mismatch                  | Document configurable `DATABASE_URL` port; optional `docker-compose.mysql.yml` for isolated dev database   |
 
 ---
 

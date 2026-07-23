@@ -165,10 +165,9 @@ export async function listPublicProducts(
 
 		if (input.q?.trim()) {
 			const term = input.q.trim();
-			where.OR = [
-				{ title: { contains: term, mode: 'insensitive' } },
-				{ description: { contains: term, mode: 'insensitive' } },
-			];
+			// MySQL utf8mb4_*_ci collations already perform case-insensitive LIKE matching.
+			// Do not use Prisma `mode: 'insensitive'` (PostgreSQL-only).
+			where.OR = [{ title: { contains: term } }, { description: { contains: term } }];
 		}
 
 		const [totalItems, products] = await Promise.all([

@@ -26,9 +26,10 @@ interface Props {
 	t: PageContext['t'];
 	user: SessionUser | null;
 	sellerMenuState?: SellerMenuState | null;
+	cartCount?: number;
 }
 
-const { locale, currentPath, t, user, sellerMenuState } = Astro.props;
+const { locale, currentPath, t, user, sellerMenuState, cartCount = 0 } = Astro.props;
 const toggleId = 'mobile-nav-toggle';
 
 const userMenuLabels = {
@@ -111,6 +112,13 @@ const userMenuLabels = {
 						></path>
 					</svg>
 					<span class="hidden xl:inline">{t('common.cart')}</span>
+					{
+						cartCount > 0 ? (
+							<span class="inline-flex min-w-5 items-center justify-center rounded-full bg-primary-700 px-1.5 text-xs font-semibold text-white">
+								{cartCount > 99 ? '99+' : cartCount}
+							</span>
+						) : null
+					}
 				</a>
 			</nav>
 		</div>

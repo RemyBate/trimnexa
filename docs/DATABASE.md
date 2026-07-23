@@ -4,7 +4,9 @@
 
 Database planning for Trimnexa. **Phase 3 initial schema implemented** in `prisma/schema.prisma`.
 
-**Planned stack:** PostgreSQL + Prisma ORM — see [ARCHITECTURE.md](./ARCHITECTURE.md)
+**Approved stack:** MySQL + Prisma ORM — see [ARCHITECTURE.md](./ARCHITECTURE.md) and [DECISIONS.md](./DECISIONS.md)
+
+Historical PostgreSQL migration SQL is preserved under `prisma/migrations_postgresql_archive/` and is not executed.
 
 **Financial flows:** [FINANCIAL-DATA.md](./FINANCIAL-DATA.md) · [PAYMENTS.md](./PAYMENTS.md) · **Product context:** [PRD.md](./PRD.md)
 
@@ -52,13 +54,13 @@ A normalized database design will be created during Phase 3.
 
 ### Shopping
 
-| Entity         | Purpose                     |
-| -------------- | --------------------------- |
-| `Cart`         | Shopping cart               |
-| `CartItem`     | Items in cart               |
-| `Wishlist`     | Customer wishlist           |
-| `WishlistItem` | Items in wishlist           |
-| `Address`      | Customer delivery addresses |
+| Entity         | Purpose                                             |
+| -------------- | --------------------------------------------------- |
+| `Cart`         | Shopping cart (customer profile and/or guest token) |
+| `CartItem`     | Items in cart (quantity only; price from Product)   |
+| `Wishlist`     | Customer wishlist                                   |
+| `WishlistItem` | Items in wishlist                                   |
+| `Address`      | Customer delivery addresses                         |
 
 ### Orders
 
@@ -123,7 +125,8 @@ Product ──1:N── ProductImage
 Product ──1:N── ProductVariant
 Product ──N:1── Category
 
-CustomerProfile ──1:1── Cart ──1:N── CartItem ──N:1── Product
+CustomerProfile ──0..1── Cart ──1:N── CartItem ──N:1── Product
+Guest cookie token ──0..1── Cart (guest carts; merged on login)
 CustomerProfile ──1:N── Order ──1:N── OrderItem
 Order ──1:N── Payment
 OrderItem ──N:1── SellerProfile (via suborder grouping)

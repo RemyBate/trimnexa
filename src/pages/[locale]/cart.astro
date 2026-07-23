@@ -1,0 +1,107 @@
+---
+import Container from '@/components/common/Container.astro';
+import CartPage from '@/components/cart/CartPage.astro';
+import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
+import { getPageContext, getStaticPathsForLocale } from '@/i18n';
+import {
+	clearGuestCartCookie,
+	createGuestCartToken,
+	readGuestCartToken,
+	setGuestCartCookie,
+} from '@/lib/cart/guest-cookie';
+import {
+	ensureGuestCart,
+	ensureUserCart,
+	getCartById,
+	mergeGuestCartIntoUser,
+} from '@/lib/cart/service';
+import { isDatabaseConfigured } from '@/lib/db';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+
+export const prerender = false;
+export const getStaticPaths = getStaticPathsForLocale;
+
+const { locale, t } = getPageContext(Astro);
+const currentPath = Astro.url.pathname;
+
+let cart = {
+	id: 'empty',
+	itemCount: 0,
+	groups: [] as Awaited<ReturnType<typeof getCartById>>['groups'],
+	subtotalMinor: '0',
+	subtotalFormatted: '0 FCFA',
+	currency: 'XAF',
+	hasUnavailableItems: false,
+};
+
+if (isDatabaseConfigured()) {
+	try {
+		const sessionUser = Astro.locals.user;
+
+		if (sessionUser) {
+			const guestToken = readGuestCartToken(Astro.cookies);
+			if (guestToken) {
+				await mergeGuestCartIntoUser(sessionUser.id, guestToken);
+				clearGuestCartCookie(Astro.cookies);
+			}
+			const cartId = await ensureUserCart(sessionUser.id);
+			cart = await getCartById(cartId, locale);
+		} else {
+			let guestToken = readGuestCartToken(Astro.cookies);
+			if (!guestToken) {
+				guestToken = createGuestCartToken();
+				setGuestCartCookie(Astro.cookies, guestToken);
+			}
+			const cartId = await ensureGuestCart(guestToken);
+			cart = await getCartById(cartId, locale);
+		}
+	} catch (error) {
+		if (import.meta.env.DEV) {
+			console.error('[cart] page load failed', error);
+		}
+	}
+}
+---
+
+<PublicLayout
+	locale={locale}
+	currentPath={currentPath}
+	t={t}
+	seo={createLocalizedPageMetadata(
+		locale,
+		currentPath,
+		t('cart.metaTitle'),
+		t('cart.metaDescription'),
+		{ noindex: true },
+	)}
+>
+	<Container class="space-y-6 py-10">
+		<div>
+			<h1 class="text-3xl font-bold text-neutral-900">{t('cart.title')}</h1>
+			<p class="mt-2 text-neutral-600">{t('cart.description')}</p>
+		</div>
+
+		<CartPage
+			locale={locale}
+			cart={cart}
+			labels={{
+				emptyTitle: t('cart.emptyTitle'),
+				emptyDescription: t('cart.emptyDescription'),
+				continueShopping: t('cart.continueShopping'),
+				quantity: t('cart.quantity'),
+				remove: t('cart.remove'),
+				subtotal: t('cart.subtotal'),
+				sellerGroup: t('cart.sellerGroup'),
+				unavailable: t('cart.unavailable'),
+				stockAdjusted: t('cart.stockAdjusted'),
+				deliveryNote: t('cart.deliveryNote'),
+				checkoutSoon: t('cart.checkoutSoon'),
+				updating: t('cart.updating'),
+				errorGeneric: t('cart.errorGeneric'),
+				errorStock: t('cart.errorStock'),
+				outOfStock: t('catalogue.outOfStock'),
+				bySeller: t('catalogue.bySeller'),
+			}}
+		/>
+	</Container>
+</PublicLayout>

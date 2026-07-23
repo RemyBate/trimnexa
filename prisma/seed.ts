@@ -1,7 +1,8 @@
 import { ApplicationStatus, PrismaClient, Role, SellerStatus, UserStatus } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { hashPassword } from 'better-auth/crypto';
-import pg from 'pg';
+
+import { parseMysqlDatabaseUrl } from '../src/lib/db-url';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -9,16 +10,15 @@ if (!connectionString) {
 	throw new Error('DATABASE_URL is required to run seed. See .env.example.');
 }
 
-const pool = new pg.Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+const adapter = new PrismaMariaDb(parseMysqlDatabaseUrl(connectionString));
 const prisma = new PrismaClient({ adapter });
 
 const categorySeeds = [
-	{ slug: 'electronics', en: 'Electronics', fr: 'Électronique' },
+	{ slug: 'electronics', en: 'Electronics', fr: '├ëlectronique' },
 	{ slug: 'fashion', en: 'Fashion', fr: 'Mode' },
-	{ slug: 'home', en: 'Home & living', fr: 'Maison & décoration' },
-	{ slug: 'beauty', en: 'Beauty & health', fr: 'Beauté & santé' },
-	{ slug: 'groceries', en: 'Groceries', fr: 'Épicerie' },
+	{ slug: 'home', en: 'Home & living', fr: 'Maison & d├®coration' },
+	{ slug: 'beauty', en: 'Beauty & health', fr: 'Beaut├® & sant├®' },
+	{ slug: 'groceries', en: 'Groceries', fr: '├ëpicerie' },
 	{ slug: 'sports', en: 'Sports & outdoors', fr: 'Sport & plein air' },
 ];
 
@@ -97,14 +97,14 @@ async function main() {
 			parentId: fashionCategory.id,
 			sortOrder: 0,
 			en: "Men's clothing",
-			fr: 'Vêtements homme',
+			fr: 'V├¬tements homme',
 		},
 		{
 			slug: 'womens-clothing',
 			parentId: fashionCategory.id,
 			sortOrder: 1,
 			en: "Women's clothing",
-			fr: 'Vêtements femme',
+			fr: 'V├¬tements femme',
 		},
 		{
 			slug: 'kitchen',
@@ -297,12 +297,12 @@ async function main() {
 		where: { userId: approvedSeller.id },
 		update: {
 			status: SellerStatus.APPROVED,
-			shopName: 'Yaoundé Home Goods',
+			shopName: 'Yaound├® Home Goods',
 			shopSlug: 'yaounde-home-goods',
-			description: 'Household essentials for families in Yaoundé.',
+			description: 'Household essentials for families in Yaound├®.',
 			shopPhone: '+237699000002',
 			addressLine1: '12 Avenue Kennedy',
-			city: 'Yaoundé',
+			city: 'Yaound├®',
 			region: 'Centre',
 			country: 'CM',
 			onboardingCompletedAt: new Date(),
@@ -310,12 +310,12 @@ async function main() {
 		create: {
 			userId: approvedSeller.id,
 			status: SellerStatus.APPROVED,
-			shopName: 'Yaoundé Home Goods',
+			shopName: 'Yaound├® Home Goods',
 			shopSlug: 'yaounde-home-goods',
-			description: 'Household essentials for families in Yaoundé.',
+			description: 'Household essentials for families in Yaound├®.',
 			shopPhone: '+237699000002',
 			addressLine1: '12 Avenue Kennedy',
-			city: 'Yaoundé',
+			city: 'Yaound├®',
 			region: 'Centre',
 			country: 'CM',
 			onboardingCompletedAt: new Date(),
@@ -329,11 +329,11 @@ async function main() {
 	await prisma.sellerApplication.create({
 		data: {
 			sellerProfileId: approvedSellerProfile.id,
-			businessName: 'Yaoundé Home Goods',
+			businessName: 'Yaound├® Home Goods',
 			description: 'Approved seed seller for development testing.',
 			contactPhone: '+237699000002',
 			contactEmail: approvedSellerEmail,
-			businessCity: 'Yaoundé',
+			businessCity: 'Yaound├®',
 			businessRegion: 'Centre',
 			status: ApplicationStatus.APPROVED,
 			reviewedAt: new Date(),
@@ -404,7 +404,7 @@ async function main() {
 				categories: categorySeeds.length + subcategorySeeds.length,
 				sellerSeeds: 2,
 				productSeeds: 2,
-				note: 'Development seed data only — change admin credentials before production.',
+				note: 'Development seed data only ÔÇö change admin credentials before production.',
 			},
 		},
 	});
@@ -422,5 +422,4 @@ main()
 	})
 	.finally(async () => {
 		await prisma.$disconnect();
-		await pool.end();
 	});

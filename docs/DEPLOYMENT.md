@@ -23,7 +23,7 @@ Deployment planning for Trimnexa. Production deployment begins in Phase 20.
 
 | Environment         | Purpose                | Database                     | Credentials            | URL              |
 | ------------------- | ---------------------- | ---------------------------- | ---------------------- | ---------------- |
-| **Local**           | Development            | Local or dev PostgreSQL      | `.env` (not committed) | `localhost:4321` |
+| **Local**           | Development            | Local or Docker MySQL        | `.env` (not committed) | `localhost:4321` |
 | **Staging/Preview** | Pre-production testing | Separate staging database    | Platform env vars      | TBD              |
 | **Production**      | Live marketplace       | Separate production database | Platform env vars only | `trimnexa.com`   |
 
@@ -45,17 +45,17 @@ Final host selection happens in **Phase 20** by comparing managed deployment pla
 
 ### Comparison criteria
 
-| Criterion               | Managed platform (e.g. Railway, Render, Fly.io)                        | Node.js on Hetzner (VPS/Cloud)                                  |
-| ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Astro SSR compatibility | Platform Node support + adapter (`@astrojs/node` or platform-specific) | `@astrojs/node` on self-managed VM                              |
-| Database access         | Managed PostgreSQL add-on                                              | Self-hosted or external PostgreSQL (Neon, Supabase, Hetzner DB) |
-| Payment webhooks        | Public HTTPS URL with platform-managed TLS                             | Reverse proxy (Caddy/Nginx) + TLS on VPS                        |
-| File storage            | External S3-compatible or Cloudinary (required either way)             | Same external object storage                                    |
-| Deployment complexity   | Lower operations; git-push deploy                                      | Higher operations; CI/CD + server maintenance                   |
-| Maintenance             | Platform handles OS patching                                           | Team manages updates, backups, monitoring                       |
-| Scalability             | Vertical or auto-scale per platform                                    | Manual scaling; load balancer added later                       |
-| Cost                    | Predictable SaaS pricing                                               | Lower infrastructure cost at scale; higher ops time             |
-| DNS connection          | Point Hetzner DNS A/CNAME record to platform                           | Point Hetzner DNS A record to Hetzner server IP                 |
+| Criterion               | Managed platform (e.g. Railway, Render, Fly.io)                        | Node.js on Hetzner (VPS/Cloud)                            |
+| ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| Astro SSR compatibility | Platform Node support + adapter (`@astrojs/node` or platform-specific) | `@astrojs/node` on self-managed VM                        |
+| Database access         | Managed MySQL / compatible cloud MySQL                                 | Self-hosted or external MySQL (Hetzner DB, managed MySQL) |
+| Payment webhooks        | Public HTTPS URL with platform-managed TLS                             | Reverse proxy (Caddy/Nginx) + TLS on VPS                  |
+| File storage            | External S3-compatible or Cloudinary (required either way)             | Same external object storage                              |
+| Deployment complexity   | Lower operations; git-push deploy                                      | Higher operations; CI/CD + server maintenance             |
+| Maintenance             | Platform handles OS patching                                           | Team manages updates, backups, monitoring                 |
+| Scalability             | Vertical or auto-scale per platform                                    | Manual scaling; load balancer added later                 |
+| Cost                    | Predictable SaaS pricing                                               | Lower infrastructure cost at scale; higher ops time       |
+| DNS connection          | Point Hetzner DNS A/CNAME record to platform                           | Point Hetzner DNS A record to Hetzner server IP           |
 
 ### Deployment flow
 

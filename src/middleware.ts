@@ -14,6 +14,8 @@ import {
 import { isDatabaseConfigured } from '@/lib/db';
 import { canAccessAdminArea, canAccessSellerArea, getMarketplaceUser } from '@/lib/authz';
 import { isAuthApiPath, isProtectedAppPath, stripLocalePrefix } from '@/lib/authz/paths';
+import { clearGuestCartCookie, readGuestCartToken } from '@/lib/cart/guest-cookie';
+import { mergeGuestCartIntoUser } from '@/lib/cart/service';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { localizedPath } from '@/i18n';
 
@@ -133,6 +135,20 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		} else {
 			context.locals.user = sessionResult.user;
 			context.locals.session = sessionResult.session;
+
+			const guestToken = readGuestCartToken(context.cookies);
+			if (guestToken) {
+				try {
+					await mergeGuestCartIntoUser(sessionResult.user.id, guestToken);
+					// Clear only after merge completes without throwing so a failed
+					// merge keeps the guest cookie for a safe retry.
+					clearGuestCartCookie(context.cookies);
+				} catch (error) {
+					if (import.meta.env.DEV) {
+						console.error('[cart] guest cart merge failed', error);
+					}
+				}
+			}
 		}
 	}
 

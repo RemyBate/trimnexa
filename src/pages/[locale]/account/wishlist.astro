@@ -1,9 +1,11 @@
 ---
 import AccountEmptyState from '@/components/account/AccountEmptyState.astro';
+import Button from '@/components/common/Button.astro';
 import Card from '@/components/common/Card.astro';
 import { createLocalizedPageMetadata } from '@/i18n/page-metadata';
-import { getPageContext, getStaticPathsForLocale } from '@/i18n';
-import { ensureCustomerWishlist, listWishlistItems } from '@/lib/account/wishlist';
+import { getPageContext, getStaticPathsForLocale, localizedPath } from '@/i18n';
+import { ensureCustomerWishlist } from '@/lib/account/wishlist';
+import { listWishlistItemDetails } from '@/lib/account/wishlist-mutations';
 import { getAccountNavItems } from '@/lib/account/navigation';
 import { requireSessionUser } from '@/lib/authz';
 import AccountLayout from '@/layouts/AccountLayout.astro';
@@ -15,8 +17,16 @@ const { locale, t } = getPageContext(Astro);
 const currentPath = Astro.url.pathname;
 const marketplaceUser = await requireSessionUser(Astro, locale);
 await ensureCustomerWishlist(marketplaceUser.id);
-const items = await listWishlistItems(marketplaceUser.id);
+const items = await listWishlistItemDetails(marketplaceUser.id, locale);
 const navItems = getAccountNavItems(t);
+const config = JSON.stringify({
+	locale,
+	labels: {
+		removed: t('account.wishlistRemoved'),
+		errorGeneric: t('cart.errorGeneric'),
+		remove: t('account.wishlistRemove'),
+	},
+});
 ---
 
 <AccountLayout
@@ -33,22 +43,135 @@ const navItems = getAccountNavItems(t);
 		{ noindex: true },
 	)}
 >
-	{
-		items.length === 0 ? (
-			<AccountEmptyState
-				title={t('account.noWishlistTitle')}
-				description={t('account.noWishlistDescription')}
-			/>
-		) : (
-			<div class="space-y-4">
-				{items.map((item) => (
-					<Card class="p-5">
-						<h2 class="font-semibold text-neutral-900">{item.productTitle}</h2>
-						<p class="mt-1 text-sm text-neutral-600">{item.productSlug}</p>
-						<p class="mt-2 text-xs text-neutral-500">{item.addedAt.toLocaleString()}</p>
+	<div data-wishlist-page data-config={config} class="space-y-4">
+		{
+			items.length === 0 ? (
+				<AccountEmptyState
+					title={t('account.noWishlistTitle')}
+					description={t('account.noWishlistDescription')}
+				/>
+			) : (
+				items.map((item) => (
+					<Card
+						class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center"
+						data-wishlist-item={item.id}
+					>
+						<a
+							href={localizedPath(locale, `/products/${item.productSlug}`)}
+							class="flex items-center gap-4"
+						>
+							{item.imageUrl ? (
+								<img
+									src={item.imageUrl}
+									alt={item.productTitle}
+									class="h-20 w-20 rounded-md object-cover"
+								/>
+							) : (
+								<div class="flex h-20 w-20 items-center justify-center rounded-md bg-neutral-100 text-neutral-500">
+									{item.productTitle.slice(0, 1)}
+								</div>
+							)}
+							<div>
+								<h2 class="font-semibold text-neutral-900">{item.productTitle}</h2>
+								{item.priceFormatted ? (
+									<p class="mt-1 text-sm font-medium text-neutral-800">{item.priceFormatted}</p>
+								) : null}
+								{!item.available ? (
+									<p class="mt-1 text-sm text-neutral-500">{t('cart.unavailable')}</p>
+								) : !item.inStock ? (
+									<p class="mt-1 text-sm text-neutral-500">{t('catalogue.outOfStock')}</p>
+								) : null}
+							</div>
+						</a>
+						<div class="flex flex-wrap gap-2 sm:ml-auto">
+							{item.available && item.inStock && item.productId ? (
+								<Button
+									type="button"
+									size="sm"
+									data-wishlist-add-cart
+									data-product-id={item.productId}
+								>
+									{t('cart.addToCart')}
+								</Button>
+							) : null}
+							<button
+								type="button"
+								data-wishlist-remove
+								data-item-id={item.id}
+								class="rounded-md px-3 py-2 text-sm font-medium text-error-700 hover:bg-error-50"
+							>
+								{t('account.wishlistRemove')}
+							</button>
+						</div>
 					</Card>
-				))}
-			</div>
-		)
-	}
+				))
+			)
+		}
+		<p class="hidden text-sm text-error-700" data-wishlist-error role="alert"></p>
+	</div>
 </AccountLayout>
+
+<script>
+	function initWishlistPage() {
+		const root = document.querySelector('[data-wishlist-page]');
+		if (!(root instanceof HTMLElement) || root.dataset.bound === '1') return;
+		root.dataset.bound = '1';
+
+		const config = JSON.parse(root.dataset.config || '{}') as {
+			locale: string;
+			labels: { removed: string; errorGeneric: string };
+		};
+		const errorEl = root.querySelector('[data-wishlist-error]');
+
+		function showError(message: string) {
+			if (!(errorEl instanceof HTMLElement)) return;
+			errorEl.textContent = message;
+			errorEl.classList.remove('hidden');
+		}
+
+		root.querySelectorAll('[data-wishlist-remove]').forEach((button) => {
+			button.addEventListener('click', async () => {
+				if (!(button instanceof HTMLButtonElement)) return;
+				const itemId = button.dataset.itemId;
+				if (!itemId) return;
+				button.disabled = true;
+				const response = await fetch(`/api/account/wishlist/items/${itemId}`, {
+					method: 'DELETE',
+					headers: { 'x-trimnexa-locale': config.locale },
+				});
+				if (!response.ok) {
+					button.disabled = false;
+					showError(config.labels.errorGeneric);
+					return;
+				}
+				window.location.reload();
+			});
+		});
+
+		root.querySelectorAll('[data-wishlist-add-cart]').forEach((button) => {
+			button.addEventListener('click', async () => {
+				if (!(button instanceof HTMLButtonElement)) return;
+				const productId = button.dataset.productId;
+				if (!productId) return;
+				button.disabled = true;
+				const response = await fetch('/api/cart/items', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-trimnexa-locale': config.locale,
+					},
+					body: JSON.stringify({ productId, quantity: 1 }),
+				});
+				button.disabled = false;
+				if (!response.ok) {
+					showError(config.labels.errorGeneric);
+					return;
+				}
+				window.location.href = `/${config.locale}/cart`;
+			});
+		});
+	}
+
+	document.addEventListener('DOMContentLoaded', initWishlistPage);
+	initWishlistPage();
+</script>

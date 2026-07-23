@@ -55,28 +55,28 @@ Complete route structure for the Trimnexa marketplace. Routes are implemented in
 
 ## Customer routes
 
-| Route                    | Purpose             |
-| ------------------------ | ------------------- |
-| `/account`               | Account dashboard   |
-| `/account/profile`       | Profile management  |
-| `/account/addresses`     | Delivery addresses  |
-| `/account/orders`        | Order history       |
-| `/account/orders/[id]`   | Order detail        |
-| `/account/wishlist`      | Saved products      |
-| `/account/reviews`       | Customer reviews    |
-| `/account/notifications` | Notification centre |
-| `/account/support`       | Support tickets     |
+| Route                    | Purpose                              |
+| ------------------------ | ------------------------------------ |
+| `/account`               | Account dashboard                    |
+| `/account/profile`       | Profile management                   |
+| `/account/addresses`     | Delivery addresses                   |
+| `/account/orders`        | Order history                        |
+| `/account/orders/[id]`   | Order detail                         |
+| `/account/wishlist`      | Saved products (add/remove; Phase 9) |
+| `/account/reviews`       | Customer reviews                     |
+| `/account/notifications` | Notification centre                  |
+| `/account/support`       | Support tickets                      |
 
 ---
 
 ## Cart and checkout routes
 
-| Route               | Purpose            |
-| ------------------- | ------------------ |
-| `/cart`             | Shopping cart      |
-| `/checkout`         | Checkout flow      |
-| `/checkout/success` | Order confirmation |
-| `/checkout/failed`  | Payment failure    |
+| Route               | Purpose                                        |
+| ------------------- | ---------------------------------------------- |
+| `/cart`             | Shopping cart (guest + authenticated; Phase 9) |
+| `/checkout`         | Checkout flow                                  |
+| `/checkout/success` | Order confirmation                             |
+| `/checkout/failed`  | Payment failure                                |
 
 ---
 

@@ -11,6 +11,7 @@ import {
 	buildProductStructuredData,
 } from '@/lib/catalogue/structured-data';
 import { getPublicProductBySlug } from '@/lib/catalogue/products';
+import { isProductInWishlist } from '@/lib/account/wishlist-mutations';
 import PublicLayout from '@/layouts/PublicLayout.astro';
 
 export const prerender = false;
@@ -20,6 +21,9 @@ const { locale, t } = getPageContext(Astro);
 const currentPath = Astro.url.pathname;
 const slug = (Astro.params as Record<string, string | undefined>).slug;
 const product = slug ? await getPublicProductBySlug(slug, locale) : null;
+const sessionUser = Astro.locals.user;
+const inWishlist =
+	product && sessionUser ? await isProductInWishlist(sessionUser.id, product.id) : false;
 
 if (!product) {
 	Astro.response.status = 404;
@@ -71,15 +75,26 @@ const primaryImage = product?.images[0]?.url;
 					<ProductDetail
 						locale={locale}
 						product={product}
+						isAuthenticated={Boolean(sessionUser)}
+						inWishlist={inWishlist}
 						labels={{
 							outOfStock: t('catalogue.outOfStock'),
 							inStock: t('catalogue.inStock'),
 							bySeller: t('catalogue.bySeller'),
 							category: t('catalogue.category'),
 							description: t('catalogue.description'),
-							addToCartSoon: t('catalogue.addToCartSoon'),
 							home: t('nav.home'),
 							products: t('catalogue.productsTitle'),
+							addToCart: t('cart.addToCart'),
+							buyNow: t('cart.buyNow'),
+							addToWishlist: t('cart.addToWishlist'),
+							inWishlist: t('cart.inWishlist'),
+							adding: t('cart.adding'),
+							added: t('cart.added'),
+							errorGeneric: t('cart.errorGeneric'),
+							errorStock: t('cart.errorStock'),
+							errorUnavailable: t('cart.errorUnavailable'),
+							signInForWishlist: t('cart.signInForWishlist'),
 						}}
 					/>
 				</Container>

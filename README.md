@@ -4,9 +4,9 @@ A trusted multi-vendor e-commerce marketplace for Cameroon. Trimnexa connects ve
 
 **Website:** [https://trimnexa.com](https://trimnexa.com)
 
-**Current project phase:** Milestone 8 — Phase 8 complete; pending owner review
+**Current project phase:** Milestone 9 — Phase 9 implemented on MySQL; pending owner review
 
-**Last roadmap update:** 2026-07-15
+**Last roadmap update:** 2026-07-23
 
 ---
 
@@ -26,11 +26,10 @@ Full vision, mission, values, and business goals: [docs/PRD.md](docs/PRD.md)
 - [x] Phase 3 — Database foundation (Prisma, migrations, seed)
 - [x] Phase 4 — Authentication (Better Auth)
 - [x] Phase 5 — Customer account
-- [ ] Phase 6 — Seller and shop
 - [x] Phase 6 — Seller application & shop
 - [x] Phase 7 — Products _(MVP: single-SKU; attributes/variants deferred)_
 - [x] Phase 8 — Catalogue and search _(pending owner review)_
-- [ ] Phase 9 — Cart and wishlist
+- [x] Phase 9 — Cart and wishlist _(pending owner review)_
 - [ ] Phase 10 — Checkout
 - [ ] Phase 11 — Payments
 - [ ] Phase 12 — Fulfilment
@@ -56,13 +55,13 @@ Full roadmap with tasks and acceptance criteria: [docs/ROADMAP.md](docs/ROADMAP.
 | Framework            | Astro `^7.0.9`                                                     |
 | Language             | TypeScript (strict)                                                |
 | Node.js              | `>=22.12.0`                                                        |
-| Database             | Prisma 7 + PostgreSQL                                              |
+| Database             | Prisma 7 + MySQL                                                   |
 | Authentication       | Better Auth (email/password, sessions, RBAC)                       |
 | Customer account     | Dashboard, profile, addresses, orders/wishlist/support foundations |
-| Marketplace features | Public catalogue, search, categories, and seller shops live        |
+| Marketplace features | Catalogue live; cart and wishlist ready for owner review           |
 | Deployment adapter   | `@astrojs/node` (server output)                                    |
 
-Run `npm run db:migrate:dev` and `npm run db:seed` after configuring PostgreSQL and `.env`.
+Run `npm run db:migrate` and `npm run db:seed` after configuring MySQL and `.env`.
 
 ---
 
@@ -76,8 +75,8 @@ Run `npm run db:migrate:dev` and `npm run db:seed` after configuring PostgreSQL 
 | Interactivity  | React 19 (`@astrojs/react` — islands prepared) |
 | Validation     | Zod (environment validation)                   |
 | Tooling        | ESLint, Prettier, Vitest, `astro check`        |
-| Database       | PostgreSQL + Prisma (planned — Phase 3)        |
-| Authentication | TBD — evaluated in Phase 4                     |
+| Database       | MySQL + Prisma                                 |
+| Authentication | Better Auth (Prisma adapter)                   |
 | Payments       | TBD — Cameroon providers (planned — Phase 11)  |
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full stack, high-level architecture diagram, and planned dependencies.
@@ -91,6 +90,40 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full stack, high-level 
 - Node.js `>=22.12.0`
 - npm
 - Git
+- MySQL 8+ (local install, XAMPP/MariaDB-compatible, or Docker)
+
+### Database setup
+
+1. Create a MySQL database named `trimnexa`.
+2. Copy `.env.example` to `.env` and set `DATABASE_URL`:
+
+```sh
+DATABASE_URL=mysql://USER:PASSWORD@127.0.0.1:PORT/trimnexa
+```
+
+Use your actual local MySQL port (commonly `3306`, or `3307` / `3308` depending on installation).
+
+Optional Docker MySQL for local development:
+
+```sh
+docker compose -f docker-compose.mysql.yml up -d
+```
+
+Default compose mapping uses host port `3308`.
+
+3. Apply migrations and seed:
+
+```sh
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+```
+
+4. Start the app:
+
+```sh
+npm run dev
+```
 
 ### Setup
 
@@ -98,6 +131,11 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full stack, high-level 
 git clone <repository-url>
 cd trimnexa
 npm install
+```
+
+Then configure MySQL as above, then:
+
+```sh
 npm run dev
 ```
 
@@ -105,18 +143,19 @@ Development server: [http://localhost:4321](http://localhost:4321)
 
 ### Commands
 
-| Command                  | Action                              |
-| ------------------------ | ----------------------------------- |
-| `npm install`            | Install dependencies                |
-| `npm run dev`            | Start dev server                    |
-| `npm run build`          | Build for production                |
-| `npm run preview`        | Preview production build            |
-| `npm run lint`           | Run ESLint                          |
-| `npm run format`         | Format with Prettier                |
-| `npm run typecheck`      | Astro + TypeScript check            |
-| `npm run test`           | Run Vitest unit tests               |
-| `npm run db:migrate:dev` | Apply migrations (local PostgreSQL) |
-| `npm run db:seed`        | Seed categories and dev settings    |
+| Command                  | Action                         |
+| ------------------------ | ------------------------------ |
+| `npm install`            | Install dependencies           |
+| `npm run dev`            | Start dev server               |
+| `npm run build`          | Build for production           |
+| `npm run preview`        | Preview production build       |
+| `npm run lint`           | Run ESLint                     |
+| `npm run format`         | Format with Prettier           |
+| `npm run typecheck`      | Astro + TypeScript check       |
+| `npm run test`           | Run Vitest unit tests          |
+| `npm run db:migrate`     | Apply migrations (MySQL)       |
+| `npm run db:migrate:dev` | Create/apply migrations in dev |
+| `npm run db:seed`        | Seed categories and dev users  |
 
 Optional background dev server: `astro dev --background` (see [AGENTS.md](AGENTS.md))
 

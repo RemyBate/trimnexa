@@ -4,15 +4,14 @@
  */
 import 'dotenv/config';
 
-import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { PrismaClient } from '@prisma/client';
-import pg from 'pg';
 
 import { env } from '@/config/env';
+import { parseMysqlDatabaseUrl } from '@/lib/db-url';
 
 const globalForPrisma = globalThis as typeof globalThis & {
 	__trimnexaPrisma?: PrismaClient;
-	__trimnexaPgPool?: pg.Pool;
 };
 
 function resolveDatabaseUrl(): string | undefined {
@@ -23,24 +22,14 @@ function getConnectionString(): string {
 	const connectionString = resolveDatabaseUrl();
 
 	if (!connectionString) {
-		throw new Error('DATABASE_URL is not set. Copy .env.example to .env and configure PostgreSQL.');
+		throw new Error('DATABASE_URL is not set. Copy .env.example to .env and configure MySQL.');
 	}
 
 	return connectionString;
 }
 
 function createPrismaClient(): PrismaClient {
-	const pool =
-		globalForPrisma.__trimnexaPgPool ??
-		new pg.Pool({
-			connectionString: getConnectionString(),
-		});
-
-	if (!globalForPrisma.__trimnexaPgPool) {
-		globalForPrisma.__trimnexaPgPool = pool;
-	}
-
-	const adapter = new PrismaPg(pool);
+	const adapter = new PrismaMariaDb(parseMysqlDatabaseUrl(getConnectionString()));
 	return new PrismaClient({ adapter });
 }
 
@@ -62,8 +51,6 @@ export const prisma = new Proxy({} as PrismaClient, {
 
 export async function disconnectDb(): Promise<void> {
 	await globalForPrisma.__trimnexaPrisma?.$disconnect();
-	await globalForPrisma.__trimnexaPgPool?.end();
-	globalForPrisma.__trimnexaPgPool = undefined;
 	globalForPrisma.__trimnexaPrisma = undefined;
 }
 

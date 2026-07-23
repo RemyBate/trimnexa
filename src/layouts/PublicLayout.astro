@@ -12,6 +12,8 @@ import Header from '@/components/layout/Header.astro';
 import SkipLink from '@/components/layout/SkipLink.astro';
 import { isDatabaseConfigured } from '@/lib/db';
 import { getUserSellerMenuState } from '@/lib/seller/guards';
+import { readGuestCartToken } from '@/lib/cart/guest-cookie';
+import { countCartItemsForGuest, countCartItemsForUser } from '@/lib/cart/service';
 
 interface Props {
 	locale: SupportedLocale;
@@ -36,6 +38,24 @@ const sessionUser = Astro.locals.user;
 const sellerMenuState =
 	sessionUser && isDatabaseConfigured() ? await getUserSellerMenuState(sessionUser.id) : null;
 
+let cartCount = 0;
+if (isDatabaseConfigured()) {
+	try {
+		if (sessionUser) {
+			cartCount = await countCartItemsForUser(sessionUser.id);
+		} else {
+			const guestToken = readGuestCartToken(Astro.cookies);
+			if (guestToken) {
+				cartCount = await countCartItemsForGuest(guestToken);
+			}
+		}
+	} catch (error) {
+		if (import.meta.env.DEV) {
+			console.error('[cart] header count failed', error);
+		}
+	}
+}
+
 const metadata: PageMetadata =
 	seoInput && 'openGraph' in seoInput
 		? seoInput
@@ -56,6 +76,7 @@ const metadata: PageMetadata =
 			t={t}
 			user={sessionUser}
 			sellerMenuState={sellerMenuState}
+			cartCount={cartCount}
 		/>
 		{showCategoryNav && <CategoryNav locale={locale} t={t} />}
 		<main id="main-content" class="flex-1 focus:outline-none" tabindex="-1">

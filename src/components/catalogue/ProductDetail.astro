@@ -1,7 +1,7 @@
 ---
 import Breadcrumbs from '@/components/catalogue/Breadcrumbs.astro';
-import Button from '@/components/common/Button.astro';
 import Card from '@/components/common/Card.astro';
+import ProductPurchaseActions from '@/components/catalogue/ProductPurchaseActions.astro';
 import type { SupportedLocale } from '@/config/site';
 import { localizedPath } from '@/i18n';
 import type { CatalogueProductDetail } from '@/lib/catalogue/types';
@@ -12,18 +12,29 @@ interface Labels {
 	bySeller: string;
 	category: string;
 	description: string;
-	addToCartSoon: string;
 	home: string;
 	products: string;
+	addToCart: string;
+	buyNow: string;
+	addToWishlist: string;
+	inWishlist: string;
+	adding: string;
+	added: string;
+	errorGeneric: string;
+	errorStock: string;
+	errorUnavailable: string;
+	signInForWishlist: string;
 }
 
 interface Props {
 	locale: SupportedLocale;
 	product: CatalogueProductDetail;
 	labels: Labels;
+	isAuthenticated: boolean;
+	inWishlist: boolean;
 }
 
-const { locale, product, labels } = Astro.props;
+const { locale, product, labels, isAuthenticated, inWishlist } = Astro.props;
 const shopHref = product.sellerShopSlug
 	? localizedPath(locale, `/shops/${product.sellerShopSlug}`)
 	: null;
@@ -114,9 +125,26 @@ const categoryHref = localizedPath(locale, `/categories/${product.categorySlug}`
 				}
 			</dl>
 
-			<Button type="button" disabled>
-				{labels.addToCartSoon}
-			</Button>
+			<ProductPurchaseActions
+				locale={locale}
+				productId={product.id}
+				inStock={product.inStock && product.stockQty > 0}
+				isAuthenticated={isAuthenticated}
+				inWishlist={inWishlist}
+				labels={{
+					addToCart: labels.addToCart,
+					buyNow: labels.buyNow,
+					addToWishlist: labels.addToWishlist,
+					inWishlist: labels.inWishlist,
+					outOfStock: labels.outOfStock,
+					adding: labels.adding,
+					added: labels.added,
+					errorGeneric: labels.errorGeneric,
+					errorStock: labels.errorStock,
+					errorUnavailable: labels.errorUnavailable,
+					signInForWishlist: labels.signInForWishlist,
+				}}
+			/>
 
 			{
 				product.description ? (

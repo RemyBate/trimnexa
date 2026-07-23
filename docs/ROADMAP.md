@@ -4,9 +4,9 @@
 
 Progress is tracked with checkboxes. **Do not begin a new phase until the previous phase is stable.** Update checkboxes when work is verified complete. Never remove completed phases from this document.
 
-**Current project phase:** Milestone 8 — Phase 8 complete; pending owner review
+**Current project phase:** Milestone 9 — Phase 9 implemented on MySQL; pending owner review
 
-**Last roadmap update:** 2026-07-15
+**Last roadmap update:** 2026-07-23
 
 ---
 
@@ -40,7 +40,7 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 - [x] **Phase 6** — Seller application and shop management (pending owner review)
 - [x] **Phase 7** — Categories and product management (pending owner review)
 - [x] **Phase 8** — Marketplace catalogue and search (pending owner review)
-- [ ] **Phase 9** — Cart and wishlist
+- [x] **Phase 9** — Cart and wishlist (pending owner review)
 - [ ] **Phase 10** — Checkout and order creation
 - [ ] **Phase 11** — Payment integration
 - [ ] **Phase 12** — Order fulfilment and delivery
@@ -163,8 +163,9 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 ## Phase 3 — Database and server foundation
 
-- [x] Select PostgreSQL provider (local PostgreSQL for development; production host deferred to Phase 20)
-- [x] Select ORM after compatibility review (Prisma 7 + `@prisma/adapter-pg`)
+- [x] Select MySQL provider (owner decision 2026-07-23; local/Docker MySQL for development; production host deferred to Phase 20)
+- [x] Select ORM after compatibility review (Prisma 7 + `@prisma/adapter-mariadb`)
+- [x] Archive PostgreSQL migration history and create MySQL baseline
 - [x] Create the initial database schema
 - [x] Create migrations
 - [x] Create safe seed data
@@ -279,17 +280,21 @@ High-level phase status. Detailed tasks and acceptance criteria are listed under
 
 ## Phase 9 — Cart and wishlist
 
-- [ ] Build cart
-- [ ] Add and remove cart items
-- [ ] Change quantities
-- [ ] Validate stock
-- [ ] Recalculate prices on the server
-- [ ] Handle products from multiple sellers
-- [ ] Build wishlist
-- [ ] Decide and implement guest-cart strategy
-- [ ] Merge guest and authenticated carts where appropriate
+- [x] Build cart
+- [x] Add and remove cart items
+- [x] Change quantities
+- [x] Validate stock
+- [x] Recalculate prices on the server
+- [x] Handle products from multiple sellers
+- [x] Build wishlist
+- [x] Decide and implement guest-cart strategy
+- [x] Merge guest and authenticated carts where appropriate
 
-**Acceptance criteria:** Client-submitted prices ignored; out-of-stock products cannot be ordered; quantities validated; cart totals calculated on server; cart persists per chosen strategy.
+**Acceptance criteria:** Client-submitted prices ignored; out-of-stock products cannot be ordered; quantities validated; cart totals calculated on server; cart persists per chosen strategy. **Status: complete — pending owner review.**
+
+**Guest-cart decision:** Session guest cart via httpOnly `trimnexa_guest_cart` cookie token; merge into authenticated cart on login (see DECISIONS.md).
+
+**Deferred to Phase 10:** Delivery-cost calculation and checkout.
 
 ---
 
@@ -569,7 +574,7 @@ Do not commit until owner review and explicit approval.
 
 **Milestone 4 — Phase 4 complete (pushed)**
 
-- Prisma 7 + PostgreSQL schema, migration, seed, money utilities, audit log foundation
+- Prisma 7 + MySQL schema, migration, seed, money utilities, audit log foundation
 - Quality checks: build (25 pages), typecheck, lint, test (18/18), format:check — all pass
 
 **Milestone 2 complete — Phase 2 (Public website and brand identity)**
@@ -595,13 +600,13 @@ Do not commit until owner review and explicit approval.
 
 ## Pending business decisions
 
-| Decision             | Options                                           | Target phase |
-| -------------------- | ------------------------------------------------- | ------------ |
-| Localization routing | Locale prefix (`/en`, `/fr`) vs cookie preference | Phase 2/17   |
-| Payment provider     | CamPay vs direct MTN MoMo vs Orange WebPay        | Phase 11     |
-| Guest cart strategy  | Session-based guest cart vs auth-required cart    | Phase 9      |
-| Initial launch city  | Douala, Yaoundé, or both                          | Phase 21     |
-| Production hosting   | Managed platform vs Hetzner Node.js               | Phase 20     |
+| Decision             | Options                                                                   | Target phase |
+| -------------------- | ------------------------------------------------------------------------- | ------------ |
+| Localization routing | Locale prefix (`/en`, `/fr`) vs cookie preference                         | Phase 2/17   |
+| Payment provider     | CamPay vs direct MTN MoMo vs Orange WebPay                                | Phase 11     |
+| Guest cart strategy  | ~~Session vs auth-required~~ **Session guest cart** (Accepted 2026-07-23) | Phase 9      |
+| Initial launch city  | Douala, Yaoundé, or both                                                  | Phase 21     |
+| Production hosting   | Managed platform vs Hetzner Node.js                                       | Phase 20     |
 
 Document final choices in [DECISIONS.md](./DECISIONS.md) when made.
 

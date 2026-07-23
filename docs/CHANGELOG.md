@@ -8,6 +8,58 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.9.1] — 2026-07-23
+
+Database provider migration: PostgreSQL → MySQL (owner decision). Phase 9 remains pending owner review.
+
+### Changed
+
+- Prisma datasource provider set to `mysql`
+- Runtime client uses `@prisma/adapter-mariadb` via `src/lib/db.ts`
+- Better Auth Prisma adapter provider set to `mysql`
+- Catalogue search uses MySQL collation-friendly `contains` (removed PostgreSQL-only `mode: 'insensitive'`)
+- Long text fields annotated with `@db.Text` / `@db.VarChar` for MySQL length safety
+- `.env.example`, README, and architecture docs updated for MySQL
+
+### Added
+
+- MySQL baseline migration `20260723120000_mysql_baseline` (includes cart/wishlist schema)
+- Optional `docker-compose.mysql.yml` for local MySQL 8.4 on host port 3308
+- `src/lib/db-url.ts` MySQL URL parser + unit tests
+
+### Archived
+
+- Previous PostgreSQL Prisma migrations preserved under `prisma/migrations_postgresql_archive/` (not executed)
+
+### Removed
+
+- Runtime dependencies `@prisma/adapter-pg`, `pg`, `@types/pg`
+
+---
+
+## [0.9.0] — 2026-07-23
+
+Milestone 9 — Phase 9 cart and wishlist (pending owner review).
+
+### Added
+
+- `Cart` / `CartItem` models (originally drafted for PostgreSQL; now included in the MySQL baseline)
+- Cart services with server-side price and stock validation; multi-seller grouping
+- Guest cart via httpOnly cookie token; merge into authenticated cart on login
+- APIs: `/api/cart`, `/api/cart/items`, `/api/cart/items/[id]`, `/api/cart/buy-now`
+- Wishlist add/remove APIs and richer wishlist page
+- Public cart page `/cart`; product detail add-to-cart, buy-now, and wishlist actions
+- Header cart count badge
+- Bilingual `cart.*` i18n strings
+- Cart validation unit tests
+
+### Notes
+
+- Delivery pricing and checkout remain Phase 10
+- Client-submitted prices are ignored; totals recalculated from live product data
+- Database verification for Phase 9 requires MySQL (`npm run db:migrate` + `npm run db:seed`)
+- Guest-cart merge requires a successful same-origin login; local `APP_URL`/`AUTH_URL` should match the browser host (`http://127.0.0.1:4321` recommended). Development also trusts loopback host aliases via Better Auth `trustedOrigins`.
+
 ---
 
 ## [0.8.0] — 2026-07-15
@@ -27,7 +79,6 @@ Milestone 8 — Phase 8 marketplace catalogue and search (pending owner review).
 
 ### Notes
 
-- Add to cart remains a placeholder until Phase 9
 - Only `ACTIVE` and `OUT_OF_STOCK` products from approved sellers are visible
 
 ---

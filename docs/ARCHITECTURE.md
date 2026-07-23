@@ -37,7 +37,7 @@ Conceptual view of the Trimnexa platform. This is not a deployment diagram — s
        │
        ▼
 ┌─────────────┐
-│ PostgreSQL  │  Users, catalogue, orders, ledger, audit logs
+│ MySQL       │  Users, catalogue, orders, ledger, audit logs
 │ Database    │  Prisma ORM (Phase 3)
 └──────┬──────┘
        │
@@ -70,16 +70,16 @@ Conceptual view of the Trimnexa platform. This is not a deployment diagram — s
 
 ### Planned (not installed until relevant phase)
 
-| Layer              | Planned choice                 | Rationale                                       | Phase |
-| ------------------ | ------------------------------ | ----------------------------------------------- | ----- |
-| Database           | PostgreSQL                     | Relational data, ACID transactions              | 3     |
-| ORM                | Prisma + `@prisma/adapter-pg`  | Official Astro 7 guide; migrations; type safety | 3     |
-| Authentication     | **TBD — evaluated in Phase 4** | Astro-compatible; self-hosted preferred         | 4     |
-| Image storage      | Cloudinary or S3-compatible    | Uploads, transforms, CDN                        | 7     |
-| Email              | Resend or Postmark             | Transactional email                             | 16    |
-| Payments           | TBD after research             | CamPay, MTN MoMo API, Orange WebPay             | 11    |
-| Testing            | Vitest + Playwright            | Astro/Vite ecosystem fit                        | 1B/19 |
-| Deployment adapter | TBD after Phase 20 comparison  | Installed only after host selection             | 20    |
+| Layer              | Planned choice                     | Rationale                                                               | Phase |
+| ------------------ | ---------------------------------- | ----------------------------------------------------------------------- | ----- |
+| Database           | MySQL                              | Owner-approved relational store; ACID transactions                      | 3     |
+| ORM                | Prisma + `@prisma/adapter-mariadb` | Official Prisma 7 MySQL/MariaDB driver adapter; migrations; type safety | 3     |
+| Authentication     | **TBD — evaluated in Phase 4**     | Astro-compatible; self-hosted preferred                                 | 4     |
+| Image storage      | Cloudinary or S3-compatible        | Uploads, transforms, CDN                                                | 7     |
+| Email              | Resend or Postmark                 | Transactional email                                                     | 16    |
+| Payments           | TBD after research                 | CamPay, MTN MoMo API, Orange WebPay                                     | 11    |
+| Testing            | Vitest + Playwright                | Astro/Vite ecosystem fit                                                | 1B/19 |
+| Deployment adapter | TBD after Phase 20 comparison      | Installed only after host selection                                     | 20    |
 
 ### Hosting status
 
@@ -150,7 +150,7 @@ The authentication solution **will be selected after evaluation during Phase 4**
 - Email/password authentication (minimum)
 - Session management with secure cookies
 - Role support: customer, seller, administrator (and future staff)
-- Prisma or PostgreSQL integration preferred
+- Prisma or MySQL integration preferred
 - Self-hosted (no per-user SaaS pricing preferred for marketplace scale)
 
 ### Candidate solutions
@@ -275,7 +275,7 @@ docs/                     # Project documentation
 
 | Environment     | Purpose                | Database                     | Credentials            |
 | --------------- | ---------------------- | ---------------------------- | ---------------------- |
-| Local           | Development            | Local or dev PostgreSQL      | `.env` (not committed) |
+| Local           | Development            | Local or Docker MySQL        | `.env` (not committed) |
 | Staging/Preview | Pre-production testing | Separate staging database    | Platform env vars      |
 | Production      | Live marketplace       | Separate production database | Platform env vars only |
 
@@ -294,7 +294,7 @@ Never commit `.env` files containing secrets.
 
 | Variable                 | Purpose                                                   | Phase |
 | ------------------------ | --------------------------------------------------------- | ----- |
-| `DATABASE_URL`           | PostgreSQL connection string                              | 3     |
+| `DATABASE_URL`           | MySQL connection string (`mysql://…`)                     | 3     |
 | `AUTH_SECRET`            | Authentication signing secret                             | 4     |
 | `AUTH_URL`               | Public application URL for auth callbacks                 | 4     |
 | `PAYMENT_PROVIDER`       | Selected payment provider identifier                      | 11    |

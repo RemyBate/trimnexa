@@ -1,0 +1,267 @@
+---
+import Button from '@/components/common/Button.astro';
+import Card from '@/components/common/Card.astro';
+import type { SupportedLocale } from '@/config/site';
+import { localizedPath } from '@/i18n';
+import type { CartView } from '@/lib/cart/service';
+
+interface Labels {
+	emptyTitle: string;
+	emptyDescription: string;
+	continueShopping: string;
+	quantity: string;
+	remove: string;
+	subtotal: string;
+	sellerGroup: string;
+	unavailable: string;
+	stockAdjusted: string;
+	deliveryNote: string;
+	checkoutSoon: string;
+	updating: string;
+	errorGeneric: string;
+	errorStock: string;
+	outOfStock: string;
+	bySeller: string;
+}
+
+interface Props {
+	locale: SupportedLocale;
+	cart: CartView;
+	labels: Labels;
+}
+
+const { locale, cart, labels } = Astro.props;
+const config = JSON.stringify({
+	locale,
+	labels: {
+		updating: labels.updating,
+		errorGeneric: labels.errorGeneric,
+		errorStock: labels.errorStock,
+	},
+});
+---
+
+<div data-cart-page data-config={config} class="space-y-6">
+	{
+		cart.groups.length === 0 ? (
+			<Card class="p-8 text-center">
+				<h2 class="text-xl font-semibold text-neutral-900">{labels.emptyTitle}</h2>
+				<p class="mt-2 text-neutral-600">{labels.emptyDescription}</p>
+				<div class="mt-6">
+					<Button href={localizedPath(locale, '/products')}>{labels.continueShopping}</Button>
+				</div>
+			</Card>
+		) : (
+			<>
+				{cart.hasUnavailableItems ? (
+					<p class="rounded-md border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-900">
+						{labels.stockAdjusted}
+					</p>
+				) : null}
+
+				{cart.groups.map((group) => (
+					<Card class="space-y-4 p-5">
+						<h2 class="text-lg font-semibold text-neutral-900">
+							{labels.sellerGroup}{' '}
+							{group.sellerShopSlug ? (
+								<a
+									href={localizedPath(locale, `/shops/${group.sellerShopSlug}`)}
+									class="text-primary-700 hover:text-primary-800"
+								>
+									{group.sellerShopName ?? labels.bySeller}
+								</a>
+							) : (
+								<span>{group.sellerShopName ?? labels.bySeller}</span>
+							)}
+						</h2>
+
+						<ul class="divide-y divide-neutral-200">
+							{group.items.map((item) => (
+								<li
+									class="flex flex-col gap-4 py-4 sm:flex-row sm:items-center"
+									data-cart-item={item.id}
+								>
+									<a
+										href={localizedPath(locale, `/products/${item.productSlug}`)}
+										class="flex shrink-0 items-center gap-3"
+									>
+										{item.imageUrl ? (
+											<img
+												src={item.imageUrl}
+												alt={item.imageAlt ?? item.productTitle}
+												class="h-20 w-20 rounded-md object-cover"
+											/>
+										) : (
+											<div class="flex h-20 w-20 items-center justify-center rounded-md bg-neutral-100 text-sm text-neutral-500">
+												{item.productTitle.slice(0, 1)}
+											</div>
+										)}
+										<span class="font-medium text-neutral-900 sm:hidden">{item.productTitle}</span>
+									</a>
+
+									<div class="min-w-0 flex-1 space-y-2">
+										<a
+											href={localizedPath(locale, `/products/${item.productSlug}`)}
+											class="hidden font-medium text-neutral-900 hover:text-primary-800 sm:block"
+										>
+											{item.productTitle}
+										</a>
+										<p class="text-sm font-semibold text-neutral-900">{item.unitPriceFormatted}</p>
+										{!item.inStock ? (
+											<p class="text-sm font-medium text-error-700">{labels.unavailable}</p>
+										) : item.quantityClamped ? (
+											<p class="text-sm text-warning-800">{labels.stockAdjusted}</p>
+										) : null}
+
+										<div class="flex flex-wrap items-center gap-3">
+											<label class="text-sm text-neutral-600">
+												<span class="sr-only">{labels.quantity}</span>
+												<input
+													type="number"
+													min="0"
+													max={item.maxQuantity || item.quantity}
+													value={item.quantity}
+													data-cart-qty
+													data-item-id={item.id}
+													disabled={!item.inStock}
+													class="w-20 rounded-md border border-neutral-300 px-2 py-1.5 text-sm disabled:bg-neutral-100"
+												/>
+											</label>
+											<button
+												type="button"
+												data-cart-remove
+												data-item-id={item.id}
+												class="text-sm font-medium text-error-700 hover:text-error-800"
+											>
+												{labels.remove}
+											</button>
+										</div>
+									</div>
+
+									<p class="text-base font-bold text-neutral-900 sm:text-right" data-line-total>
+										{item.lineTotalFormatted}
+									</p>
+								</li>
+							))}
+						</ul>
+
+						<p class="text-right text-sm font-medium text-neutral-800">
+							{labels.subtotal}: {group.subtotalFormatted}
+						</p>
+					</Card>
+				))}
+
+				<Card class="space-y-4 p-5">
+					<div class="flex flex-wrap items-end justify-between gap-3">
+						<div>
+							<p class="text-sm text-neutral-600">{labels.deliveryNote}</p>
+							<p class="mt-2 text-2xl font-bold text-neutral-900">
+								{labels.subtotal}: <span data-cart-subtotal>{cart.subtotalFormatted}</span>
+							</p>
+						</div>
+						<div class="flex flex-wrap gap-3">
+							<Button href={localizedPath(locale, '/products')} variant="secondary">
+								{labels.continueShopping}
+							</Button>
+							<Button type="button" disabled>
+								{labels.checkoutSoon}
+							</Button>
+						</div>
+					</div>
+					<p class="hidden text-sm text-error-700" data-cart-error role="alert" />
+				</Card>
+			</>
+		)
+	}
+</div>
+
+<script>
+	function initCartPage() {
+		const root = document.querySelector('[data-cart-page]');
+		if (!(root instanceof HTMLElement) || root.dataset.bound === '1') return;
+		root.dataset.bound = '1';
+
+		const config = JSON.parse(root.dataset.config || '{}') as {
+			locale: string;
+			labels: { updating: string; errorGeneric: string; errorStock: string };
+		};
+
+		const errorEl = root.querySelector('[data-cart-error]');
+		const subtotalEl = root.querySelector('[data-cart-subtotal]');
+
+		function showError(message: string) {
+			if (!(errorEl instanceof HTMLElement)) return;
+			errorEl.textContent = message;
+			errorEl.classList.remove('hidden');
+		}
+
+		function clearError() {
+			if (!(errorEl instanceof HTMLElement)) return;
+			errorEl.textContent = '';
+			errorEl.classList.add('hidden');
+		}
+
+		async function mutate(url: string, method: string, body?: unknown) {
+			clearError();
+			const response = await fetch(url, {
+				method,
+				headers: {
+					'Content-Type': 'application/json',
+					'x-trimnexa-locale': config.locale,
+				},
+				body: body === undefined ? undefined : JSON.stringify(body),
+			});
+
+			const payload = (await response.json().catch(() => ({}))) as {
+				error?: string;
+				cart?: { subtotalFormatted?: string };
+			};
+
+			if (!response.ok) {
+				if (payload.error === 'insufficient_stock') {
+					showError(config.labels.errorStock);
+				} else {
+					showError(config.labels.errorGeneric);
+				}
+				return null;
+			}
+
+			return payload;
+		}
+
+		root.querySelectorAll('[data-cart-qty]').forEach((input) => {
+			input.addEventListener('change', async () => {
+				if (!(input instanceof HTMLInputElement)) return;
+				const itemId = input.dataset.itemId;
+				if (!itemId) return;
+				const quantity = Number(input.value);
+				const payload = await mutate(`/api/cart/items/${itemId}`, 'PATCH', { quantity });
+				if (payload?.cart) {
+					window.location.reload();
+				}
+			});
+		});
+
+		root.querySelectorAll('[data-cart-remove]').forEach((button) => {
+			button.addEventListener('click', async () => {
+				if (!(button instanceof HTMLButtonElement)) return;
+				const itemId = button.dataset.itemId;
+				if (!itemId) return;
+				button.disabled = true;
+				const payload = await mutate(`/api/cart/items/${itemId}`, 'DELETE');
+				if (payload?.cart) {
+					window.location.reload();
+				} else {
+					button.disabled = false;
+				}
+			});
+		});
+
+		if (subtotalEl instanceof HTMLElement) {
+			// Reserved for future in-place updates without reload.
+		}
+	}
+
+	document.addEventListener('DOMContentLoaded', initCartPage);
+	initCartPage();
+</script>

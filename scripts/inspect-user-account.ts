@@ -1,8 +1,9 @@
 import 'dotenv/config';
 
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+
+import { parseMysqlDatabaseUrl } from '../src/lib/db-url';
 
 const email = process.argv[2] ?? 'remybatem@gmail.com';
 const connectionString = process.env.DATABASE_URL;
@@ -12,8 +13,9 @@ if (!connectionString) {
 	process.exit(1);
 }
 
-const pool = new pg.Pool({ connectionString });
-const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
+const prisma = new PrismaClient({
+	adapter: new PrismaMariaDb(parseMysqlDatabaseUrl(connectionString)),
+});
 
 try {
 	const user = await prisma.user.findUnique({
@@ -53,5 +55,4 @@ try {
 	);
 } finally {
 	await prisma.$disconnect();
-	await pool.end();
 }

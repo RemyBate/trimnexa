@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-	provider = "postgresql"
+	provider = "mysql"
 }
 
 // --- Users and access (auth integration in Phase 4) ---
@@ -35,7 +35,7 @@ model User {
 	lastName      String?    @map("last_name")
 	status        UserStatus @default(PENDING_VERIFICATION)
 	suspendedAt   DateTime?  @map("suspended_at")
-	suspendedReason String?  @map("suspended_reason")
+	suspendedReason String?  @map("suspended_reason") @db.Text
 	locale        String     @default("en")
 	createdAt     DateTime   @default(now()) @map("created_at")
 	updatedAt     DateTime   @updatedAt @map("updated_at")
@@ -62,7 +62,7 @@ model Session {
 	createdAt DateTime @default(now()) @map("created_at")
 	updatedAt DateTime @updatedAt @map("updated_at")
 	ipAddress String?  @map("ip_address")
-	userAgent String?  @map("user_agent")
+	userAgent String?  @map("user_agent") @db.Text
 	userId    String   @map("user_id")
 
 	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -75,13 +75,13 @@ model Account {
 	accountId             String    @map("account_id")
 	providerId            String    @map("provider_id")
 	userId                String    @map("user_id")
-	accessToken           String?   @map("access_token")
-	refreshToken          String?   @map("refresh_token")
-	idToken               String?   @map("id_token")
+	accessToken           String?   @map("access_token") @db.Text
+	refreshToken          String?   @map("refresh_token") @db.Text
+	idToken               String?   @map("id_token") @db.Text
 	accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
 	refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
-	scope                 String?
-	password              String?
+	scope                 String?   @db.Text
+	password              String?   @db.Text
 	createdAt             DateTime  @default(now()) @map("created_at")
 	updatedAt             DateTime  @updatedAt @map("updated_at")
 
@@ -93,7 +93,7 @@ model Account {
 model Verification {
 	id         String    @id @default(cuid())
 	identifier String
-	value      String
+	value      String   @db.Text
 	expiresAt  DateTime  @map("expires_at")
 	createdAt  DateTime? @default(now()) @map("created_at")
 	updatedAt  DateTime? @updatedAt @map("updated_at")
@@ -122,8 +122,40 @@ model CustomerProfile {
 
 	user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 	wishlist Wishlist?
+	cart     Cart?
 
 	@@map("customer_profiles")
+}
+
+// --- Shopping cart (Phase 9) ---
+
+model Cart {
+	id                String   @id @default(cuid())
+	customerProfileId String?  @unique @map("customer_profile_id")
+	guestToken        String?  @unique @map("guest_token")
+	createdAt         DateTime @default(now()) @map("created_at")
+	updatedAt         DateTime @updatedAt @map("updated_at")
+
+	customerProfile CustomerProfile? @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+	items           CartItem[]
+
+	@@map("carts")
+}
+
+model CartItem {
+	id        String   @id @default(cuid())
+	cartId    String   @map("cart_id")
+	productId String   @map("product_id")
+	quantity  Int      @default(1)
+	createdAt DateTime @default(now()) @map("created_at")
+	updatedAt DateTime @updatedAt @map("updated_at")
+
+	cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+	product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+	@@unique([cartId, productId])
+	@@index([productId])
+	@@map("cart_items")
 }
 
 // --- Customer account (Phase 5) ---
@@ -193,7 +225,7 @@ model WishlistItem {
 	wishlistId   String   @map("wishlist_id")
 	productId    String?  @map("product_id")
 	productSlug  String   @map("product_slug")
-	productTitle String   @map("product_title")
+	productTitle String   @map("product_title") @db.VarChar(200)
 	addedAt      DateTime @default(now()) @map("added_at")
 
 	wishlist Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
@@ -216,7 +248,7 @@ model Notification {
 	userId    String           @map("user_id")
 	type      NotificationType @default(SYSTEM)
 	title     String
-	body      String
+	body      String           @db.Text
 	readAt    DateTime?        @map("read_at")
 	createdAt DateTime         @default(now()) @map("created_at")
 
@@ -252,7 +284,7 @@ model SupportMessage {
 	id           String   @id @default(cuid())
 	ticketId     String   @map("ticket_id")
 	authorUserId String   @map("author_user_id")
-	body         String
+	body         String   @db.Text
 	createdAt    DateTime @default(now()) @map("created_at")
 
 	ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
@@ -273,11 +305,11 @@ model SellerProfile {
 	userId                String       @unique @map("user_id")
 	shopName              String?      @map("shop_name")
 	shopSlug              String?      @unique @map("shop_slug")
-	description           String?
-	logoPath              String?      @map("logo_path")
-	bannerPath            String?      @map("banner_path")
-	returnPolicy          String?      @map("return_policy")
-	shippingPolicy        String?      @map("shipping_policy")
+	description           String?      @db.Text
+	logoPath              String?      @map("logo_path") @db.Text
+	bannerPath            String?      @map("banner_path") @db.Text
+	returnPolicy          String?      @map("return_policy") @db.Text
+	shippingPolicy        String?      @map("shipping_policy") @db.Text
 	shopPhone             String?      @map("shop_phone")
 	shopEmail             String?      @map("shop_email")
 	addressLine1          String?      @map("address_line1")
@@ -288,7 +320,7 @@ model SellerProfile {
 	status                SellerStatus @default(PENDING)
 	onboardingCompletedAt DateTime?    @map("onboarding_completed_at")
 	suspendedAt           DateTime?    @map("suspended_at")
-	suspensionReason      String?      @map("suspension_reason")
+	suspensionReason      String?      @map("suspension_reason") @db.Text
 	createdAt             DateTime     @default(now()) @map("created_at")
 	updatedAt             DateTime     @updatedAt @map("updated_at")
 
@@ -310,7 +342,7 @@ model SellerApplication {
 	id              String            @id @default(cuid())
 	sellerProfileId String            @map("seller_profile_id")
 	businessName    String            @map("business_name")
-	description     String?
+	description     String?           @db.Text
 	contactPhone    String            @map("contact_phone")
 	contactEmail    String            @map("contact_email")
 	businessCity    String            @map("business_city")
@@ -319,7 +351,7 @@ model SellerApplication {
 	submittedAt     DateTime          @default(now()) @map("submitted_at")
 	reviewedAt      DateTime?         @map("reviewed_at")
 	reviewedById    String?           @map("reviewed_by_id")
-	reviewNotes     String?           @map("review_notes")
+	reviewNotes     String?           @map("review_notes") @db.Text
 
 	sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
 
@@ -351,7 +383,7 @@ model CategoryTranslation {
 	categoryId  String  @map("category_id")
 	locale      String
 	name        String
-	description String?
+	description String? @db.Text
 
 	category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
@@ -373,9 +405,9 @@ model Product {
 	id              String        @id @default(cuid())
 	sellerProfileId String        @map("seller_profile_id")
 	categoryId      String        @map("category_id")
-	title           String
+	title           String        @db.VarChar(200)
 	slug            String        @unique
-	description     String?
+	description     String?       @db.Text
 	priceMinor      BigInt        @map("price_minor")
 	currency        String        @default("XAF")
 	stockQty        Int           @default(0) @map("stock_qty")
@@ -383,7 +415,7 @@ model Product {
 	submittedAt     DateTime?     @map("submitted_at")
 	reviewedAt      DateTime?     @map("reviewed_at")
 	reviewedById    String?       @map("reviewed_by_id")
-	reviewNotes     String?       @map("review_notes")
+	reviewNotes     String?       @map("review_notes") @db.Text
 	createdAt       DateTime      @default(now()) @map("created_at")
 	updatedAt       DateTime      @updatedAt @map("updated_at")
 
@@ -392,6 +424,7 @@ model Product {
 	images               ProductImage[]
 	inventoryAdjustments InventoryAdjustment[]
 	wishlistItems        WishlistItem[]
+	cartItems            CartItem[]
 
 	@@index([sellerProfileId, status])
 	@@index([categoryId, status])
@@ -402,8 +435,8 @@ model Product {
 model ProductImage {
 	id        String   @id @default(cuid())
 	productId String   @map("product_id")
-	path      String
-	altText   String?  @map("alt_text")
+	path      String   @db.Text
+	altText   String?  @map("alt_text") @db.Text
 	sortOrder Int      @default(0) @map("sort_order")
 	createdAt DateTime @default(now()) @map("created_at")
 
@@ -420,7 +453,7 @@ model InventoryAdjustment {
 	delta       Int
 	previousQty Int      @map("previous_qty")
 	newQty      Int      @map("new_qty")
-	reason      String
+	reason      String   @db.Text
 	createdAt   DateTime @default(now()) @map("created_at")
 
 	product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -440,7 +473,7 @@ model AuditLog {
 	actorId    String?  @map("actor_id")
 	metadata   Json?
 	ipAddress  String?  @map("ip_address")
-	userAgent  String?  @map("user_agent")
+	userAgent  String?  @map("user_agent") @db.Text
 	createdAt  DateTime @default(now()) @map("created_at")
 
 	actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
